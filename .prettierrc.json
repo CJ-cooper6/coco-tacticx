@@ -1,0 +1,10 @@
+{
+  "tabWidth": 2,
+  "printWidth": 120,
+  "endOfLine": "auto",
+  "trailingComma": "es5",
+  "semi": true,
+  "arrowParens": "always",
+  "htmlWhitespaceSensitivity": "ignore",
+  "jsxBracketSameLine": false
+}

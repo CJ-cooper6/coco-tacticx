@@ -1,0 +1,43 @@
+module.exports = {
+  root: true,
+  env: {
+    browser: true,
+    es6: true,
+  },
+  parserOptions: {
+    ecmaVersion: 2018,
+    parser: "@typescript-eslint/parser",
+    sourceType: "module",
+  },
+  extends: ["airbnb-base", "prettier", "plugin:vue/essential", "plugin:@typescript-eslint/eslint-recommended"],
+  plugins: ["vue", "@typescript-eslint", "prettier"],
+  rules: {
+    "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
+    "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
+    "no-unused-expressions": "off",
+    "no-unused-vars": "off",
+    "import/no-unresolved": "off",
+    "no-useless-constructor": "off",
+    "no-continue": "off",
+    "no-plusplus": "off",
+    "no-underscore-dangle": "off",
+    "no-new": "off",
+    "class-methods-use-this": "off",
+    "import/prefer-default-export": "off",
+    "import/no-default-export": "off",
+    "no-unexpected-multiline": "error",
+    "max-classes-per-file": ["error", 10],
+    "vue/no-parsing-error": ["error", { "x-invalid-end-tag": false }],
+    "import/extensions": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        autoFixOnSave: true,
+        printWidth: 120,
+      },
+    ],
+    "import/no-extraneous-dependencies": "off",
+    "prefer-destructuring": "off",
+    "vue/multi-word-component-names": "off",
+  },
+};

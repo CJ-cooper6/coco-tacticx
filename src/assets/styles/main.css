@@ -1,0 +1,47 @@
+:root {
+  --primary-color: #5c9a5e;
+  --primary-brand-color-lightened-3: #75896a;
+  --primary-brand-color-lightened-2: #738554;
+  --primary-brand-color-lightened-1: #72a653;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif, "Noto Sans CJK SC",
+    Code2001, Code2002;
+  height: 100%;
+  min-height: 100vh;
+  color: #39474b;
+  font-size: 16px;
+  background: linear-gradient(135deg, #64a7a5, #19586a);
+}
+
+@media (max-width: 1200px) {
+  html {
+    font-size: 15px; /* 中等屏幕 */
+  }
+}
+
+@media (max-width: 992px) {
+  html {
+    font-size: 14px; /* 小屏幕 */
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 13px; /* 超小屏幕 */
+  }
+}
+
+@media (max-width: 576px) {
+  html {
+    font-size: 12px; /* 手机屏幕 */
+  }
+}
+
+#app {
+  height: 100%;
+}

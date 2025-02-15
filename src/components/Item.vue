@@ -1,7 +1,12 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-  <g :id="`item-${item.id}`">
-    <g @pointerdown="handlePointerDown(item, $event)">
+  <g :id="`item-${item.id}`" ref="itemRef">
+    <g
+      @pointerdown="handlePointerDown"
+      @pointermove="handlePointerMove"
+      @pointerup="handlePointerUp"
+      @click="handleClick"
+    >
       <!-- 名称 -->
       <text :x="itemPosition.x" :y="itemPosition.y - item.r - 10" text-anchor="middle" class="player-name">
         {{ item.text }}
@@ -15,7 +20,6 @@
         :fill="item.color"
         :stroke="itemStore.numberColor(item)"
         stroke-width="4"
-        @pointerdown="handlePointerUp"
       ></circle>
 
       <!-- 号码 -->
@@ -86,10 +90,13 @@ const itemStore = useItemStore();
 
 const popupRef = ref(null);
 const circleRef = ref(null);
+const itemRef = ref(null);
 const popupX = ref(200);
 const popupY = ref(200);
 const showPopup = ref(false);
 const animationRef = ref(null);
+const isPointerDown = ref(false);
+const hasDragged = ref(false);
 
 const emit = defineEmits(["start-drag"]);
 
@@ -107,10 +114,6 @@ const hasAnimation = computed(() => {
   const action = animationStore.getElementAnimationAction(props.item.id, currentFrameIndex.value);
   return !!action;
 });
-
-const handlePointerDown = (item: Item, event: PointerEvent) => {
-  emit("start-drag", item, event);
-};
 
 const animationPathData = () => {
   const action = animationStore.getElementAnimationAction(props.item.id, currentFrameIndex.value);
@@ -144,16 +147,33 @@ const calculatePopupPosition = () => {
   }
 };
 
+const handlePointerDown = () => {
+  isPointerDown.value = true;
+};
+
+const handlePointerMove = (event: PointerEvent) => {
+  if (!isPointerDown.value) return;
+  emit("start-drag", props.item, event);
+  isPointerDown.value = false;
+  hasDragged.value = true;
+};
+
 const handlePointerUp = () => {
-  window.setTimeout(() => {
-    if (props.item.isDragging) return;
-    showPopup.value = !showPopup.value;
-    nextTick(() => {
-      if (showPopup.value) {
-        calculatePopupPosition();
-      }
-    });
-  }, 300);
+  isPointerDown.value = false;
+};
+
+const handleClick = () => {
+  if (props.item.isDragging || hasDragged.value) {
+    hasDragged.value = false;
+    return;
+  }
+  showPopup.value = !showPopup.value;
+  nextTick(() => {
+    if (showPopup.value) {
+      itemStore.moveItemToLast(props.item);
+      calculatePopupPosition();
+    }
+  });
 };
 
 const closePopup = () => {
@@ -161,7 +181,7 @@ const closePopup = () => {
 };
 
 useClickOutside({
-  targetRef: popupRef,
+  targetRef: itemRef,
   onClickOutside: closePopup,
 });
 

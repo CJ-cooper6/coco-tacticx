@@ -35,7 +35,6 @@ export const useItemStore = defineStore("items", () => {
 
   // 使用 keyof Item 来限制 property 参数只能是 Item 类型的键
   const setItemProperty = <K extends keyof Item>(id: number, property: K, value: Item[K]) => {
-    console.log("setItemProperty", id, property, value);
     // 如果是动画模式，需要更新当前帧的元素
     if (isAnimationMode.value) {
       const itemIndex = currentFrameElements.value.findIndex((p) => p.id === id);
@@ -75,6 +74,29 @@ export const useItemStore = defineStore("items", () => {
     return luminance > 128 ? "#000000" : "#FFFFFF";
   };
 
+  const moveItemToLast = (item: Item) => {
+    // 将点击的元素移动到最后，层级最高
+    if (isAnimationMode.value) {
+      // 动画模式下，元素数组是计算属性，将元素移动到当前帧的元素数组中的最后可实现层级最高
+      const allItems = currentFrameElements.value;
+      const index = allItems.findIndex((a) => a.id === item.id);
+      if (index !== -1) {
+        // 将项目移到数组末尾
+        const tmp = allItems.splice(index, 1)[0];
+        allItems.push(tmp);
+      }
+    } else {
+      // 非动画模式下，直接将元素移动到最后
+      const itemElement = document.getElementById(`item-${item.id}`);
+      if (itemElement) {
+        const parent = itemElement.parentElement;
+        if (parent) {
+          parent.appendChild(itemElement);
+        }
+      }
+    }
+  };
+
   return {
     items,
     newDraggingItem,
@@ -86,5 +108,6 @@ export const useItemStore = defineStore("items", () => {
     setItemProperty,
     numberColor,
     deleteItem,
+    moveItemToLast,
   };
 });

@@ -16,7 +16,6 @@
           />
         </div>
         <Shape></Shape>
-        {{ globalStore.deviceInfo }}
         <div class="icon-button" title="清空" @click="clearItems">
           <GradientSvgIcon
             class="icon"
@@ -72,7 +71,12 @@
         </div>
 
         <div class="icon-button" v-if="!isAnimationMode" @click="openAnimation" title="动画模式">
-          <span>创建动画</span>
+          <GradientSvgIcon
+            class="icon animation-icon"
+            :startColor="gradientColor.startColor"
+            :endColor="gradientColor.endColor"
+            name="animation"
+          />
         </div>
         <div class="icon-button" v-else @click="exitAnimation" title="退出动画模式">
           <span>退出动画</span>
@@ -207,6 +211,11 @@ onBeforeUnmount(() => {
 .screenshot-icon {
   width: 33px;
   height: 33px;
+}
+
+.animation-icon {
+  width: 40px;
+  height: 40px;
 }
 
 circle {

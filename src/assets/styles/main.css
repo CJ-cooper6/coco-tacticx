@@ -9,13 +9,15 @@ body,
 html {
   margin: 0;
   padding: 0;
-  font-family: "Helvetica", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif, "Noto Sans CJK SC",
-    Code2001, Code2002;
+  font-family:
+    "Helvetica", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif, "Noto Sans CJK SC", Code2001,
+    Code2002;
   height: 100%;
   min-height: 100vh;
   color: #39474b;
   font-size: 16px;
-  background: linear-gradient(135deg, #64a7a5, #19586a);
+  background: #64a7a5;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @media (max-width: 1200px) {

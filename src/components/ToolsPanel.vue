@@ -2,59 +2,71 @@
   <g class="tools-panel">
     <foreignObject ref="toolsPanelRef" x="143" y="33" width="1296" height="115" overflow="visible">
       <div class="tools-panel-content">
-        <div
-          class="icon-button"
-          title="选择"
-          :class="{ select: currentTool === 'select' }"
-          @click="setCurrentTool('select')"
-        >
-          <GradientSvgIcon
-            class="icon select-icon"
-            :startColor="gradientColor.startColor"
-            :endColor="gradientColor.endColor"
-            name="select"
-          />
+        <div class="tools-panel-item">
+          <div
+            class="icon-button"
+            title="选择"
+            :class="{ select: currentTool === 'select' }"
+            @click="setCurrentTool('select')"
+          >
+            <GradientSvgIcon
+              class="icon select-icon"
+              :startColor="gradientColor.startColor"
+              :endColor="gradientColor.endColor"
+              name="select"
+            />
+          </div>
+          <span>选择</span>
         </div>
+
         <Shape></Shape>
-        <div class="icon-button" title="清空" @click="clearItems">
-          <GradientSvgIcon
-            class="icon"
-            :startColor="gradientColor.startColor"
-            :endColor="gradientColor.endColor"
-            name="clear"
-          />
+
+        <div class="tools-panel-item">
+          <div class="icon-button" title="清空" @click="clearItems">
+            <GradientSvgIcon
+              class="icon"
+              :startColor="gradientColor.startColor"
+              :endColor="gradientColor.endColor"
+              name="clear"
+            />
+          </div>
+          <span>清空</span>
         </div>
 
-        <div class="icon-button" title="全屏" @click="fullscreen" v-if="!isFullscreen && !globalStore.deviceInfo.isIOS">
-          <GradientSvgIcon
-            class="icon full-screen-icon"
-            :startColor="gradientColor.startColor"
-            :endColor="gradientColor.endColor"
-            name="full-screen"
-          />
+        <div class="tools-panel-item" v-if="!isFullscreen && !globalStore.deviceInfo.isIOS">
+          <div class="icon-button" title="全屏" @click="fullscreen">
+            <GradientSvgIcon
+              class="icon full-screen-icon"
+              :startColor="gradientColor.startColor"
+              :endColor="gradientColor.endColor"
+              name="full-screen"
+            />
+          </div>
+          <span>全屏</span>
         </div>
 
-        <div
-          class="icon-button"
-          title="退出全屏"
-          @click="exitFullscreen"
-          v-if="isFullscreen && !globalStore.deviceInfo.isIOS"
-        >
-          <GradientSvgIcon
-            class="icon exit-full-screen-icon"
-            :startColor="gradientColor.startColor"
-            :endColor="gradientColor.endColor"
-            name="exit-full-screen"
-          />
+        <div class="tools-panel-item" v-if="isFullscreen && !globalStore.deviceInfo.isIOS">
+          <div class="icon-button" title="退出全屏" @click="exitFullscreen">
+            <GradientSvgIcon
+              class="icon exit-full-screen-icon"
+              :startColor="gradientColor.startColor"
+              :endColor="gradientColor.endColor"
+              name="exit-full-screen"
+            />
+          </div>
+          <span>退出全屏</span>
         </div>
 
-        <div class="icon-button" title="截图" v-if="boardArea" @click="captureScreenshot(boardArea)">
-          <GradientSvgIcon
-            class="icon screenshot-icon"
-            :startColor="gradientColor.startColor"
-            :endColor="gradientColor.endColor"
-            name="screenshot"
-          />
+        <div class="tools-panel-item">
+          <div class="icon-button" title="截图" v-if="boardArea" @click="captureScreenshot(boardArea)">
+            <GradientSvgIcon
+              class="icon screenshot-icon"
+              :startColor="gradientColor.startColor"
+              :endColor="gradientColor.endColor"
+              name="screenshot"
+            />
+          </div>
+          <span>截图</span>
         </div>
 
         <div class="animation-controls" v-if="isAnimationMode">
@@ -70,15 +82,22 @@
           </div>
         </div>
 
-        <div class="icon-button" v-if="!isAnimationMode" @click="openAnimation" title="动画模式">
-          <GradientSvgIcon
-            class="icon animation-icon"
-            :startColor="gradientColor.startColor"
-            :endColor="gradientColor.endColor"
-            name="animation"
-          />
+        <div class="tools-panel-item" v-if="!isAnimationMode">
+          <div class="icon-button" @click="openAnimation" title="动画">
+            <GradientSvgIcon
+              class="icon animation-icon"
+              :startColor="gradientColor.startColor"
+              :endColor="gradientColor.endColor"
+              name="animation"
+            />
+          </div>
+          <span>动画</span>
         </div>
-        <div class="icon-button" v-else @click="exitAnimation" title="退出动画模式">
+
+        <div class="tools-panel-item" v-else>
+          <div class="icon-button" @click="exitAnimation" title="退出动画模式">
+            <span>退出动画</span>
+          </div>
           <span>退出动画</span>
         </div>
       </div>
@@ -168,6 +187,15 @@ onBeforeUnmount(() => {
   gap: 80px;
   align-items: center;
   justify-content: center;
+  padding-top: 10px;
+
+  .tools-panel-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+  }
 
   .icon-button {
     display: flex;

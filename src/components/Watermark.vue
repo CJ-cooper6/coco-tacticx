@@ -28,6 +28,6 @@ const props = withDefaults(defineProps<Props>(), {
   color: "#000000",
   rotate: 0,
   x: 1190,
-  y: 930,
+  y: 980,
 });
 </script>

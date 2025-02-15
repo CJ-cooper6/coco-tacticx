@@ -1,19 +1,22 @@
 <template>
   <el-popover placement="bottom" popper-class="shape-popover" trigger="click" ref="popoverRef">
     <template #reference>
-      <div
-        class="icon-button"
-        ref="buttonRef"
-        title="形状"
-        :class="{ select: currentTool === 'shape' }"
-        @click="handleClick()"
-      >
-        <GradientSvgIcon
-          class="icon shape-icon"
-          :startColor="gradientColor.startColor"
-          :endColor="gradientColor.endColor"
-          name="shape"
-        />
+      <div class="tools-panel-item">
+        <div
+          class="icon-button"
+          ref="buttonRef"
+          title="形状"
+          :class="{ select: currentTool === 'shape' }"
+          @click="handleClick()"
+        >
+          <GradientSvgIcon
+            class="icon shape-icon"
+            :startColor="gradientColor.startColor"
+            :endColor="gradientColor.endColor"
+            name="shape"
+          />
+        </div>
+        <span>形状</span>
       </div>
     </template>
     <div class="shape-select-container" ref="popoverContainerRef">

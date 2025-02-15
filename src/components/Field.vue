@@ -81,6 +81,7 @@
               />
               <!-- 控制点 -->
               <circle
+                v-if="currentFrameIndex !== 0"
                 :cx="pathControlPoint(item)?.x"
                 :cy="pathControlPoint(item)?.y"
                 r="5"

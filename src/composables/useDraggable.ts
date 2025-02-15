@@ -10,13 +10,15 @@ export function useDraggable() {
   const animationStore = useAnimationStore();
   const boardStore = useBoardStore();
 
-  const { isAnimationMode, currentFrameElements } = storeToRefs(animationStore);
+  const { isAnimationMode } = storeToRefs(animationStore);
   const { setItemProperty, moveItem } = itemStore;
   const { svgElement } = storeToRefs(boardStore);
 
   const startDrag = (item: Item, event: PointerEvent) => {
     const svg = svgElement.value;
     if (!svg) return;
+
+    itemStore.moveItemToLast(item);
 
     const handleMoveItem = (moveEvent: PointerEvent) => {
       const point = svg.createSVGPoint();

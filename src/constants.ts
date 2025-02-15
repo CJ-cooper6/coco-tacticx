@@ -1,7 +1,7 @@
 export const GAME_CONSTANTS = {
   DefaultItemRadius: 21, // 默认半径
   showWatermark: true, // 是否显示水印
-  showWatermarkText: "Coco战术板", // 水印文本
+  showWatermarkText: "Coco战术板 - www.cocotactic.cn", // 水印文本
 };
 
 // 背景渐变色

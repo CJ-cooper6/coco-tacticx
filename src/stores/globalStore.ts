@@ -3,10 +3,6 @@ import { defineStore } from "pinia";
 import { isMobile, isTablet, isBrowser, isIOS } from "mobile-device-detect";
 
 export const useGlobalStore = defineStore("global", () => {
-  const isFullscreen = ref(false);
-  const windowSize = ref({ width: window.innerWidth, height: window.innerHeight });
-  const isDrawing = ref(false);
-
   // 设备信息
   const deviceInfo = {
     isIOS,
@@ -14,19 +10,23 @@ export const useGlobalStore = defineStore("global", () => {
     isTablet, // 是否为平板
     isBrowser, // 是否为浏览器
   };
+  const isFullscreen = ref(false);
+  const windowSize = ref({ width: window.innerWidth, height: window.innerHeight });
+  const isDrawing = ref(false);
+  // 屏幕方向 portrait 竖屏 landscape 横屏
+  const orientation = ref<"portrait" | "landscape">(window.innerHeight > window.innerWidth ? "portrait" : "landscape");
 
   // getters
+  const deviceType = computed(() => {
+    if (isMobile) return "mobile";
+    if (isTablet) return "tablet";
+    return "desktop";
+  });
 
   // 是否为移动设备（手机或平板）
   const isMobileDevice = computed(() => deviceInfo.isMobile || deviceInfo.isTablet);
 
   // actions
-
-  // 更新窗口大小
-  const updateWindowSize = (width: number, height: number) => {
-    windowSize.value = { width, height };
-  };
-
   // 切换全屏
   const toggleFullscreen = (force?: boolean) => {
     isFullscreen.value = force ?? !isFullscreen.value;
@@ -37,14 +37,20 @@ export const useGlobalStore = defineStore("global", () => {
     isDrawing.value = status;
   };
 
+  const updateOrientation = () => {
+    orientation.value = window.innerHeight > window.innerWidth ? "portrait" : "landscape";
+  };
+
   return {
     isFullscreen,
     windowSize,
-    updateWindowSize,
     toggleFullscreen,
     isDrawing,
     setDrawStatus,
     isMobileDevice,
     deviceInfo,
+    orientation,
+    updateOrientation,
+    deviceType,
   };
 });

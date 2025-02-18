@@ -49,7 +49,7 @@
           <div class="input-group color">
             <input type="color" v-model="item.color" @pointerdown.stop />
           </div>
-          <button class="delete-btn" @pointerdown="itemStore.deleteItem(item.id)">删除球员</button>
+          <button class="delete-btn" v-if="item.id" @pointerdown="itemStore.deleteItem(item.id)">删除球员</button>
         </div>
       </div>
     </foreignObject>

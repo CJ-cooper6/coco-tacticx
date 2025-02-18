@@ -1,5 +1,6 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" :class="[`device-${deviceType}`, `orientation-${orientation}`]">
+    <Debug v-if="isDev" />
     <div class="board">
       <Field :items="items" class="field" />
     </div>
@@ -8,12 +9,26 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
+import { onMounted, onUnmounted } from "vue";
 import Field from "./components/Field.vue";
 import { useItemStore } from "./stores/itemStore";
+import { useGlobalStore } from "./stores/globalStore";
+import Debug from "./components/Debug.vue";
+
+const isDev = import.meta.env.DEV;
 
 const itemStore = useItemStore();
-// 使用 storeToRefs 保持响应性
 const { items } = storeToRefs(itemStore);
+const globalStore = useGlobalStore();
+const { orientation, deviceType } = storeToRefs(globalStore);
+
+onMounted(() => {
+  window.addEventListener("resize", globalStore.updateOrientation);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", globalStore.updateOrientation);
+});
 </script>
 
 <style lang="scss" scoped>

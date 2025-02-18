@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import type { Component } from "vue";
 import { storeToRefs } from "pinia";
 import { GAME_CONSTANTS } from "../constants";
@@ -205,21 +205,10 @@ const getDrawingComponent = (type: string) => {
   }
 };
 
-// 事件处理函数
-const handleResize = () => {
-  globalStore.updateWindowSize(window.innerWidth, window.innerHeight);
-};
-
-// 生命周期钩子
 onMounted(() => {
   if (svgRef.value) {
     boardStore.setBoardArea(svgRef.value.getElementById("board-area") as SVGGraphicsElement);
     boardStore.setSvgElement(svgRef.value);
   }
-  window.addEventListener("resize", handleResize);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
 });
 </script>

@@ -12,8 +12,8 @@ module.exports = {
   extends: ["airbnb-base", "prettier", "plugin:vue/essential", "plugin:@typescript-eslint/eslint-recommended"],
   plugins: ["vue", "@typescript-eslint", "prettier"],
   rules: {
-    "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
+    "no-console": "warn",
+    "no-debugger": "warn",
     "no-unused-expressions": "off",
     "no-unused-vars": "off",
     "import/no-unresolved": "off",
@@ -29,6 +29,7 @@ module.exports = {
     "max-classes-per-file": ["error", 10],
     "vue/no-parsing-error": ["error", { "x-invalid-end-tag": false }],
     "import/extensions": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "prettier/prettier": [
       "error",
       {

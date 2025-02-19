@@ -1,13 +1,15 @@
-FROM node:20.4.0-alpine
+FROM node:20.4.0-alpine AS builder
 WORKDIR /app
 
 RUN yarn config set registry https://registry.npmmirror.com
 
-COPY package.json yarn.lock ./
-RUN yarn install --production=true \
+COPY package.json ./
+RUN yarn install --production=false \
     && yarn cache clean
 
 COPY . .
-EXPOSE 5173
+RUN yarn build
 
-CMD ["yarn", "dev"]
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80

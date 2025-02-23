@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
   fontSize: 24,
   color: "#000000",
   rotate: 0,
-  x: 1190,
-  y: 980,
+  x: 950,
+  y: 780,
 });
 </script>

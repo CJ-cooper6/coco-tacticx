@@ -68,11 +68,21 @@ onUnmounted(() => {
       height: auto;
     }
   }
+}
+.device-mobile {
+  .board {
+    width: 80%;
+  }
+}
+.orientation-portrait {
+  .board {
+    width: 100%;
+  }
+}
 
-  @media (orientation: portrait) {
-    .board {
-      width: 100%; /* 竖屏时使用更大的宽度 */
-    }
+.device-mobile.orientation-landscape {
+  .board {
+    width: 65%;
   }
 }
 </style>

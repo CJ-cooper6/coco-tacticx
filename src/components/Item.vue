@@ -160,6 +160,7 @@ const handlePointerMove = (event: PointerEvent) => {
 
 const handlePointerUp = () => {
   isPointerDown.value = false;
+  hasDragged.value = false;
 };
 
 const handleClick = () => {

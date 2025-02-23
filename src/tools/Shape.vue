@@ -16,7 +16,6 @@
             name="shape"
           />
         </div>
-        <span>形状</span>
       </div>
     </template>
     <div class="shape-select-container" ref="popoverContainerRef">

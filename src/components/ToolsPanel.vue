@@ -1,6 +1,13 @@
 <template>
   <g class="tools-panel">
-    <foreignObject ref="toolsPanelRef" x="143" y="33" width="1296" height="115" overflow="visible">
+    <foreignObject
+      ref="toolsPanelRef"
+      :x="toolsPanelPosition.x"
+      :y="toolsPanelPosition.y"
+      :width="toolsPanelPosition.width"
+      :height="toolsPanelPosition.height"
+      overflow="visible"
+    >
       <div class="tools-panel-content">
         <div class="tools-panel-item">
           <div
@@ -16,7 +23,6 @@
               name="select"
             />
           </div>
-          <span>选择</span>
         </div>
 
         <Shape></Shape>
@@ -30,7 +36,6 @@
               name="clear"
             />
           </div>
-          <span>清空</span>
         </div>
 
         <div class="tools-panel-item" v-if="!isFullscreen && !globalStore.deviceInfo.isIOS">
@@ -42,7 +47,6 @@
               name="full-screen"
             />
           </div>
-          <span>全屏</span>
         </div>
 
         <div class="tools-panel-item" v-if="isFullscreen && !globalStore.deviceInfo.isIOS">
@@ -54,7 +58,6 @@
               name="exit-full-screen"
             />
           </div>
-          <span>退出全屏</span>
         </div>
 
         <div class="tools-panel-item" v-if="boardArea && !isAnimationMode">
@@ -66,7 +69,6 @@
               name="screenshot"
             />
           </div>
-          <span>截图</span>
         </div>
 
         <div class="animation-controls" v-if="isAnimationMode">
@@ -76,8 +78,6 @@
               <span class="frame-counter-slash">/</span>
               <span>{{ totalFrames }}</span>
             </div>
-
-            <span>当前帧 / 总帧</span>
           </div>
           <div class="tools-panel-item">
             <div class="icon-button" @click="addFrame" title="添加帧">
@@ -88,7 +88,6 @@
                 name="add"
               />
             </div>
-            <span>添加帧</span>
           </div>
           <div class="tools-panel-item">
             <div class="icon-button" @click="deleteLastFrame" title="删除帧">
@@ -99,7 +98,6 @@
                 name="delete"
               />
             </div>
-            <span>删除帧</span>
           </div>
 
           <div class="tools-panel-item" v-show="!isPlaying">
@@ -111,7 +109,6 @@
                 name="play"
               />
             </div>
-            <span>播放</span>
           </div>
           <div class="tools-panel-item" v-show="isPlaying">
             <div class="icon-button" @click="togglePlayback" title="停止">
@@ -122,7 +119,6 @@
                 name="stop"
               />
             </div>
-            <span>停止</span>
           </div>
         </div>
 
@@ -135,7 +131,6 @@
               name="animation"
             />
           </div>
-          <span>动画</span>
         </div>
 
         <div class="tools-panel-item" v-else>
@@ -147,7 +142,6 @@
               name="back"
             />
           </div>
-          <span>退出动画</span>
         </div>
       </div>
     </foreignObject>
@@ -156,7 +150,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { onBeforeUnmount, ref, watch } from "vue";
+import { onBeforeUnmount, ref, watch, computed } from "vue";
 import { captureScreenshot } from "../utils/index";
 import { useItemStore } from "../stores/itemStore";
 import { useGlobalStore } from "../stores/globalStore";
@@ -186,6 +180,13 @@ const { currentTool } = storeToRefs(drawStore);
 
 const frameInput = ref(1);
 frameInput.value = currentFrameIndex.value + 1;
+
+const toolsPanelPosition = computed(() => {
+  if (globalStore.orientation === "landscape") {
+    return { x: 1250, y: 0, width: 115, height: 800 };
+  }
+  return { x: 0, y: -120, width: 1250, height: 115 };
+});
 
 const fullscreen = () => {
   const de = document.documentElement;
@@ -255,7 +256,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .icon {
   width: 45px;
   height: 45px;
@@ -265,7 +266,7 @@ onBeforeUnmount(() => {
   height: 100%;
   width: 100%;
   display: flex;
-  gap: 80px;
+  gap: 50px;
   align-items: center;
   justify-content: center;
   padding-top: 10px;
@@ -275,34 +276,7 @@ onBeforeUnmount(() => {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    gap: 10px;
-  }
-
-  .icon-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    transition: color 0.3s;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow:
-      18px 26px 13px rgba(0, 0, 0, 0.01),
-      10px 15px 11px rgba(0, 0, 0, 0.05),
-      5px 7px 8px rgba(0, 0, 0, 0.09),
-      1px 2px 4px rgba(0, 0, 0, 0.1);
-
-    &:hover,
-    &.select {
-      background: #c2f4f2;
-    }
-
-    // 会导致移动端弹窗无法弹出
-    // &:hover {
-    //   transform: scale(0.95);
-    // }
+    gap: 5px;
   }
 }
 
@@ -350,9 +324,14 @@ circle {
 
   .frame-counter {
     display: flex;
-    height: 50px;
+    width: 80px;
+    height: 40px;
     align-items: center;
+    justify-content: center;
     gap: 4px;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 4px 8px;
   }
 
   .frame-input {
@@ -365,8 +344,8 @@ circle {
     background: transparent;
     padding: 2px 4px;
     border-radius: 4px;
-    border-color: #ffffff;
-    box-shadow: 0 0 0 2px #ffffff;
+    border-color: #aedbda;
+    box-shadow: 0 0 0 2px #aedbda;
 
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
@@ -384,6 +363,41 @@ circle {
     margin: 0 10px;
     font-size: 16px;
     color: #333;
+  }
+}
+</style>
+
+<style lang="scss">
+.orientation-landscape {
+  .tools-panel-content,
+  .animation-controls {
+    flex-direction: column;
+  }
+
+  .tools-panel-content {
+    gap: 20px;
+  }
+}
+
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: color 0.3s;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow:
+    18px 26px 13px rgba(0, 0, 0, 0.01),
+    10px 15px 11px rgba(0, 0, 0, 0.05),
+    5px 7px 8px rgba(0, 0, 0, 0.09),
+    1px 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover,
+  &.select {
+    background: #c2f4f2;
   }
 }
 </style>

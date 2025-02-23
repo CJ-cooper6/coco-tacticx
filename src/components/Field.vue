@@ -2,44 +2,31 @@
   <svg
     ref="svgRef"
     id="field"
-    width="1641"
-    height="1075"
-    viewBox="0 0 1641 1075"
+    width="1250"
+    height="826"
+    viewBox="0 0 1250 826"
     xmlns="http://www.w3.org/2000/svg"
     preserveAspectRatio="xMidYMid meet"
     @pointerdown="startDrawing"
     @pointermove="moveDrawing"
     @pointerup="endDrawing"
-    @touchmove.prevent
+    @dblclick.stop
     style="overflow: visible"
   >
-    <!-- 外围透明区域 -->
-    <g opacity="0.36">
-      <rect x="173" y="183" width="1281" height="855" rx="31" fill="white" />
-    </g>
     <!-- 工具栏区域 -->
-    <g id="toolbar">
-      <rect x="143" y="33" width="1296" height="115" rx="11" fill="#AEDBDA" />
-      <ToolsPanel />
-    </g>
+    <ToolsPanel />
 
     <!-- 拖动工具栏区域 -->
-    <g id="toolbar-drag">
-      <rect x="43" y="184" width="100" height="840" rx="11" fill="#AEDBDA" />
+    <g id="toolbar-drag" @touchmove.prevent>
       <g id="tools-panel">
         <DragToolsPanel />
       </g>
     </g>
     <!-- 球场区域 -->
-    <g id="board-area">
-      <!-- 外围白线区域 -->
-      <path
-        d="M188 215C188 203.402 197.402 194 209 194H1417C1428.6 194 1438 203.402 1438 215V1003C1438 1014.6 1428.6 1024 1417 1024H209C197.402 1024 188 1014.6 188 1003V215Z"
-        fill="white"
-      />
+    <g>
       <!-- 场地区域 -->
       <!-- 动态引入场地组件 -->
-      <component :is="currentFieldComponent">
+      <component :is="currentFieldComponent" @touchmove.prevent.stop>
         <!-- 非动画模式 -->
         <template v-if="!isAnimationMode">
           <g id="drawings">
@@ -212,3 +199,12 @@ onMounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.app-icon {
+  width: 35px;
+  height: 35px;
+  fill: #64a7a5;
+  cursor: pointer;
+}
+</style>

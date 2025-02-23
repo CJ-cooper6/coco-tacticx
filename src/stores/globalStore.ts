@@ -1,6 +1,7 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { isMobile, isTablet, isBrowser, isIOS } from "mobile-device-detect";
+import { debounce } from "lodash";
 
 export const useGlobalStore = defineStore("global", () => {
   // 设备信息
@@ -37,9 +38,15 @@ export const useGlobalStore = defineStore("global", () => {
     isDrawing.value = status;
   };
 
-  const updateOrientation = () => {
+  const updateOrientation = debounce(() => {
     orientation.value = window.innerHeight > window.innerWidth ? "portrait" : "landscape";
-  };
+    $debug.log({
+      screenWidth: window.screen.width,
+      screenHeight: window.screen.height,
+      orientation: window.screen.orientation?.type,
+      calculatedOrientation: orientation.value,
+    });
+  }, 150);
 
   return {
     isFullscreen,

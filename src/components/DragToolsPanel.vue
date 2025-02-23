@@ -35,21 +35,33 @@ import { isInsideField } from "../utils/index";
 import { useItemStore } from "../stores/itemStore";
 import { Item } from "../types/item";
 import { useAnimationStore } from "../stores/animationStore";
+import { useGlobalStore } from "../stores/globalStore";
 
 const itemStore = useItemStore();
 const animationStore = useAnimationStore();
+const globalStore = useGlobalStore();
+
 // 方法可以直接解构
 const { addItem, removeDraggingNewItem, setDraggingNewItem } = itemStore;
 
 // 使用 storeToRefs 保持响应性
 const { newDraggingItem } = storeToRefs(itemStore);
 const { isAnimationMode } = storeToRefs(animationStore);
+const { orientation } = storeToRefs(globalStore);
 
 const toolItemNumbers = ref([0, 0]);
-const toolItems = computed(() => [
-  new Item("#ffffff", 90, 250, GAME_CONSTANTS.DefaultItemRadius, 0, "", toolItemNumbers.value[0]),
-  new Item("#000000", 90, 350, GAME_CONSTANTS.DefaultItemRadius, 0, "", toolItemNumbers.value[1]),
-]);
+const toolItems = computed(() => {
+  if (orientation.value === "landscape") {
+    return [
+      new Item("#ffffff", -50, 300, GAME_CONSTANTS.DefaultItemRadius, 0, "", toolItemNumbers.value[0]),
+      new Item("#000000", -50, 370, GAME_CONSTANTS.DefaultItemRadius, 0, "", toolItemNumbers.value[1]),
+    ];
+  }
+  return [
+    new Item("#ffffff", 310, 870, GAME_CONSTANTS.DefaultItemRadius, 0, "", toolItemNumbers.value[0]),
+    new Item("#000000", 380, 870, GAME_CONSTANTS.DefaultItemRadius, 0, "", toolItemNumbers.value[1]),
+  ];
+});
 
 const startDragNewItem = (color: string, event: PointerEvent, index: number) => {
   // @ts-ignore

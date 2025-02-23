@@ -57,8 +57,8 @@
           <span>退出全屏</span>
         </div>
 
-        <div class="tools-panel-item">
-          <div class="icon-button" title="截图" v-if="boardArea" @click="captureScreenshot(boardArea)">
+        <div class="tools-panel-item" v-if="boardArea && !isAnimationMode">
+          <div class="icon-button" title="截图" @click="captureScreenshot(boardArea)">
             <GradientSvgIcon
               class="icon screenshot-icon"
               :startColor="gradientColor.startColor"
@@ -70,15 +70,59 @@
         </div>
 
         <div class="animation-controls" v-if="isAnimationMode">
-          <div class="icon-button" @click="switchFrame(Math.max(0, currentFrameIndex - 1))" title="上一帧">
-            <span>←</span>
+          <div class="tools-panel-item">
+            <div class="frame-counter">
+              <input type="number" v-model="frameInput" @change="switchFrameIndex" class="frame-input" />
+              <span class="frame-counter-slash">/</span>
+              <span>{{ totalFrames }}</span>
+            </div>
+
+            <span>当前帧 / 总帧</span>
           </div>
-          <div class="frame-info">帧 {{ currentFrameIndex }}</div>
-          <div class="icon-button" @click="addFrame" title="下一帧">
-            <span>→</span>
+          <div class="tools-panel-item">
+            <div class="icon-button" @click="addFrame" title="添加帧">
+              <GradientSvgIcon
+                class="icon control-icon"
+                :startColor="gradientColor.startColor"
+                :endColor="gradientColor.endColor"
+                name="add"
+              />
+            </div>
+            <span>添加帧</span>
           </div>
-          <div class="icon-button" @click="togglePlayback" title="播放/暂停">
-            <span>{{ isPlaying ? "⏸" : "▶" }}</span>
+          <div class="tools-panel-item">
+            <div class="icon-button" @click="deleteLastFrame" title="删除帧">
+              <GradientSvgIcon
+                class="icon control-icon"
+                :startColor="gradientColor.startColor"
+                :endColor="gradientColor.endColor"
+                name="delete"
+              />
+            </div>
+            <span>删除帧</span>
+          </div>
+
+          <div class="tools-panel-item" v-show="!isPlaying">
+            <div class="icon-button" @click="togglePlayback" title="播放">
+              <GradientSvgIcon
+                class="icon play-icon"
+                :startColor="gradientColor.startColor"
+                :endColor="gradientColor.endColor"
+                name="play"
+              />
+            </div>
+            <span>播放</span>
+          </div>
+          <div class="tools-panel-item" v-show="isPlaying">
+            <div class="icon-button" @click="togglePlayback" title="停止">
+              <GradientSvgIcon
+                class="icon play-icon"
+                :startColor="gradientColor.startColor"
+                :endColor="gradientColor.endColor"
+                name="stop"
+              />
+            </div>
+            <span>停止</span>
           </div>
         </div>
 
@@ -96,7 +140,12 @@
 
         <div class="tools-panel-item" v-else>
           <div class="icon-button" @click="exitAnimation" title="退出动画模式">
-            <span>退出动画</span>
+            <GradientSvgIcon
+              class="icon back-icon"
+              :startColor="gradientColor.startColor"
+              :endColor="gradientColor.endColor"
+              name="back"
+            />
           </div>
           <span>退出动画</span>
         </div>
@@ -107,7 +156,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { onBeforeUnmount } from "vue";
+import { onBeforeUnmount, ref, watch } from "vue";
 import { captureScreenshot } from "../utils/index";
 import { useItemStore } from "../stores/itemStore";
 import { useGlobalStore } from "../stores/globalStore";
@@ -127,13 +176,16 @@ const animationStore = useAnimationStore();
 const { toggleFullscreen } = globalStore;
 const { clearItems } = itemStore;
 const { setCurrentTool } = drawStore;
-const { isAnimationMode, currentFrameIndex, isPlaying } = storeToRefs(animationStore);
-const { openAnimation, exitAnimation, switchFrame, addFrame, togglePlayback } = animationStore;
+const { isAnimationMode, currentFrameIndex, isPlaying, totalFrames } = storeToRefs(animationStore);
+const { openAnimation, exitAnimation, switchFrame, togglePlayback } = animationStore;
 
 // 使用 storeToRefs 保持响应性
 const { isFullscreen } = storeToRefs(globalStore);
 const { boardArea } = storeToRefs(boardStore);
 const { currentTool } = storeToRefs(drawStore);
+
+const frameInput = ref(1);
+frameInput.value = currentFrameIndex.value + 1;
 
 const fullscreen = () => {
   const de = document.documentElement;
@@ -167,6 +219,34 @@ const exitFullscreen = () => {
   toggleFullscreen(false);
 };
 
+const switchFrameIndex = () => {
+  if (frameInput.value < 1) {
+    frameInput.value = 1;
+  }
+  if (frameInput.value >= totalFrames.value + 1) {
+    frameInput.value = totalFrames.value;
+  }
+  switchFrame(frameInput.value - 1);
+};
+
+const addFrame = () => {
+  animationStore.addFrame();
+  frameInput.value = currentFrameIndex.value + 1;
+};
+
+const deleteLastFrame = () => {
+  animationStore.deleteLastFrame();
+  if (frameInput.value >= totalFrames.value + 1) {
+    frameInput.value = totalFrames.value;
+  }
+};
+
+watch(currentFrameIndex, (newVal) => {
+  if (isPlaying.value) {
+    frameInput.value = currentFrameIndex.value + 1;
+  }
+});
+
 // 添加组件卸载时的清理逻辑
 onBeforeUnmount(() => {
   if (isPlaying.value) {
@@ -180,6 +260,7 @@ onBeforeUnmount(() => {
   width: 45px;
   height: 45px;
 }
+
 .tools-panel-content {
   height: 100%;
   width: 100%;
@@ -236,6 +317,8 @@ onBeforeUnmount(() => {
   height: 30px;
 }
 
+.play-icon,
+.back-icon,
 .screenshot-icon {
   width: 33px;
   height: 33px;
@@ -254,12 +337,53 @@ circle {
 .animation-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 
-  .frame-info {
+  .control-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .icon-button {
+    background: white;
+  }
+
+  .frame-counter {
+    display: flex;
+    height: 50px;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .frame-input {
+    width: 32px;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-size: 16px;
     color: #333;
-    font-size: 14px;
-    padding: 0 10px;
+    background: transparent;
+    padding: 2px 4px;
+    border-radius: 4px;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2px #ffffff;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &:focus {
+      // border: 1px solid #64a7a5;
+      border: none;
+    }
+  }
+
+  .frame-counter-slash {
+    margin: 0 10px;
+    font-size: 16px;
+    color: #333;
   }
 }
 </style>

@@ -42,7 +42,7 @@ export const useAnimationStore = defineStore("animation", () => {
 
   const currentFrameElements = computed(() => {
     const animationFrames = currentAnimation.value?.frames;
-    if (!animationFrames) return [];
+    if (!animationFrames || animationFrames.length <= 0) return [];
     return animationFrames[currentFrameIndex.value].elements;
   });
 
@@ -82,7 +82,7 @@ export const useAnimationStore = defineStore("animation", () => {
   // 获取某一帧的元素
   const getFrameElements = (frameIndex: number) => {
     const animationFrames = currentAnimation.value?.frames;
-    if (!animationFrames) return [];
+    if (!animationFrames || animationFrames.length <= 0) return [];
     return animationFrames[frameIndex].elements;
   };
 
@@ -117,7 +117,9 @@ export const useAnimationStore = defineStore("animation", () => {
 
   // 添加新元素
   const addElement = (item: Item) => {
-    const frame = currentAnimation.value?.frames[currentFrameIndex.value];
+    const currentAnimationFrames = currentAnimation.value?.frames;
+    if (!currentAnimationFrames) return;
+    const frame = currentAnimationFrames[currentFrameIndex.value];
     if (!frame) return;
     frame.elements.push(Item.clone(item));
   };
@@ -239,6 +241,18 @@ export const useAnimationStore = defineStore("animation", () => {
     }
   };
 
+  const deleteLastFrame = () => {
+    if (!currentAnimation.value) return;
+    if (currentFrameIndex.value === 0) {
+      currentAnimation.value.frames = [{ elements: [] }];
+    } else {
+      currentAnimation.value.frames.pop();
+    }
+    if (currentFrameIndex.value >= currentAnimation.value.frames.length) {
+      currentFrameIndex.value = currentAnimation.value.frames.length - 1;
+    }
+  };
+
   return {
     // 状态
     isAnimationMode,
@@ -262,11 +276,13 @@ export const useAnimationStore = defineStore("animation", () => {
     startAutoPlay,
     stopAutoPlay,
     getFrameElements,
+    deleteLastFrame,
 
     // 计算属性
     haveActionPrevFrameElements,
     playNextFrame,
     currentFrameElements,
     currentFrameElementsIds,
+    totalFrames,
   };
 });

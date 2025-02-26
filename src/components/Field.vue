@@ -1,116 +1,118 @@
 <template>
-  <svg
-    ref="svgRef"
-    id="field"
-    width="1250"
-    height="826"
-    viewBox="0 0 1250 826"
-    xmlns="http://www.w3.org/2000/svg"
-    preserveAspectRatio="xMidYMid meet"
-    @pointerdown="startDrawing"
-    @pointermove="moveDrawing"
-    @pointerup="endDrawing"
-    @dblclick.stop
-    style="overflow: visible"
-  >
-    <!-- 工具栏区域 -->
-    <ToolsPanel />
+  <div class="board">
+    <svg
+      ref="svgRef"
+      id="field"
+      width="1250"
+      height="826"
+      viewBox="0 0 1250 826"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
+      @pointerdown="startDrawing"
+      @pointermove="moveDrawing"
+      @pointerup="endDrawing"
+      @dblclick.stop
+      class="field"
+    >
+      <!-- 工具栏区域 -->
+      <ToolsPanel />
 
-    <!-- 拖动工具栏区域 -->
-    <g id="toolbar-drag" @touchmove.prevent>
-      <g id="tools-panel">
-        <DragToolsPanel />
+      <!-- 拖动工具栏区域 -->
+      <g id="toolbar-drag" @touchmove.prevent>
+        <g id="tools-panel">
+          <DragToolsPanel />
+        </g>
       </g>
-    </g>
-    <!-- 球场区域 -->
-    <g>
-      <!-- 场地区域 -->
-      <!-- 动态引入场地组件 -->
-      <component :is="currentFieldComponent" @touchmove.prevent.stop>
-        <!-- 非动画模式 -->
-        <template v-if="!isAnimationMode">
-          <g id="drawings">
-            <component
-              v-for="drawing in drawings"
-              :key="drawing.id"
-              :is="getDrawingComponent(drawing.type)"
-              :drawing="drawing"
-            />
-          </g>
-          <!-- 球员 -->
-          <g id="players">
-            <ItemComponent
-              v-for="item in normalItems"
-              :key="item.id"
-              :item="item"
-              @start-drag="startDrag(item, $event)"
-            />
-          </g>
-        </template>
-        <!-- 动画模式 -->
-        <template v-else>
-          <!-- 播放动画时的图层 -->
-          <!-- 播放动画是从上一帧位置移动到当前帧位置，所以一开始需要显示上一帧的元素 -->
-          <g id="players" v-show="isPlaying">
-            <ItemComponent v-for="item in prevFrameElements" :key="item.id" :item="item" />
-          </g>
-          <template v-if="!isPlaying">
-            <!-- 创建动画时的图层 -->
-            <!-- 和上一帧之间的曲线路径 -->
-            <g id="paths" v-for="item in animationItems" :key="`path-${item.id}`" style="z-index: 1">
-              <path
-                v-if="showPath(item)"
-                :d="pathData(item)"
-                stroke="rgba(0,0,0,0.2)"
-                fill="none"
-                stroke-dasharray="5,5"
-                stroke-width="4"
+      <!-- 球场区域 -->
+      <g>
+        <!-- 场地区域 -->
+        <!-- 动态引入场地组件 -->
+        <component :is="currentFieldComponent" @touchmove.prevent.stop>
+          <!-- 非动画模式 -->
+          <template v-if="!isAnimationMode">
+            <g id="drawings">
+              <component
+                v-for="drawing in drawings"
+                :key="drawing.id"
+                :is="getDrawingComponent(drawing.type)"
+                :drawing="drawing"
               />
-              <!-- 控制点 -->
-              <circle
-                v-if="currentFrameIndex !== 0"
-                :cx="pathControlPoint(item)?.x"
-                :cy="pathControlPoint(item)?.y"
-                r="5"
-                fill="red"
-                @pointerdown="startDragControlPoint(item, $event)"
-              />
-            </g>
-            <!-- 上一帧球员 -->
-            <g id="prev-frame-elements" style="opacity: 0.5; z-index: 10">
-              <ItemComponent v-for="item in haveActionPrevFrameElements" :key="`prev-${item.id}`" :item="item" />
             </g>
             <!-- 球员 -->
             <g id="players">
               <ItemComponent
-                v-for="item in animationItems"
+                v-for="item in normalItems"
                 :key="item.id"
                 :item="item"
                 @start-drag="startDrag(item, $event)"
               />
             </g>
           </template>
-        </template>
-        <!-- 水印 -->
-        <template v-if="showWatermark" #watermark>
-          <Watermark />
-        </template>
-      </component>
-    </g>
+          <!-- 动画模式 -->
+          <template v-else>
+            <!-- 播放动画时的图层 -->
+            <!-- 播放动画是从上一帧位置移动到当前帧位置，所以一开始需要显示上一帧的元素 -->
+            <g id="players" v-show="isPlaying">
+              <ItemComponent v-for="item in prevFrameElements" :key="item.id" :item="item" />
+            </g>
+            <template v-if="!isPlaying">
+              <!-- 创建动画时的图层 -->
+              <!-- 和上一帧之间的曲线路径 -->
+              <g id="paths" v-for="item in animationItems" :key="`path-${item.id}`" style="z-index: 1">
+                <path
+                  v-if="showPath(item)"
+                  :d="pathData(item)"
+                  stroke="rgba(0,0,0,0.2)"
+                  fill="none"
+                  stroke-dasharray="5,5"
+                  stroke-width="4"
+                />
+                <!-- 控制点 -->
+                <circle
+                  v-if="currentFrameIndex !== 0"
+                  :cx="pathControlPoint(item)?.x"
+                  :cy="pathControlPoint(item)?.y"
+                  r="5"
+                  fill="red"
+                  @pointerdown="startDragControlPoint(item, $event)"
+                />
+              </g>
+              <!-- 上一帧球员 -->
+              <g id="prev-frame-elements" style="opacity: 0.5; z-index: 10">
+                <ItemComponent v-for="item in haveActionPrevFrameElements" :key="`prev-${item.id}`" :item="item" />
+              </g>
+              <!-- 球员 -->
+              <g id="players">
+                <ItemComponent
+                  v-for="item in animationItems"
+                  :key="item.id"
+                  :item="item"
+                  @start-drag="startDrag(item, $event)"
+                />
+              </g>
+            </template>
+          </template>
+          <!-- 水印 -->
+          <template v-if="showWatermark" #watermark>
+            <Watermark />
+          </template>
+        </component>
+      </g>
 
-    <!-- 正在移动的新元素 -->
-    <g id="tools-panel">
-      <ItemComponent v-if="newDraggingItem" :item="newDraggingItem" />
-    </g>
-    <!-- 正在绘制的新元素 -->
-    <g id="new-drawing">
-      <component
-        v-if="newDraggingDrawing"
-        :is="getDrawingComponent(newDraggingDrawing.type)"
-        :drawing="newDraggingDrawing"
-      />
-    </g>
-  </svg>
+      <!-- 正在移动的新元素 -->
+      <g id="tools-panel">
+        <ItemComponent v-if="newDraggingItem" :item="newDraggingItem" />
+      </g>
+      <!-- 正在绘制的新元素 -->
+      <g id="new-drawing">
+        <component
+          v-if="newDraggingDrawing"
+          :is="getDrawingComponent(newDraggingDrawing.type)"
+          :drawing="newDraggingDrawing"
+        />
+      </g>
+    </svg>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -206,5 +208,11 @@ onMounted(() => {
   height: 35px;
   fill: #64a7a5;
   cursor: pointer;
+}
+
+.field {
+  width: 100%;
+  height: auto;
+  overflow: visible;
 }
 </style>

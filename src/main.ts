@@ -4,7 +4,7 @@ import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 import { createApp } from "vue";
 import { debug } from "./utils/debugBus";
-
+import router from "./router";
 import App from "./App.vue";
 import pinia from "./stores/index.js";
 
@@ -15,4 +15,5 @@ if (import.meta.env.DEV) {
 
 app.use(pinia);
 app.use(ElementPlus);
+app.use(router);
 app.mount("#app");

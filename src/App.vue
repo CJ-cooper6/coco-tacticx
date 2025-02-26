@@ -1,9 +1,7 @@
 <template>
   <div class="wrapper" :class="[`device-${deviceType}`, `orientation-${orientation}`]">
     <Debug v-if="isDev" />
-    <div class="board">
-      <Field :items="items" class="field" />
-    </div>
+    <RouterView />
   </div>
 </template>
 
@@ -31,7 +29,7 @@ onUnmounted(() => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .wrapper {
   display: flex;
   align-items: center;
@@ -62,11 +60,6 @@ onUnmounted(() => {
     /* 禁用移动端的长按菜单 */
     -webkit-touch-callout: none;
     -webkit-user-drag: none;
-
-    .field {
-      width: 100%;
-      height: auto;
-    }
   }
 }
 .device-mobile {

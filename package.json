@@ -20,7 +20,8 @@
     "mobile-device-detect": "^0.4.3",
     "pinia": "^2.2.5",
     "vite-plugin-svg-icons": "^2.0.1",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "vue-router": "4"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",

@@ -40,12 +40,6 @@ export const useGlobalStore = defineStore("global", () => {
 
   const updateOrientation = debounce(() => {
     orientation.value = window.innerHeight > window.innerWidth ? "portrait" : "landscape";
-    $debug.log({
-      screenWidth: window.screen.width,
-      screenHeight: window.screen.height,
-      orientation: window.screen.orientation?.type,
-      calculatedOrientation: orientation.value,
-    });
   }, 150);
 
   return {

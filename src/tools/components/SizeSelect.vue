@@ -20,7 +20,7 @@ import { useDrawStore } from "@/stores/drawStore";
 
 const drawStore = useDrawStore();
 const { shapesConfig } = storeToRefs(drawStore);
-const sizes = [10, 15, 20];
+const sizes = [2, 5, 10];
 
 const emit = defineEmits(["changed"]);
 

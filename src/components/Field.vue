@@ -9,8 +9,6 @@
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMid meet"
       @pointerdown="startDrawing"
-      @pointermove="moveDrawing"
-      @pointerup="endDrawing"
       @dblclick.stop
       class="field"
     >
@@ -23,11 +21,12 @@
           <DragToolsPanel />
         </g>
       </g>
-      <!-- 球场区域 -->
       <g>
-        <!-- 场地区域 -->
-        <!-- 动态引入场地组件 -->
+        <!-- 球场区域 -->
+        <!-- 动态引入球场组件 -->
         <component :is="currentFieldComponent" @touchmove.prevent.stop>
+          <!-- 正在创建的新元素层 -->
+          <g id="drawingLayer"></g>
           <!-- 非动画模式 -->
           <template v-if="!isAnimationMode">
             <g id="drawings">
@@ -103,14 +102,6 @@
       <g id="tools-panel">
         <ItemComponent v-if="newDraggingItem" :item="newDraggingItem" />
       </g>
-      <!-- 正在绘制的新元素 -->
-      <g id="new-drawing">
-        <component
-          v-if="newDraggingDrawing"
-          :is="getDrawingComponent(newDraggingDrawing.type)"
-          :drawing="newDraggingDrawing"
-        />
-      </g>
     </svg>
   </div>
 </template>
@@ -126,7 +117,7 @@ import ToolsPanel from "./ToolsPanel.vue";
 import DragToolsPanel from "./DragToolsPanel.vue";
 import FootballField from "./fields/FootballField.vue";
 import RectangleComponent from "./drawings/Rectangle.vue";
-import CircleComponent from "./drawings/Circle.vue";
+import EllipseComponent from "./drawings/Ellipse.vue";
 import Watermark from "./Watermark.vue";
 
 // Store 导入
@@ -155,7 +146,7 @@ const animationStore = useAnimationStore();
 
 // Store 状态和方法解构
 const { items, newDraggingItem } = storeToRefs(itemStore);
-const { drawings, newDraggingDrawing } = storeToRefs(drawStore);
+const { drawings } = storeToRefs(drawStore);
 const { isAnimationMode, haveActionPrevFrameElements, currentFrameIndex, isPlaying, currentFrameElements } =
   storeToRefs(animationStore);
 
@@ -187,8 +178,8 @@ const getDrawingComponent = (type: string) => {
   switch (type) {
     case "rectangle":
       return RectangleComponent;
-    case "circle":
-      return CircleComponent;
+    case "ellipse":
+      return EllipseComponent;
     default:
       return null;
   }

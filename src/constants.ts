@@ -18,7 +18,7 @@ export const DEFAULT_TOOL_CONFIG = {
   },
   SHAPES: {
     color: "#ff0000",
-    size: 10,
+    size: 2,
     shape: "rectangle",
   },
 };

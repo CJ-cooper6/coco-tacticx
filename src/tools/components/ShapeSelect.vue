@@ -23,7 +23,7 @@ const drawStore = useDrawStore();
 
 const { shapesConfig } = storeToRefs(drawStore);
 
-const shapes = ["rectangle", "circle"];
+const shapes = ["rectangle", "ellipse"];
 
 const emit = defineEmits(["changedShape"]);
 

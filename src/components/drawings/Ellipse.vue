@@ -1,5 +1,5 @@
 <template>
-  <RoughWrapper type="rectangle" :drawing="drawing" />
+  <RoughWrapper type="ellipse" :drawing="drawing" />
 </template>
 
 <script setup lang="ts">

@@ -1,3 +1,3 @@
 <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="17.6299" cy="17.1113" r="16" stroke="currentColor" stroke-width="2"/>
+<ellipse cx="17.6299" cy="17.1113" rx="16" ry="10" stroke="currentColor" stroke-width="2"/>
 </svg>

@@ -39,6 +39,7 @@ export function useDrawing() {
           stroke: color,
           strokeWidth: size,
           fill: "none",
+          seed: 1,
         });
         drawingLayer.value.appendChild(roughElement);
         return roughElement;
@@ -56,6 +57,7 @@ export function useDrawing() {
           stroke: color,
           strokeWidth: size,
           fill: "none",
+          seed: 1,
         });
         drawingLayer.value.appendChild(roughElement);
         return roughElement;

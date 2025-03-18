@@ -39,6 +39,7 @@ const drawShape = () => {
         roughness: 1.5,
         stroke: props.drawing.color,
         strokeWidth: props.drawing.size,
+        seed: 1,
       });
       break;
     }
@@ -52,6 +53,7 @@ const drawShape = () => {
           roughness: 1.5,
           stroke: props.drawing.color,
           strokeWidth: props.drawing.size,
+          seed: 1,
         }
       );
       break;
@@ -60,6 +62,7 @@ const drawShape = () => {
         roughness: 1.5,
         stroke: props.drawing.color,
         strokeWidth: props.drawing.size,
+        seed: 1,
       });
       break;
     default:

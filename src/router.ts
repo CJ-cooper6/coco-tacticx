@@ -7,10 +7,12 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      name: "home",
       component: LandingPage,
     },
     {
       path: "/board",
+      name: "board",
       component: Field,
     },
   ],

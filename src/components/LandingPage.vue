@@ -3,7 +3,7 @@
     <div class="hero-section">
       <h1 class="title">Coco战术板</h1>
       <p class="subtitle">简单易用的足球战术分析工具</p>
-      <router-link to="/board" class="start-button">开始使用</router-link>
+      <router-link :to="{ name: 'board' }" target="_blank" class="start-button">开始使用</router-link>
     </div>
 
     <div class="features-section">

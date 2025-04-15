@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <div class="faq-section">
+    <div class="faq-section" id="faq">
       <h2 class="faq-title">常见问题</h2>
       <div class="faq-grid">
         <div class="faq-item">
@@ -48,26 +48,40 @@
           <div class="sitemap-column">
             <h3>文档</h3>
             <ul>
-              <li><router-link to="/docs/getting-started">快速开始</router-link></li>
-              <li><router-link to="/docs/tutorials">使用教程</router-link></li>
-              <li><router-link to="/docs/faq">常见问题</router-link></li>
-            </ul>
-          </div>
-          <div class="sitemap-column">
-            <h3>联系我们</h3>
-            <ul>
-              <li><a href="mailto:contact@example.com">电子邮件</a></li>
-              <li><a href="#" target="_blank">微信公众号</a></li>
-              <li><a href="https://github.com/CJ-cooper6/coco-tacticx" target="_blank">GitHub</a></li>
+              <li>快速开始</li>
+              <li>使用教程</li>
+              <li><a href="#faq" @click.prevent="scrollToFaq">常见问题</a></li>
             </ul>
           </div>
           <div class="sitemap-column">
             <h3>关于</h3>
             <ul>
-              <li><router-link to="/about">关于我们</router-link></li>
-              <li><router-link to="/privacy">隐私政策</router-link></li>
-              <li><router-link to="/terms">使用条款</router-link></li>
+              <li>关于我们</li>
+              <li>隐私政策</li>
+              <li>使用条款</li>
             </ul>
+          </div>
+          <div class="sitemap-column">
+            <h3>联系</h3>
+            <ul>
+              <li><a href="https://github.com/CJ-cooper6/coco-tacticx" target="_blank">GitHub</a></li>
+              <li>cha473172339@163.com</li>
+              <li>
+                <a href="https://qiyjcn5ub3.feishu.cn/share/base/form/shrcnFrxVlFamvENvwhHw2noxXe" target="_blank">
+                  问题反馈
+                </a>
+              </li>
+            </ul>
+            <div class="qr-codes-container">
+              <div class="qr-code-item">
+                <img src="/qq-group.png" alt="QQ群二维码" class="qr-code" />
+                <p class="qr-desc">QQ交流群：38793551</p>
+              </div>
+              <div class="qr-code-item">
+                <img src="/wechat-mp.jpg" alt="微信公众号二维码" class="qr-code" />
+                <p class="qr-desc">微信公众号</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -77,6 +91,18 @@
     </footer>
   </div>
 </template>
+
+<script setup lang="ts">
+const scrollToFaq = () => {
+  const faqElement = document.getElementById("faq");
+  if (faqElement) {
+    faqElement.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+};
+</script>
 
 <style scoped>
 .landing-page {
@@ -232,7 +258,18 @@
 }
 
 .sitemap-column ul li {
+  cursor: pointer;
   margin-bottom: 0.5rem;
+}
+
+.sitemap-column ul li {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.sitemap-column ul li:hover {
+  color: white;
 }
 
 .sitemap-column ul li a {
@@ -276,9 +313,93 @@
   color: white;
 }
 
+.contact-list {
+  display: flex;
+  gap: 2rem;
+}
+
+.qq-group {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+  border-radius: 1rem;
+  text-align: center;
+}
+
+.qq-group h4 {
+  margin: 0 0 0.8rem 0;
+  font-size: 1rem;
+  color: white;
+}
+
+.qq-group .qr-code {
+  width: 150px;
+  height: 150px;
+  border-radius: 0.5rem;
+  background: white;
+  padding: 0.5rem;
+}
+
+.qr-codes-container {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.qr-code-item {
+  padding: 0.8rem;
+  border-radius: 0.8rem;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.qr-code-item:hover {
+  transform: translateY(-2px);
+}
+
+.qr-code {
+  width: 90px;
+  height: 90px;
+  border-radius: 0.5rem;
+  background: white;
+  padding: 0.4rem;
+}
+
+.qr-desc {
+  margin-top: 0.6rem;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
 @media (max-width: 768px) {
   .sitemap-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contact-list {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .qq-group .qr-code {
+    width: 100px;
+    height: 100px;
+  }
+
+  .qr-codes-container {
+    grid-template-columns: 1fr;
+  }
+
+  .qr-code {
+    width: 100px;
+    height: 100px;
+  }
+
+  .qr-desc {
+    font-size: 0.8rem;
   }
 }
 

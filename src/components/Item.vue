@@ -215,7 +215,7 @@ watch([isPlaying, currentFrameIndex], ([newIsPlaying, newFrameIndex]) => {
 
   .popup-content {
     height: 100%;
-    background: #aedbda;
+    background: var(--primary-hover-color);
     border-radius: 12px;
   }
 
@@ -235,7 +235,7 @@ watch([isPlaying, currentFrameIndex], ([newIsPlaying, newFrameIndex]) => {
 
       input {
         padding: 6px 12px;
-        border: 1px solid #e5e7eb;
+        border: 1px solid var(--primary-color);
         border-radius: 6px;
         transition: all 0.2s;
         font-size: 20px;
@@ -265,17 +265,17 @@ watch([isPlaying, currentFrameIndex], ([newIsPlaying, newFrameIndex]) => {
       cursor: pointer;
       font-weight: 500;
       transition: all 0.2s;
-      background: #66c2be;
+      background: var(--error-color);
 
       &:hover {
-        background: #60a2a2;
+        background: var(--error-hover-color);
       }
     }
   }
 }
 
 .player-name {
-  fill: #333;
+  fill: var(--text-dark-color);
   font-size: 18px;
   user-select: none;
 }

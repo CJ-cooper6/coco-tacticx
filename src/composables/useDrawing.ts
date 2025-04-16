@@ -26,7 +26,9 @@ export function useDrawing() {
   // 创建临时图形
   const createShape = (type: string, endX: number, endY: number) => {
     if (!drawingLayer.value || !roughSvg.value) return null;
-    const color = shapesConfig.value.color;
+    const strokeColor = shapesConfig.value.strokeColor;
+    const backgroundColor = shapesConfig.value.backgroundColor;
+
     const size = shapesConfig.value.size;
     switch (type) {
       case "rectangle": {
@@ -35,10 +37,10 @@ export function useDrawing() {
         const x = Math.min(startX, endX);
         const y = Math.min(startY, endY);
         const roughElement = roughSvg.value.rectangle(x, y, width, height, {
-          roughness: 1.5,
-          stroke: color,
+          roughness: 2,
+          stroke: strokeColor,
           strokeWidth: size,
-          fill: "none",
+          fill: backgroundColor,
           seed: 1,
         });
         drawingLayer.value.appendChild(roughElement);
@@ -53,10 +55,10 @@ export function useDrawing() {
         const x = left + width / 2;
         const y = top + height / 2;
         const roughElement = roughSvg.value.ellipse(x, y, width, height, {
-          roughness: 1.5,
-          stroke: color,
+          roughness: 2,
+          stroke: strokeColor,
           strokeWidth: size,
-          fill: "none",
+          fill: backgroundColor,
           seed: 1,
         });
         drawingLayer.value.appendChild(roughElement);

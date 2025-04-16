@@ -7,7 +7,8 @@ export const useDrawStore = defineStore("draw", () => {
   const currentTool = ref("select");
   const drawings = ref<Drawing[]>([]);
   const shapesConfig = reactive({
-    color: DEFAULT_TOOL_CONFIG.SHAPES.color,
+    strokeColor: DEFAULT_TOOL_CONFIG.SHAPES.strokeColor,
+    backgroundColor: DEFAULT_TOOL_CONFIG.SHAPES.backgroundColor,
     size: DEFAULT_TOOL_CONFIG.SHAPES.size,
     shape: DEFAULT_TOOL_CONFIG.SHAPES.shape,
   });
@@ -26,7 +27,8 @@ export const useDrawStore = defineStore("draw", () => {
         endX,
         endY,
         "saved",
-        shapesConfig.color,
+        shapesConfig.strokeColor,
+        shapesConfig.backgroundColor,
         shapesConfig.size
       );
     }

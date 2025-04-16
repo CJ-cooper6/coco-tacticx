@@ -1,5 +1,5 @@
 <template>
-  <el-popover placement="bottom" popper-class="shape-popover" trigger="click" ref="popoverRef">
+  <el-popover :placement="placement" popper-class="shape-popover" trigger="click" ref="popoverRef">
     <template #reference>
       <div class="tools-panel-item">
         <div
@@ -19,8 +19,21 @@
       </div>
     </template>
     <div class="shape-select-container" ref="popoverContainerRef">
+      <span>形状</span>
       <ShapeSelect></ShapeSelect>
-      <ColorSelect></ColorSelect>
+      <span>描边</span>
+      <ColorSelect
+        :preset-colors="['#1e1e1e', '#cf423b', '#3472bc']"
+        :default-select-color="'#1e1e1e'"
+        @change-color="handleChangeStrokeColor"
+      ></ColorSelect>
+      <span>背景</span>
+      <ColorSelect
+        :preset-colors="['transparent', '#ffc9c9', '#a5d8ff']"
+        :default-select-color="'transparent'"
+        @change-color="handleChangeBackgroundColor"
+      ></ColorSelect>
+      <span>描边宽度</span>
       <SizeSelect></SizeSelect>
     </div>
   </el-popover>
@@ -28,7 +41,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { useDrawStore } from "../stores/drawStore";
 import { gradientColor } from "../constants";
 import GradientSvgIcon from "@/components/GradientSvgIcon.vue";
@@ -36,11 +49,15 @@ import ShapeSelect from "./components/ShapeSelect.vue";
 import ColorSelect from "./components/ColorSelect.vue";
 import SizeSelect from "./components/SizeSelect.vue";
 import { useClickOutside } from "@/composables/useClickOutside";
+import { useGlobalStore } from "@/stores/globalStore";
 
 const drawStore = useDrawStore();
+const globalStore = useGlobalStore();
+
 const { setCurrentTool } = drawStore;
 
-const { currentTool } = storeToRefs(drawStore);
+const { currentTool, shapesConfig } = storeToRefs(drawStore);
+const { orientation } = storeToRefs(globalStore);
 
 const popoverVisible = ref(false);
 
@@ -63,6 +80,16 @@ useClickOutside({
   onClickOutside: closePopover,
 });
 
+const handleChangeStrokeColor = (color: string) => {
+  shapesConfig.value.strokeColor = color;
+};
+
+const handleChangeBackgroundColor = (color: string) => {
+  shapesConfig.value.backgroundColor = color;
+};
+
+const placement = computed(() => (orientation.value === "landscape" ? "left-start" : "bottom"));
+
 watch(currentTool, (newTool) => {
   if (newTool !== "shape") {
     closePopover();
@@ -75,9 +102,14 @@ watch(currentTool, (newTool) => {
   width: 32px !important;
   height: 32px !important;
 }
-
+.el-popover.el-popover,
 .el-popover {
   font-size: inherit !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1.5px solid var(--primary-color);
+  color: var(--text-dark-color);
+  font-weight: 500;
 }
 
 .shape-popover {

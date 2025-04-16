@@ -1,45 +1,40 @@
 :root {
-  --primary-color: #5c9a5e;
-  --primary-brand-color-lightened-3: #75896a;
-  --primary-brand-color-lightened-2: #738554;
-  --primary-brand-color-lightened-1: #72a653;
+  --primary-color: #64a7a5;
+  --primary-hover-color: #c2f4f2;
+  --primary-white-color: #ffffff;
+  --warning-color: #facc15;
+  --error-color: #fe5971;
+  --error-hover-color: #c64c5e;
+  --text-dark-color: #1a2b2b;
+  --default-border-color: #f1f0ff;
 }
 
 body,
 html {
   margin: 0;
   padding: 0;
-  font-family: "Helvetica", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif, "Noto Sans CJK SC",
-    Code2001, Code2002;
+  font-family: "Arial", "Helvetica", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif,
+    "Noto Sans CJK SC", Code2001, Code2002;
   height: 100%;
   min-height: 100vh;
-  color: #39474b;
-  font-size: 16px;
-  background: #64a7a5;
+  color: var(--text-dark-color);
+  background: var(--primary-color);
   -webkit-tap-highlight-color: transparent;
-}
 
-@media (max-width: 1200px) {
-  html {
-    font-size: 15px; /* 中等屏幕 */
+  @media (max-width: 1200px) {
+    font-size: 16px !important;
   }
-}
 
-@media (max-width: 992px) {
-  html {
-    font-size: 14px; /* 小屏幕 */
+  @media (max-width: 992px) {
+    font-size: 14px !important;
   }
-}
 
-@media (max-width: 768px) {
-  html {
-    font-size: 13px; /* 超小屏幕 */
+  @media (max-width: 768px) {
+    font-size: 13px !important;
   }
-}
 
-@media (max-width: 576px) {
-  html {
-    font-size: 12px; /* 手机屏幕 */
+  @media (max-width: 576px) {
+    font-size: 12px !important;
   }
 }
 

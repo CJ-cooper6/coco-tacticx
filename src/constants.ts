@@ -4,7 +4,7 @@ export const GAME_CONSTANTS = {
   showWatermarkText: "Coco战术板 - www.cocotactic.cn", // 水印文本
 };
 
-// 背景渐变色
+// 图标渐变色
 export const gradientColor = {
   startColor: "#95e3e1",
   endColor: "#3ca49f",
@@ -16,9 +16,5 @@ export const DEFAULT_TOOL_CONFIG = {
     size: 5,
     cursorMinSize: 8,
   },
-  SHAPES: {
-    color: "#ff0000",
-    size: 2,
-    shape: "rectangle",
-  },
+  SHAPES: { strokeColor: "#1e1e1e", backgroundColor: "transparent", size: 2, shape: "rectangle" },
 };

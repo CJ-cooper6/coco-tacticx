@@ -13,7 +13,9 @@ export class Drawing {
 
   state: string = "temporary"; // temporary(临时), saved(已保存), stored(已存储)
 
-  color: string;
+  strokeColor: string; // 描边颜色
+
+  backgroundColor: string; // 背景颜色
 
   size: number;
 
@@ -24,7 +26,8 @@ export class Drawing {
     endX: number,
     endY: number,
     state: string,
-    color: string,
+    strokeColor: string,
+    backgroundColor: string,
     size: number,
     id?: number
   ) {
@@ -35,7 +38,8 @@ export class Drawing {
     this.endX = endX;
     this.endY = endY;
     this.state = state;
-    this.color = color;
+    this.strokeColor = strokeColor;
+    this.backgroundColor = backgroundColor;
     this.size = size;
   }
 }

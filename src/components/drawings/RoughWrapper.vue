@@ -13,7 +13,8 @@ const props = defineProps<{
     startY: number;
     endX: number;
     endY: number;
-    color: string;
+    strokeColor: string;
+    backgroundColor: string;
     size: number;
   };
 }>();
@@ -36,8 +37,9 @@ const drawShape = () => {
       const centerX = props.drawing.startX + width / 2;
       const centerY = props.drawing.startY + height / 2;
       shape = rc.ellipse(centerX, centerY, Math.abs(width), Math.abs(height), {
-        roughness: 1.5,
-        stroke: props.drawing.color,
+        roughness: 2,
+        stroke: props.drawing.strokeColor,
+        fill: props.drawing.backgroundColor,
         strokeWidth: props.drawing.size,
         seed: 1,
       });
@@ -50,8 +52,9 @@ const drawShape = () => {
         props.drawing.endX - props.drawing.startX,
         props.drawing.endY - props.drawing.startY,
         {
-          roughness: 1.5,
-          stroke: props.drawing.color,
+          roughness: 2,
+          stroke: props.drawing.strokeColor,
+          fill: props.drawing.backgroundColor,
           strokeWidth: props.drawing.size,
           seed: 1,
         }
@@ -59,8 +62,9 @@ const drawShape = () => {
       break;
     case "line":
       shape = rc.line(props.drawing.startX, props.drawing.startY, props.drawing.endX, props.drawing.endY, {
-        roughness: 1.5,
-        stroke: props.drawing.color,
+        roughness: 2,
+        stroke: props.drawing.strokeColor,
+        fill: props.drawing.backgroundColor,
         strokeWidth: props.drawing.size,
         seed: 1,
       });

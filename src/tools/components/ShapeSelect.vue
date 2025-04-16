@@ -42,25 +42,35 @@ const chooseShape = (shape: string) => {
   .shape-group {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row;
+    justify-content: space-around;
     width: 100%;
   }
 
   .shape-item {
-    flex: 1;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    color: black;
+    color: var(--text-dark-color);
+    box-shadow:
+      5px 7px 8px rgba(0, 0, 0, 0.08),
+      1px 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1.5px solid var(--primary-color);
+
+    &:hover {
+      background: var(--primary-hover-color);
+    }
 
     .svg-icon {
-      width: 2rem;
-      height: 2rem;
+      width: 1rem;
+      height: 1rem;
     }
 
     &.active {
-      color: #00bbbd;
+      background: var(--primary-hover-color);
     }
   }
 }

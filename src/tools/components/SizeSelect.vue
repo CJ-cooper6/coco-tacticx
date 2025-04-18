@@ -2,13 +2,13 @@
   <div class="size-container">
     <div class="size-group">
       <div
-        v-for="size in sizes"
+        v-for="(size, index) in sizes"
         :key="size"
         class="size-item"
         :class="{ active: shapesConfig.size === size }"
         @click="chooseSize(size)"
       >
-        <div class="size-circle" :style="{ width: size + 'px', height: size + 'px' }"></div>
+        <SvgIcon :name="`stroke-size-${index + 1}`" class="svg-icon"></SvgIcon>
       </div>
     </div>
   </div>
@@ -17,6 +17,7 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { useDrawStore } from "@/stores/drawStore";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const drawStore = useDrawStore();
 const { shapesConfig } = storeToRefs(drawStore);
@@ -39,30 +40,35 @@ const chooseSize = (size: number) => {
   .size-group {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row;
+    justify-content: space-around;
     width: 100%;
   }
 
   .size-item {
-    flex: 1;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    padding: 5px;
-    transition: all 0.3s ease;
+    color: var(--text-dark-color);
+    box-shadow:
+      5px 7px 8px rgba(0, 0, 0, 0.08),
+      1px 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1.5px solid var(--primary-color);
 
-    &.active {
-      .size-circle {
-        box-shadow:
-          0 0 0 0.1rem white,
-          0 0 0 0.2rem #00bbbd;
-      }
+    &:hover {
+      background: var(--primary-hover-color);
     }
 
-    .size-circle {
-      background-color: black;
-      border-radius: 50%;
+    .svg-icon {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &.active {
+      background: var(--primary-hover-color);
     }
   }
 }

@@ -41,6 +41,8 @@ export function useDrawing() {
           stroke: strokeColor,
           strokeWidth: size,
           fill: backgroundColor,
+          fillWeight: 2,
+          hachureGap: 8,
           seed: 1,
         });
         drawingLayer.value.appendChild(roughElement);
@@ -59,6 +61,8 @@ export function useDrawing() {
           stroke: strokeColor,
           strokeWidth: size,
           fill: backgroundColor,
+          fillWeight: 2,
+          hachureGap: 8,
           seed: 1,
         });
         drawingLayer.value.appendChild(roughElement);

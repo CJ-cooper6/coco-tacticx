@@ -41,6 +41,8 @@ const drawShape = () => {
         stroke: props.drawing.strokeColor,
         fill: props.drawing.backgroundColor,
         strokeWidth: props.drawing.size,
+        fillWeight: 2,
+        hachureGap: 8,
         seed: 1,
       });
       break;
@@ -56,6 +58,8 @@ const drawShape = () => {
           stroke: props.drawing.strokeColor,
           fill: props.drawing.backgroundColor,
           strokeWidth: props.drawing.size,
+          fillWeight: 2,
+          hachureGap: 8,
           seed: 1,
         }
       );
@@ -66,6 +70,8 @@ const drawShape = () => {
         stroke: props.drawing.strokeColor,
         fill: props.drawing.backgroundColor,
         strokeWidth: props.drawing.size,
+        fillWeight: 2,
+        hachureGap: 8,
         seed: 1,
       });
       break;

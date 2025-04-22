@@ -19,6 +19,8 @@ export class Drawing {
 
   size: number;
 
+  pathData?: string; // 绘画路径数据
+
   constructor(
     type: string,
     startX: number,
@@ -29,7 +31,8 @@ export class Drawing {
     strokeColor: string,
     backgroundColor: string,
     size: number,
-    id?: number
+    id?: number,
+    pathData?: string
   ) {
     this.id = id;
     this.type = type;
@@ -41,5 +44,6 @@ export class Drawing {
     this.strokeColor = strokeColor;
     this.backgroundColor = backgroundColor;
     this.size = size;
+    this.pathData = pathData;
   }
 }

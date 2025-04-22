@@ -23,11 +23,8 @@ const drawStore = useDrawStore();
 const { shapesConfig } = storeToRefs(drawStore);
 const sizes = [2, 5, 10];
 
-const emit = defineEmits(["changed"]);
-
 const chooseSize = (size: number) => {
   shapesConfig.value.size = size;
-  emit("changed", size);
 };
 </script>
 

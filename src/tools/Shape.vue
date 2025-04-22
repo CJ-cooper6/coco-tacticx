@@ -5,7 +5,7 @@
         <div
           class="icon-button"
           ref="buttonRef"
-          title="形状"
+          title="绘制图形"
           :class="{ select: currentTool === 'shape' }"
           @click="handleClick()"
         >
@@ -19,7 +19,7 @@
       </div>
     </template>
     <div class="shape-select-container" ref="popoverContainerRef">
-      <span>形状</span>
+      <span>图形类型</span>
       <ShapeSelect></ShapeSelect>
       <span>描边</span>
       <ColorSelect
@@ -99,17 +99,17 @@ watch(currentTool, (newTool) => {
 
 <style lang="scss">
 .shape-icon {
-  width: 32px !important;
-  height: 32px !important;
+  width: 38px !important;
+  height: 38px !important;
 }
 .el-popover.el-popover,
 .el-popover {
-  font-size: inherit !important;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border: 1.5px solid var(--primary-color);
   color: var(--text-dark-color);
   font-weight: 500;
+  padding: 20px;
 }
 
 .shape-popover {

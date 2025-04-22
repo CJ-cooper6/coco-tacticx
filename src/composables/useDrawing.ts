@@ -31,6 +31,15 @@ export function useDrawing() {
 
     const size = shapesConfig.value.size;
     switch (type) {
+      case "pen": {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", `M${startX},${startY}`);
+        path.setAttribute("stroke", shapesConfig.value.strokeColor);
+        path.setAttribute("stroke-width", shapesConfig.value.size.toString());
+        path.setAttribute("fill", "none");
+        drawingLayer.value?.appendChild(path);
+        return null;
+      }
       case "rectangle": {
         const width = Math.abs(endX - startX);
         const height = Math.abs(endY - startY);
@@ -75,6 +84,14 @@ export function useDrawing() {
 
   const updateShape = (endX: number, endY: number) => {
     if (!roughSvg.value) return;
+    if (shapesConfig.value.shape === "pen") {
+      const path = drawingLayer.value?.lastChild as SVGPathElement;
+      if (path) {
+        const currentPath = path.getAttribute("d");
+        path.setAttribute("d", `${currentPath} L${endX},${endY}`);
+      }
+      return;
+    }
     clearDrawingLayer();
     createShape(shapesConfig.value.shape, endX, endY);
   };

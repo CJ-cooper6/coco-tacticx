@@ -32,6 +32,14 @@ export const useDrawStore = defineStore("draw", () => {
         shapesConfig.size
       );
     }
+    if (newDrawing !== null && shapesConfig.shape === "pen") {
+      const drawingLayer = document.getElementById("drawingLayer");
+      const penElement = drawingLayer?.lastChild as SVGPathElement;
+      const path = penElement.getAttribute("d");
+      if (path !== null) {
+        newDrawing.pathData = path;
+      }
+    }
     if (newDrawing !== null) {
       drawings.value.push(newDrawing);
     }

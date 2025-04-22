@@ -119,6 +119,7 @@ import FootballField from "./fields/FootballField.vue";
 import RectangleComponent from "./drawings/Rectangle.vue";
 import EllipseComponent from "./drawings/Ellipse.vue";
 import Watermark from "./Watermark.vue";
+import PenComponent from "./drawings/Pen.vue";
 
 // Store 导入
 import { useItemStore } from "../stores/itemStore";
@@ -176,6 +177,8 @@ const showWatermark = computed(() => GAME_CONSTANTS.showWatermark);
 // 工具函数
 const getDrawingComponent = (type: string) => {
   switch (type) {
+    case "pen":
+      return PenComponent;
     case "rectangle":
       return RectangleComponent;
     case "ellipse":

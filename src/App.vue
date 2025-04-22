@@ -8,7 +8,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { onMounted, onUnmounted } from "vue";
-import Field from "./components/Field.vue";
 import { useItemStore } from "./stores/itemStore";
 import { useGlobalStore } from "./stores/globalStore";
 import Debug from "./components/Debug.vue";

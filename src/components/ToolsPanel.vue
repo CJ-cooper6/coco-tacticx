@@ -28,7 +28,7 @@
         <Shape></Shape>
 
         <div class="tools-panel-item">
-          <div class="icon-button" title="清空" @click="clearItems">
+          <div class="icon-button" title="清空" @click="clear">
             <GradientSvgIcon
               class="icon"
               :startColor="gradientColor.startColor"
@@ -169,7 +169,7 @@ const animationStore = useAnimationStore();
 // 方法可以直接解构
 const { toggleFullscreen } = globalStore;
 const { clearItems } = itemStore;
-const { setCurrentTool } = drawStore;
+const { setCurrentTool, clearDrawings } = drawStore;
 const { isAnimationMode, currentFrameIndex, isPlaying, totalFrames } = storeToRefs(animationStore);
 const { openAnimation, exitAnimation, switchFrame, togglePlayback } = animationStore;
 
@@ -240,6 +240,11 @@ const deleteLastFrame = () => {
   if (frameInput.value >= totalFrames.value + 1) {
     frameInput.value = totalFrames.value;
   }
+};
+
+const clear = () => {
+  clearItems();
+  clearDrawings();
 };
 
 watch(currentFrameIndex, (newVal) => {

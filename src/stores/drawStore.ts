@@ -45,11 +45,16 @@ export const useDrawStore = defineStore("draw", () => {
     }
   };
 
+  const clearDrawings = () => {
+    drawings.value = [];
+  };
+
   return {
     currentTool,
     setCurrentTool,
     drawings,
     shapesConfig,
     createDrawing,
+    clearDrawings,
   };
 });

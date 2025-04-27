@@ -5,7 +5,7 @@
         v-for="shape in shapes"
         :key="shape"
         class="shape-item"
-        :class="{ active: shapesConfig.shape === shape }"
+        :class="{ active: drawingConfig.type === shape }"
         @click="chooseShape(shape)"
       >
         <SvgIcon :name="shape" class="svg-icon"></SvgIcon>
@@ -21,14 +21,14 @@ import SvgIcon from "@/components/SvgIcon.vue";
 
 const drawStore = useDrawStore();
 
-const { shapesConfig } = storeToRefs(drawStore);
+const { drawingConfig } = storeToRefs(drawStore);
 
 const shapes = ["pen", "rectangle", "ellipse"];
 
 const emit = defineEmits(["changedShape"]);
 
 const chooseShape = (shape: string) => {
-  shapesConfig.value.shape = shape;
+  drawingConfig.value.type = shape;
   emit("changedShape", shape);
 };
 </script>

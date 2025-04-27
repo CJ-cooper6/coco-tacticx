@@ -56,7 +56,7 @@ const globalStore = useGlobalStore();
 
 const { setCurrentTool } = drawStore;
 
-const { currentTool, shapesConfig } = storeToRefs(drawStore);
+const { currentTool, drawingConfig } = storeToRefs(drawStore);
 const { orientation } = storeToRefs(globalStore);
 
 const popoverVisible = ref(false);
@@ -81,11 +81,11 @@ useClickOutside({
 });
 
 const handleChangeStrokeColor = (color: string) => {
-  shapesConfig.value.strokeColor = color;
+  drawingConfig.value.strokeColor = color;
 };
 
 const handleChangeBackgroundColor = (color: string) => {
-  shapesConfig.value.backgroundColor = color;
+  drawingConfig.value.backgroundColor = color;
 };
 
 const placement = computed(() => (orientation.value === "landscape" ? "left-start" : "bottom"));

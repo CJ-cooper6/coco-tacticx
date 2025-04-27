@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-  <g :id="`item-${item.id}`" ref="itemRef">
+  <g :id="`item-${item.uuid}`" ref="itemRef">
     <g
       @pointerdown="handlePointerDown"
       @pointermove="handlePointerMove"
@@ -49,7 +49,9 @@
           <div class="input-group color">
             <input type="color" v-model="item.color" @pointerdown.stop />
           </div>
-          <button class="delete-btn" v-if="item.id" @pointerdown="itemStore.deleteItem(item.id)">删除球员</button>
+          <button class="delete-btn" v-if="item.uuid" @pointerdown="itemStore.deleteElement(item.uuid)">
+            删除球员
+          </button>
         </div>
       </div>
     </foreignObject>
@@ -69,7 +71,7 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick } from "vue";
 import { storeToRefs } from "pinia";
-import { type Item } from "../types/item";
+import { FieldElement } from "../types/fieldElement";
 import { useBoardStore } from "../stores/boardStore";
 import { useAnimationStore } from "../stores/animationStore";
 import { useClickOutside } from "../composables/useClickOutside";
@@ -78,7 +80,7 @@ import { useItemStore } from "../stores/itemStore";
 
 const props = defineProps({
   item: {
-    type: Object as () => Item,
+    type: Object as () => FieldElement,
     required: true,
   },
 });
@@ -111,7 +113,7 @@ const itemPosition = computed(() => {
 // 当前元素是否有动画
 const hasAnimation = computed(() => {
   if (!isPlaying.value) return false;
-  const action = animationStore.getElementAnimationAction(props.item.id, currentFrameIndex.value);
+  const action = animationStore.getElementAnimationAction(props.item.uuid, currentFrameIndex.value);
   return !!action;
 });
 

@@ -1,12 +1,12 @@
 <template>
   <g class="tools-panel">
-    <g v-for="(item, index) in toolItems" :key="`tool-item-${item.id}`">
+    <g v-for="(item, index) in toolItems" :key="`tool-item-${item.uuid}`">
       <circle
         :cx="item.x"
         :cy="item.y"
         :r="item.r"
         :fill="item.color"
-        :key="`tool-item-${item.id}`"
+        :key="`tool-item-${item.uuid}`"
         :stroke="itemStore.numberColor(item)"
         stroke-width="4"
         @pointerdown="startDragNewItem(item.color, $event, index)"
@@ -30,10 +30,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
-import { GAME_CONSTANTS } from "../constants";
 import { isInsideField } from "../utils/index";
 import { useItemStore } from "../stores/itemStore";
-import { Item } from "../types/item";
+import { FieldElement } from "../types/fieldElement";
 import { useAnimationStore } from "../stores/animationStore";
 import { useGlobalStore } from "../stores/globalStore";
 
@@ -42,7 +41,7 @@ const animationStore = useAnimationStore();
 const globalStore = useGlobalStore();
 
 // 方法可以直接解构
-const { addItem, removeDraggingNewItem, setDraggingNewItem } = itemStore;
+const { addElement, removeDraggingNewItem, setDraggingNewItem } = itemStore;
 
 // 使用 storeToRefs 保持响应性
 const { newDraggingItem } = storeToRefs(itemStore);
@@ -53,13 +52,13 @@ const toolItemNumbers = ref([0, 0]);
 const toolItems = computed(() => {
   if (orientation.value === "landscape") {
     return [
-      new Item("#ffffff", -50, 300, GAME_CONSTANTS.DefaultItemRadius, 0, "", toolItemNumbers.value[0]),
-      new Item("#000000", -50, 370, GAME_CONSTANTS.DefaultItemRadius, 0, "", toolItemNumbers.value[1]),
+      new FieldElement({ color: "#ffffff", x: -50, y: 300, number: toolItemNumbers.value[0] }),
+      new FieldElement({ color: "#000000", x: -50, y: 370, number: toolItemNumbers.value[1] }),
     ];
   }
   return [
-    new Item("#ffffff", 310, 870, GAME_CONSTANTS.DefaultItemRadius, 0, "", toolItemNumbers.value[0]),
-    new Item("#000000", 380, 870, GAME_CONSTANTS.DefaultItemRadius, 0, "", toolItemNumbers.value[1]),
+    new FieldElement({ color: "#ffffff", x: 310, y: 870, number: toolItemNumbers.value[0] }),
+    new FieldElement({ color: "#000000", x: 380, y: 870, number: toolItemNumbers.value[1] }),
   ];
 });
 
@@ -77,19 +76,28 @@ const startDragNewItem = (color: string, event: PointerEvent, index: number) => 
     return { x: svgPoint.x, y: svgPoint.y };
   };
   const svgPoint = getTransformedPoint(event);
-  const itemNumber = toolItemNumbers.value[index];
-  setDraggingNewItem(new Item(color, svgPoint.x, svgPoint.y, GAME_CONSTANTS.DefaultItemRadius, 0, "", itemNumber));
+  const elementNumber = toolItemNumbers.value[index];
+  setDraggingNewItem(
+    new FieldElement({
+      color,
+      x: svgPoint.x,
+      y: svgPoint.y,
+      number: elementNumber,
+      isDragging: true,
+      state: "temporary",
+    })
+  );
 
   const stopDrag = (moveEvent: PointerEvent) => {
     const { x, y } = getTransformedPoint(moveEvent);
     if (isInsideField(x, y)) {
-      const item = addItem(color, x, y);
-      item.number = itemNumber;
-      toolItemNumbers.value[index]++;
-      if (isAnimationMode.value && item.id) {
-        itemStore.setItemProperty(item.id, "type", "animation");
-        animationStore.addElement(item);
+      const element = new FieldElement({ color, x, y, number: elementNumber });
+      if (isAnimationMode.value) {
+        element.creationMode = "animation";
+        animationStore.addElement(element);
       }
+      addElement(element);
+      toolItemNumbers.value[index]++;
     }
     removeDraggingNewItem();
     svg.removeEventListener("pointerup", stopDrag);

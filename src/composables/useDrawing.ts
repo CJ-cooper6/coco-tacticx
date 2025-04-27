@@ -1,7 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { ref } from "vue";
 import { storeToRefs } from "pinia";
-import { nanoid } from "nanoid";
 import { useDrawStore } from "../stores/drawStore";
 import { useGlobalStore } from "../stores/globalStore";
 import { useBoardStore } from "../stores/boardStore";
@@ -13,7 +11,7 @@ export function useDrawing() {
 
   const { svgElement } = storeToRefs(boardStore);
   const { isDrawing } = storeToRefs(globalStore);
-  const { currentTool, shapesConfig } = storeToRefs(drawStore);
+  const { currentTool, drawingConfig } = storeToRefs(drawStore);
   const { createDrawing } = drawStore;
   const { setDrawStatus } = globalStore;
   const { isOutOfBoardArea, getSvgPosition } = boardStore;
@@ -26,16 +24,16 @@ export function useDrawing() {
   // 创建临时图形
   const createShape = (type: string, endX: number, endY: number) => {
     if (!drawingLayer.value || !roughSvg.value) return null;
-    const strokeColor = shapesConfig.value.strokeColor;
-    const backgroundColor = shapesConfig.value.backgroundColor;
+    const strokeColor = drawingConfig.value.strokeColor;
+    const backgroundColor = drawingConfig.value.backgroundColor;
 
-    const size = shapesConfig.value.size;
+    const size = drawingConfig.value.size;
     switch (type) {
       case "pen": {
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("d", `M${startX},${startY}`);
-        path.setAttribute("stroke", shapesConfig.value.strokeColor);
-        path.setAttribute("stroke-width", shapesConfig.value.size.toString());
+        path.setAttribute("stroke", drawingConfig.value.strokeColor);
+        path.setAttribute("stroke-width", drawingConfig.value.size.toString());
         path.setAttribute("fill", "none");
         drawingLayer.value?.appendChild(path);
         return null;
@@ -84,7 +82,7 @@ export function useDrawing() {
 
   const updateShape = (endX: number, endY: number) => {
     if (!roughSvg.value) return;
-    if (shapesConfig.value.shape === "pen") {
+    if (drawingConfig.value.type === "pen") {
       const path = drawingLayer.value?.lastChild as SVGPathElement;
       if (path) {
         const currentPath = path.getAttribute("d");
@@ -93,7 +91,7 @@ export function useDrawing() {
       return;
     }
     clearDrawingLayer();
-    createShape(shapesConfig.value.shape, endX, endY);
+    createShape(drawingConfig.value.type, endX, endY);
   };
 
   const clearDrawingLayer = () => {
@@ -113,7 +111,7 @@ export function useDrawing() {
     const point = getSvgPosition(e);
     startX = point.x;
     startY = point.y;
-    createShape(shapesConfig.value.shape, point.x, point.y);
+    createShape(drawingConfig.value.type, point.x, point.y);
 
     svgElement.value.addEventListener("pointermove", moveDrawing);
     svgElement.value.addEventListener("pointerup", endDrawing);

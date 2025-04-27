@@ -1,7 +1,8 @@
+/* eslint-disable no-param-reassign */
 import { storeToRefs } from "pinia";
 import { useItemStore } from "../stores/itemStore";
 import { useAnimationStore } from "../stores/animationStore";
-import { Item } from "../types/item";
+import { FieldElement } from "../types/fieldElement";
 import { clampPosition } from "../utils";
 import { useBoardStore } from "../stores/boardStore";
 
@@ -11,10 +12,10 @@ export function useDraggable() {
   const boardStore = useBoardStore();
 
   const { isAnimationMode } = storeToRefs(animationStore);
-  const { setItemProperty, moveItem } = itemStore;
+  const { moveElement } = itemStore;
   const { svgElement } = storeToRefs(boardStore);
 
-  const startDrag = (item: Item, event: PointerEvent) => {
+  const startDrag = (item: FieldElement, event: PointerEvent) => {
     const svg = svgElement.value;
     if (!svg) return;
 
@@ -27,18 +28,20 @@ export function useDraggable() {
       const svgPoint = point.matrixTransform(svg.getScreenCTM()?.inverse());
       const { x, y } = clampPosition(svgPoint.x, svgPoint.y);
 
-      if (item.id !== undefined) {
-        if (isAnimationMode.value) {
-          animationStore.updateElementPosition(item.id, x, y);
-        } else {
-          moveItem({ id: item.id, x, y });
-        }
+      if (item.uuid !== undefined) {
+        // todo fix
+        // if (isAnimationMode.value) {
+        //   animationStore.updateElementPosition(item.id, x, y);
+        // } else {
+        //   moveElement(item.uuid, x, y);
+        // }
+        moveElement(item.uuid, x, y);
       }
     };
 
     const stopDrag = () => {
       if (item.id !== undefined) {
-        setItemProperty(item.id, "isDragging", false);
+        item.isDragging = false;
       }
       svg.removeEventListener("pointermove", handleMoveItem);
       svg.removeEventListener("pointerup", stopDrag);
@@ -46,7 +49,7 @@ export function useDraggable() {
     };
 
     if (item.id !== undefined) {
-      setItemProperty(item.id, "isDragging", true);
+      item.isDragging = true;
     }
     svg.addEventListener("pointermove", handleMoveItem);
     svg.addEventListener("pointerup", stopDrag);

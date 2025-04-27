@@ -2,7 +2,7 @@
 import { defineStore } from "pinia";
 import { ref, computed, nextTick } from "vue";
 import { AnimationFrame, AnimationAction, Animation } from "../types/animation";
-import { Item } from "../types/item";
+import { FieldElement } from "../types/fieldElement";
 import { getDefaultControlPoint } from "../utils/index";
 
 export const useAnimationStore = defineStore("animation", () => {
@@ -116,12 +116,12 @@ export const useAnimationStore = defineStore("animation", () => {
   };
 
   // 添加新元素
-  const addElement = (item: Item) => {
+  const addElement = (item: FieldElement) => {
     const currentAnimationFrames = currentAnimation.value?.frames;
     if (!currentAnimationFrames) return;
     const frame = currentAnimationFrames[currentFrameIndex.value];
     if (!frame) return;
-    frame.elements.push(Item.clone(item));
+    frame.elements.push(item.clone());
   };
 
   // 生成/更新动画行为
@@ -151,7 +151,7 @@ export const useAnimationStore = defineStore("animation", () => {
     const lastFrame = animationFrames[animationFrames.length - 1];
     // 复制上一帧的元素到新帧
     const newFrame: AnimationFrame = {
-      elements: lastFrame.elements.map((el) => Item.clone(el)),
+      elements: lastFrame.elements.map((el) => el.clone()),
     };
     animationFrames.push(newFrame);
     currentFrameIndex.value = animationFrames.length - 1;
@@ -181,7 +181,7 @@ export const useAnimationStore = defineStore("animation", () => {
     return action;
   };
 
-  const prevFrameElement = (item: Item) => {
+  const prevFrameElement = (item: FieldElement) => {
     if (!currentAnimation.value) return null;
     const frames = currentAnimation.value.frames;
     if (!frames) return null;

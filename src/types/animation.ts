@@ -1,10 +1,10 @@
-import { Item } from "./item";
+import { FieldElement } from "./fieldElement";
 
 // 关键帧 - 记录某一时刻所有元素的状态
 export class AnimationFrame {
-  elements: Item[];
+  elements: FieldElement[];
 
-  constructor(elements: Item[] = []) {
+  constructor(elements: FieldElement[] = []) {
     this.elements = elements;
   }
 }

@@ -1,56 +1,51 @@
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { defineStore, storeToRefs } from "pinia";
-import { Item } from "../types/item";
-import { GAME_CONSTANTS } from "../constants";
+import { FieldElement, FieldElementCollection } from "../types/fieldElement";
 import { useAnimationStore } from "./animationStore";
 
 export const useItemStore = defineStore("items", () => {
   const animationStore = useAnimationStore();
   const { isAnimationMode, currentFrameElements } = storeToRefs(animationStore);
 
-  const items = ref<Item[]>([]);
-  const newDraggingItem = ref<Item | null>(null);
-  let nextItemId = 1;
+  const items = reactive(new FieldElementCollection());
+  const newDraggingItem = ref<FieldElement | null>(null);
 
-  const addItem = (color: string, x: number, y: number, r: number = GAME_CONSTANTS.DefaultItemRadius) => {
-    const item = new Item(color, x, y, r, nextItemId++);
-    items.value.push(item);
-    return item;
+  const addElement = (element: FieldElement) => {
+    items.add(element);
   };
 
-  const moveItem = ({ id, x, y }: { id: number; x: number; y: number }) => {
-    const item = items.value.find((p) => p.id === id);
-    if (item) {
-      item.move(x, y);
+  const moveElement = (identifier: string | number, x: number, y: number) => {
+    items.move(x, y, identifier);
+  };
+
+  const deleteElement = (identifier: string | number) => {
+    if (typeof identifier === "number") {
+      items.deleteById(identifier);
+      return;
     }
+    items.deleteByUuid(identifier);
   };
 
-  const clearItems = () => {
-    items.value = [];
+  const clearElements = () => {
+    items.clear();
   };
 
-  const deleteItem = (id: number) => {
-    items.value = items.value.filter((item) => item.id !== id);
+  const setDraggingNewItem = (item: FieldElement | null) => {
+    newDraggingItem.value = item;
   };
 
-  // 使用 keyof Item 来限制 property 参数只能是 Item 类型的键
-  const setItemProperty = <K extends keyof Item>(id: number, property: K, value: Item[K]) => {
-    // 如果是动画模式，需要更新当前帧的元素
+  const setElementProperty = <K extends keyof FieldElement>(uuid: string, property: K, value: FieldElement[K]) => {
     if (isAnimationMode.value) {
-      const itemIndex = currentFrameElements.value.findIndex((p) => p.id === id);
-      if (itemIndex !== -1) {
-        currentFrameElements.value[itemIndex][property] = value;
+      const elementIndex = currentFrameElements.value.findIndex((p) => p.uuid === uuid);
+      if (elementIndex !== -1) {
+        currentFrameElements.value[elementIndex][property] = value;
       }
     } else {
-      const itemIndex = items.value.findIndex((p) => p.id === id);
-      if (itemIndex !== -1) {
-        items.value[itemIndex][property] = value;
+      const element = items.findByUuid(uuid);
+      if (element) {
+        element[property] = value;
       }
     }
-  };
-
-  const setDraggingNewItem = (item: Item | null) => {
-    newDraggingItem.value = item;
   };
 
   const removeDraggingNewItem = () => {
@@ -68,18 +63,18 @@ export const useItemStore = defineStore("items", () => {
   };
 
   // 决定号码颜色
-  const numberColor = (item: Item) => {
+  const numberColor = (element: FieldElement) => {
     // eslint-disable-next-line no-use-before-define
-    const luminance = getLuminance(item.color);
+    const luminance = getLuminance(element.color);
     return luminance > 128 ? "#000000" : "#FFFFFF";
   };
 
-  const moveItemToLast = (item: Item) => {
+  const moveItemToLast = (element: FieldElement) => {
     // 将点击的元素移动到最后，层级最高
     if (isAnimationMode.value) {
       // 动画模式下，元素数组是计算属性，将元素移动到当前帧的元素数组中的最后可实现层级最高
       const allItems = currentFrameElements.value;
-      const index = allItems.findIndex((a) => a.id === item.id);
+      const index = allItems.findIndex((a) => a.id === element.id);
       if (index !== -1) {
         // 将项目移到数组末尾
         const tmp = allItems.splice(index, 1)[0];
@@ -87,7 +82,7 @@ export const useItemStore = defineStore("items", () => {
       }
     } else {
       // 非动画模式下，直接将元素移动到最后
-      const itemElement = document.getElementById(`item-${item.id}`);
+      const itemElement = document.getElementById(`item-${element.id}`);
       if (itemElement) {
         const parent = itemElement.parentElement;
         if (parent) {
@@ -98,16 +93,16 @@ export const useItemStore = defineStore("items", () => {
   };
 
   return {
-    items,
     newDraggingItem,
-    addItem,
-    moveItem,
-    clearItems,
-    setDraggingNewItem,
     removeDraggingNewItem,
-    setItemProperty,
     numberColor,
-    deleteItem,
     moveItemToLast,
+    addElement,
+    setElementProperty,
+    items,
+    setDraggingNewItem,
+    moveElement,
+    clearElements,
+    deleteElement,
   };
 });

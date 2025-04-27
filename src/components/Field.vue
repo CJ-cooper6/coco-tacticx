@@ -29,19 +29,19 @@
           <g id="drawingLayer"></g>
           <!-- 非动画模式 -->
           <template v-if="!isAnimationMode">
-            <g id="drawings">
+            <g id="drawings" v-if="drawings">
               <component
-                v-for="drawing in drawings"
-                :key="drawing.id"
-                :is="getDrawingComponent(drawing.type)"
+                v-for="drawing in drawings.getDrawings()"
+                :key="drawing.uuid"
+                :is="getDrawingComponent(drawing.drawingType)"
                 :drawing="drawing"
               />
             </g>
             <!-- 球员 -->
-            <g id="players">
+            <g id="players" v-if="normalItems">
               <ItemComponent
                 v-for="item in normalItems"
-                :key="item.id"
+                :key="item.uuid"
                 :item="item"
                 @start-drag="startDrag(item, $event)"
               />
@@ -52,12 +52,12 @@
             <!-- 播放动画时的图层 -->
             <!-- 播放动画是从上一帧位置移动到当前帧位置，所以一开始需要显示上一帧的元素 -->
             <g id="players" v-show="isPlaying">
-              <ItemComponent v-for="item in prevFrameElements" :key="item.id" :item="item" />
+              <ItemComponent v-for="item in prevFrameElements" :key="item.uuid" :item="item" />
             </g>
             <template v-if="!isPlaying">
               <!-- 创建动画时的图层 -->
               <!-- 和上一帧之间的曲线路径 -->
-              <g id="paths" v-for="item in animationItems" :key="`path-${item.id}`" style="z-index: 1">
+              <g id="paths" v-for="item in animationItems" :key="`path-${item.uuid}`" style="z-index: 1">
                 <path
                   v-if="showPath(item)"
                   :d="pathData(item)"
@@ -78,13 +78,13 @@
               </g>
               <!-- 上一帧球员 -->
               <g id="prev-frame-elements" style="opacity: 0.5; z-index: 10">
-                <ItemComponent v-for="item in haveActionPrevFrameElements" :key="`prev-${item.id}`" :item="item" />
+                <ItemComponent v-for="item in haveActionPrevFrameElements" :key="`prev-${item.uuid}`" :item="item" />
               </g>
               <!-- 球员 -->
               <g id="players">
                 <ItemComponent
                   v-for="item in animationItems"
-                  :key="item.id"
+                  :key="item.uuid"
                   :item="item"
                   @start-drag="startDrag(item, $event)"
                 />
@@ -163,7 +163,7 @@ const fieldComponents: Record<string, Component> = {
 // 计算属性
 const currentFieldComponent = computed(() => fieldComponents[currentFieldType.value]);
 
-const normalItems = computed(() => items.value.filter((item) => item.type === "normal"));
+const normalItems = computed(() => items.value.findByCreationMode("normal"));
 
 const animationItems = computed(() => currentFrameElements.value);
 
@@ -172,7 +172,7 @@ const prevFrameElements = computed(() => {
   return animationStore.getFrameElements(currentFrameIndex.value - 1);
 });
 
-const showWatermark = computed(() => GAME_CONSTANTS.showWatermark);
+const showWatermark = GAME_CONSTANTS.showWatermark;
 
 // 工具函数
 const getDrawingComponent = (type: string) => {

@@ -168,7 +168,7 @@ const drawStore = useDrawStore();
 const animationStore = useAnimationStore();
 // 方法可以直接解构
 const { toggleFullscreen } = globalStore;
-const { clearItems } = itemStore;
+const { clearElements } = itemStore;
 const { setCurrentTool, clearDrawings } = drawStore;
 const { isAnimationMode, currentFrameIndex, isPlaying, totalFrames } = storeToRefs(animationStore);
 const { openAnimation, exitAnimation, switchFrame, togglePlayback } = animationStore;
@@ -243,7 +243,7 @@ const deleteLastFrame = () => {
 };
 
 const clear = () => {
-  clearItems();
+  clearElements();
   clearDrawings();
 };
 

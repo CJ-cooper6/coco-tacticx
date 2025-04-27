@@ -1,49 +1,58 @@
-export class Drawing {
-  id?: number;
+/* eslint-disable lines-between-class-members */
+import type { IBaseElementProps } from "./base";
+import { BaseElement } from "./base";
+import { DEFAULT_TOOL_CONFIG } from "@/constants";
 
-  type: string;
-
+// 绘制图案
+interface IDrawingProps extends IBaseElementProps {
   startX: number;
-
   startY: number;
-
   endX: number;
-
   endY: number;
-
-  state: string = "temporary"; // temporary(临时), saved(已保存), stored(已存储)
-
-  strokeColor: string; // 描边颜色
-
-  backgroundColor: string; // 背景颜色
-
+  strokeColor?: string; // 描边颜色
+  backgroundColor?: string; // 背景颜色
   size: number;
-
   pathData?: string; // 绘画路径数据
+  drawingType: string; // 绘画图案类型
+}
 
-  constructor(
-    type: string,
-    startX: number,
-    startY: number,
-    endX: number,
-    endY: number,
-    state: string,
-    strokeColor: string,
-    backgroundColor: string,
-    size: number,
-    id?: number,
-    pathData?: string
-  ) {
-    this.id = id;
-    this.type = type;
-    this.startX = startX;
-    this.startY = startY;
-    this.endX = endX;
-    this.endY = endY;
-    this.state = state;
-    this.strokeColor = strokeColor;
-    this.backgroundColor = backgroundColor;
-    this.size = size;
-    this.pathData = pathData;
+export class Drawing extends BaseElement implements IDrawingProps {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  strokeColor?: string; // 描边颜色
+  backgroundColor?: string; // 背景颜色
+  size: number;
+  pathData?: string; // 绘画路径数据
+  drawingType: string; // 绘画图案类型
+
+  constructor(props: Partial<IDrawingProps> = {}) {
+    super(props);
+    this.startX = props.startX || 0;
+    this.startY = props.startY || 0;
+    this.endX = props.endX || 0;
+    this.endY = props.endY || 0;
+    this.strokeColor = props.strokeColor;
+    this.backgroundColor = props.backgroundColor;
+    this.size = props.size || DEFAULT_TOOL_CONFIG.SHAPES.size;
+    this.pathData = props.pathData;
+    this.drawingType = props.drawingType || DEFAULT_TOOL_CONFIG.SHAPES.shape;
+  }
+}
+
+export class DrawingCollection {
+  private drawings: Drawing[] = [];
+
+  add(drawing: Drawing) {
+    this.drawings.push(drawing);
+  }
+
+  clear() {
+    this.drawings = [];
+  }
+
+  getDrawings(): Drawing[] {
+    return this.drawings;
   }
 }

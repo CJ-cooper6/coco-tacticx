@@ -5,18 +5,11 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import rough from "roughjs";
+import type { Drawing } from "@/types/drawing";
 
 const props = defineProps<{
   type: "ellipse" | "rectangle" | "line";
-  drawing: {
-    startX: number;
-    startY: number;
-    endX: number;
-    endY: number;
-    strokeColor: string;
-    backgroundColor: string;
-    size: number;
-  };
+  drawing: Drawing;
 }>();
 
 const container = ref<any>(null);

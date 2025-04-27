@@ -5,7 +5,7 @@
         v-for="(size, index) in sizes"
         :key="size"
         class="size-item"
-        :class="{ active: shapesConfig.size === size }"
+        :class="{ active: drawingConfig.size === size }"
         @click="chooseSize(size)"
       >
         <SvgIcon :name="`stroke-size-${index + 1}`" class="svg-icon"></SvgIcon>
@@ -20,11 +20,11 @@ import { useDrawStore } from "@/stores/drawStore";
 import SvgIcon from "@/components/SvgIcon.vue";
 
 const drawStore = useDrawStore();
-const { shapesConfig } = storeToRefs(drawStore);
+const { drawingConfig } = storeToRefs(drawStore);
 const sizes = [2, 5, 10];
 
 const chooseSize = (size: number) => {
-  shapesConfig.value.size = size;
+  drawingConfig.value.size = size;
 };
 </script>
 

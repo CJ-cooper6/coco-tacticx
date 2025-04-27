@@ -1,6 +1,6 @@
 import { storeToRefs } from "pinia";
 import { useAnimationStore } from "../stores/animationStore";
-import { Item } from "../types/item";
+import { FieldElement } from "../types/fieldElement";
 import { getCatmullRomPath } from "../utils/path";
 import { getDefaultControlPoint } from "../utils";
 
@@ -8,20 +8,20 @@ export function usePath() {
   const animationStore = useAnimationStore();
   const { currentAnimation, currentFrameIndex } = storeToRefs(animationStore);
 
-  const showPath = (item: Item) => {
+  const showPath = (item: FieldElement) => {
     if (!currentAnimation.value) return false;
     const actions = currentAnimation.value.actions;
     if (!actions) return false;
     return actions.some((a) => a.elementId === item.id && a.startFrame === currentFrameIndex.value - 1);
   };
 
-  const elementAction = (item: Item) => {
+  const elementAction = (item: FieldElement) => {
     const currentFrameActions = currentAnimation.value?.actions;
     if (!currentFrameActions) return null;
     return currentFrameActions.find((a) => a.elementId === item.id && a.startFrame === currentFrameIndex.value - 1);
   };
 
-  const pathData = (item: Item) => {
+  const pathData = (item: FieldElement) => {
     const element = animationStore.prevFrameElement(item);
     if (!element) return "";
     const action = elementAction(item);
@@ -30,7 +30,7 @@ export function usePath() {
     return getCatmullRomPath(points);
   };
 
-  const pathControlPoint = (item: Item) => {
+  const pathControlPoint = (item: FieldElement) => {
     const currentFrameActions = currentAnimation.value?.actions;
     const element = animationStore.prevFrameElement(item);
     if (!element) return null;
@@ -42,7 +42,7 @@ export function usePath() {
     return action ? action.controlPoint : getDefaultControlPoint(element.x, element.y, item.x, item.y);
   };
 
-  const startDragControlPoint = (item: Item, event: PointerEvent) => {
+  const startDragControlPoint = (item: FieldElement, event: PointerEvent) => {
     const svg = (event.currentTarget as SVGElement).closest("svg");
     if (!svg) return;
     const action = elementAction(item);

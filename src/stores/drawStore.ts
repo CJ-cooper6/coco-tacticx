@@ -1,16 +1,16 @@
 import { reactive, ref } from "vue";
 import { defineStore } from "pinia";
-import { Drawing } from "../types/drawing";
+import { Drawing, DrawingCollection } from "../types/drawing";
 import { DEFAULT_TOOL_CONFIG } from "@/constants";
 
 export const useDrawStore = defineStore("draw", () => {
   const currentTool = ref("select");
-  const drawings = ref<Drawing[]>([]);
-  const shapesConfig = reactive({
+  const drawings = reactive(new DrawingCollection());
+  const drawingConfig = ref({
     strokeColor: DEFAULT_TOOL_CONFIG.SHAPES.strokeColor,
     backgroundColor: DEFAULT_TOOL_CONFIG.SHAPES.backgroundColor,
     size: DEFAULT_TOOL_CONFIG.SHAPES.size,
-    shape: DEFAULT_TOOL_CONFIG.SHAPES.shape,
+    type: DEFAULT_TOOL_CONFIG.SHAPES.shape,
   });
 
   const setCurrentTool = (tool: string) => {
@@ -20,19 +20,19 @@ export const useDrawStore = defineStore("draw", () => {
   const createDrawing = (tool: string, startX: number, startY: number, endX: number, endY: number) => {
     let newDrawing = null;
     if (tool === "shape") {
-      newDrawing = new Drawing(
-        shapesConfig.shape,
+      newDrawing = new Drawing({
+        drawingType: drawingConfig.value.type,
         startX,
         startY,
         endX,
         endY,
-        "saved",
-        shapesConfig.strokeColor,
-        shapesConfig.backgroundColor,
-        shapesConfig.size
-      );
+        state: "saved",
+        strokeColor: drawingConfig.value.strokeColor,
+        backgroundColor: drawingConfig.value.backgroundColor,
+        size: drawingConfig.value.size,
+      });
     }
-    if (newDrawing !== null && shapesConfig.shape === "pen") {
+    if (newDrawing !== null && drawingConfig.value.type === "pen") {
       const drawingLayer = document.getElementById("drawingLayer");
       const penElement = drawingLayer?.lastChild as SVGPathElement;
       const path = penElement.getAttribute("d");
@@ -41,19 +41,19 @@ export const useDrawStore = defineStore("draw", () => {
       }
     }
     if (newDrawing !== null) {
-      drawings.value.push(newDrawing);
+      drawings.add(newDrawing);
     }
   };
 
   const clearDrawings = () => {
-    drawings.value = [];
+    drawings.clear();
   };
 
   return {
     currentTool,
     setCurrentTool,
     drawings,
-    shapesConfig,
+    drawingConfig,
     createDrawing,
     clearDrawings,
   };

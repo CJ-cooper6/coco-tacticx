@@ -39,12 +39,7 @@
             </g>
             <!-- 球员 -->
             <g id="players" v-if="normalItems">
-              <ItemComponent
-                v-for="item in normalItems"
-                :key="item.uuid"
-                :item="item"
-                @start-drag="startDrag(item, $event)"
-              />
+              <ItemComponent v-for="item in normalItems" :key="item.uuid" :item="item" />
             </g>
           </template>
           <!-- 动画模式 -->
@@ -82,12 +77,7 @@
               </g>
               <!-- 球员 -->
               <g id="players">
-                <ItemComponent
-                  v-for="item in animationItems"
-                  :key="item.uuid"
-                  :item="item"
-                  @start-drag="startDrag(item, $event)"
-                />
+                <ItemComponent v-for="item in animationItems" :key="item.uuid" :item="item" />
               </g>
             </template>
           </template>
@@ -130,12 +120,10 @@ import { useAnimationStore } from "../stores/animationStore";
 
 // Composables 导入
 import { useDrawing } from "../composables/useDrawing";
-import { useDraggable } from "../composables/useDraggable";
 import { usePath } from "../composables/usePath";
 
 // 组合式函数初始化
-const { startDrawing, moveDrawing, endDrawing } = useDrawing();
-const { startDrag } = useDraggable();
+const { startDrawing } = useDrawing();
 const { showPath, pathData, pathControlPoint, startDragControlPoint } = usePath();
 
 // Store 初始化

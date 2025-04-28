@@ -80,7 +80,7 @@ export function useDrawing() {
     }
   };
 
-  const updateShape = (endX: number, endY: number) => {
+  const updateDrawing = (endX: number, endY: number) => {
     if (!roughSvg.value) return;
     if (drawingConfig.value.type === "pen") {
       const path = drawingLayer.value?.lastChild as SVGPathElement;
@@ -127,7 +127,7 @@ export function useDrawing() {
     }
     animationFrameId = requestAnimationFrame(() => {
       const point = getSvgPosition(e);
-      updateShape(point.x, point.y);
+      updateDrawing(point.x, point.y);
     });
   };
 

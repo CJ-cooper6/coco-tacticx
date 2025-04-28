@@ -36,6 +36,5 @@ const props = defineProps({
 });
 
 const symbolId = computed(() => `#${props.prefix}-${props.name}`);
-// 为每个图标生成唯一的渐变ID
 const gradientId = computed(() => `gradient-${props.name}`);
 </script>

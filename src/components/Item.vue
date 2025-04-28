@@ -1,12 +1,7 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
   <g :id="`item-${item.uuid}`" ref="itemRef">
-    <g
-      @pointerdown="handlePointerDown"
-      @pointermove="handlePointerMove"
-      @pointerup="handlePointerUp"
-      @click="handleClick"
-    >
+    <g @pointerdown="handlePointerDown">
       <!-- 名称 -->
       <text :x="itemPosition.x" :y="itemPosition.y - item.r - 10" text-anchor="middle" class="player-name">
         {{ item.text }}
@@ -77,6 +72,7 @@ import { useAnimationStore } from "../stores/animationStore";
 import { useClickOutside } from "../composables/useClickOutside";
 import { getCatmullRomPath } from "../utils/path";
 import { useItemStore } from "../stores/itemStore";
+import { useDraggable } from "../composables/useDraggable";
 
 const props = defineProps({
   item: {
@@ -89,6 +85,7 @@ const { boardAreaBBox } = storeToRefs(boardStore);
 const animationStore = useAnimationStore();
 const { isPlaying, currentFrameIndex, frameTime } = storeToRefs(animationStore);
 const itemStore = useItemStore();
+const { startDrag } = useDraggable();
 
 const popupRef = ref(null);
 const circleRef = ref(null);
@@ -97,8 +94,6 @@ const popupX = ref(200);
 const popupY = ref(200);
 const showPopup = ref(false);
 const animationRef = ref(null);
-const isPointerDown = ref(false);
-const hasDragged = ref(false);
 
 const emit = defineEmits(["start-drag"]);
 
@@ -132,7 +127,7 @@ const animationPathData = () => {
   return getCatmullRomPath(points);
 };
 
-// 计算弹窗位置, todo: 改造成公共方法
+// 计算弹窗位置
 const calculatePopupPosition = () => {
   if (!boardAreaBBox.value) return;
   const svgRect = boardAreaBBox.value;
@@ -141,39 +136,40 @@ const calculatePopupPosition = () => {
   // 默认右方
   popupX.value = buttonBBox.x + buttonBBox.width + 10;
   popupY.value = buttonBBox.y;
+
   // 检查是否超出右边
   if (popupX.value + popupBBox.width > svgRect.right) {
     // 尝试左方
     popupX.value = buttonBBox.x - popupBBox.width - 10;
     popupY.value = buttonBBox.y;
   }
-};
 
-const handlePointerDown = () => {
-  isPointerDown.value = true;
-};
-
-const handlePointerMove = (event: PointerEvent) => {
-  if (!isPointerDown.value) return;
-  emit("start-drag", props.item, event);
-  isPointerDown.value = false;
-  hasDragged.value = true;
-};
-
-const handlePointerUp = () => {
-  isPointerDown.value = false;
-  hasDragged.value = false;
-};
-
-const handleClick = () => {
-  if (props.item.isDragging || hasDragged.value) {
-    hasDragged.value = false;
-    return;
+  // 检查是否超出下方
+  if (popupY.value + popupBBox.height > svgRect.bottom) {
+    // 尝试上方
+    popupY.value = buttonBBox.y - popupBBox.height - 10;
   }
+
+  // 检查是否超出上方
+  if (popupY.value < svgRect.top) {
+    // 尝试下方
+    popupY.value = buttonBBox.y + buttonBBox.height + 10;
+  }
+};
+
+const handleDragMove = (x: number, y: number) => {
+  closePopup();
+};
+
+const handlePointerDown = (event: PointerEvent) => {
+  itemStore.moveItemToLast(props.item);
+  startDrag(props.item, event, { onDragMove: handleDragMove, onClick: handleClickItem });
+};
+
+const handleClickItem = () => {
   showPopup.value = !showPopup.value;
   nextTick(() => {
     if (showPopup.value) {
-      itemStore.moveItemToLast(props.item);
       calculatePopupPosition();
     }
   });
@@ -187,15 +183,6 @@ useClickOutside({
   targetRef: itemRef,
   onClickOutside: closePopup,
 });
-
-watch(
-  () => props.item.isDragging,
-  (newVal) => {
-    if (newVal) {
-      showPopup.value = false;
-    }
-  }
-);
 
 watch([isPlaying, currentFrameIndex], ([newIsPlaying, newFrameIndex]) => {
   nextTick(() => {

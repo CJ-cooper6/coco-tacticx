@@ -82,7 +82,7 @@ export const useItemStore = defineStore("items", () => {
       }
     } else {
       // 非动画模式下，直接将元素移动到最后
-      const itemElement = document.getElementById(`item-${element.id}`);
+      const itemElement = document.getElementById(`item-${element.uuid}`);
       if (itemElement) {
         const parent = itemElement.parentElement;
         if (parent) {

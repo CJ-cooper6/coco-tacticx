@@ -40,5 +40,6 @@ module.exports = {
     "import/no-extraneous-dependencies": "off",
     "prefer-destructuring": "off",
     "vue/multi-word-component-names": "off",
+    "no-use-before-define": "off",
   },
 };

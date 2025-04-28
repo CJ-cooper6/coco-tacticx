@@ -6,6 +6,10 @@
       <text :x="itemPosition.x" :y="itemPosition.y - item.r - 10" text-anchor="middle" class="player-name">
         {{ item.text }}
       </text>
+      <!-- 位置 -->
+      <text :x="itemPosition.x" :y="itemPosition.y + item.r + 23" text-anchor="middle" class="player-position">
+        {{ item.playerPosition }}
+      </text>
 
       <circle
         ref="circleRef"
@@ -32,7 +36,7 @@
     </g>
 
     <!-- 弹窗 -->
-    <foreignObject class="popup" ref="popupRef" :x="popupX" :y="popupY" width="200" height="210" v-if="showPopup">
+    <foreignObject class="popup" ref="popupRef" :x="popupX" :y="popupY" width="200" height="260" v-if="showPopup">
       <div xmlns="http://www.w3.org/1999/xhtml" class="popup-content">
         <div class="popup-body">
           <div class="input-group">
@@ -40,6 +44,9 @@
           </div>
           <div class="input-group">
             <input type="text" placeholder="名称" v-model="item.text" />
+          </div>
+          <div class="input-group">
+            <input type="text" placeholder="位置" v-model="item.playerPosition" />
           </div>
           <div class="input-group color">
             <input type="color" v-model="item.color" @pointerdown.stop />
@@ -262,11 +269,12 @@ watch([isPlaying, currentFrameIndex], ([newIsPlaying, newFrameIndex]) => {
     }
   }
 }
-
+.player-position,
 .player-name {
   fill: var(--text-dark-color);
   font-size: 18px;
   user-select: none;
+  font-weight: 600;
 }
 
 .player-number {

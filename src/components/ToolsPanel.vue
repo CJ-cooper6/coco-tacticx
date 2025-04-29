@@ -156,9 +156,9 @@ import { useItemStore } from "../stores/itemStore";
 import { useGlobalStore } from "../stores/globalStore";
 import { useBoardStore } from "../stores/boardStore";
 import { useDrawStore } from "../stores/drawStore";
-import GradientSvgIcon from "./GradientSvgIcon.vue";
+import GradientSvgIcon from "./common/GradientSvgIcon.vue";
 import { gradientColor } from "../constants";
-import Shape from "../tools/Shape.vue";
+import Shape from "./drawings/Shape.vue";
 import { useAnimationStore } from "../stores/animationStore";
 
 const globalStore = useGlobalStore();

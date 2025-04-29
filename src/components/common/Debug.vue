@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { debugBus, debug } from "../utils/debugBus";
+import { debugBus, debug } from "../../utils/debugBus";
 
 const isOpen = ref(false);
 const { messages } = debugBus;

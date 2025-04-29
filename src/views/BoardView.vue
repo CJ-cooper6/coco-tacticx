@@ -102,14 +102,14 @@ import type { Component } from "vue";
 import { storeToRefs } from "pinia";
 import { GAME_CONSTANTS } from "../constants";
 // 组件导入
-import ItemComponent from "./Item.vue";
-import ToolsPanel from "./ToolsPanel.vue";
-import DragToolsPanel from "./DragToolsPanel.vue";
-import FootballField from "./fields/FootballField.vue";
-import RectangleComponent from "./drawings/Rectangle.vue";
-import EllipseComponent from "./drawings/Ellipse.vue";
-import Watermark from "./Watermark.vue";
-import PenComponent from "./drawings/Pen.vue";
+import ItemComponent from "@/components/Item.vue";
+import ToolsPanel from "@/components/ToolsPanel.vue";
+import DragToolsPanel from "@/components/DragToolsPanel.vue";
+import FootballField from "@/components/fields/FootballField.vue";
+import RectangleComponent from "@/components/drawings/Rectangle.vue";
+import EllipseComponent from "@/components/drawings/Ellipse.vue";
+import Watermark from "@/components/common/Watermark.vue";
+import PenComponent from "@/components/drawings/Pen.vue";
 
 // Store 导入
 import { useItemStore } from "../stores/itemStore";

@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { GAME_CONSTANTS } from "../constants";
+import { GAME_CONSTANTS } from "../../constants";
 
 interface Props {
   text?: string;

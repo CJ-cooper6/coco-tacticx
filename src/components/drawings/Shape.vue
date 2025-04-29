@@ -42,12 +42,12 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { ref, watch, computed } from "vue";
-import { useDrawStore } from "../stores/drawStore";
-import { gradientColor } from "../constants";
-import GradientSvgIcon from "@/components/GradientSvgIcon.vue";
-import ShapeSelect from "./components/ShapeSelect.vue";
-import ColorSelect from "./components/ColorSelect.vue";
-import SizeSelect from "./components/SizeSelect.vue";
+import { useDrawStore } from "../../stores/drawStore";
+import { gradientColor } from "../../constants";
+import GradientSvgIcon from "@/components/common/GradientSvgIcon.vue";
+import ShapeSelect from "@/components/drawings/ShapeSelect.vue";
+import ColorSelect from "@/components/drawings/ColorSelect.vue";
+import SizeSelect from "@/components/drawings/SizeSelect.vue";
 import { useClickOutside } from "@/composables/useClickOutside";
 import { useGlobalStore } from "@/stores/globalStore";
 

@@ -10,7 +10,7 @@ import { storeToRefs } from "pinia";
 import { onMounted, onUnmounted } from "vue";
 import { useItemStore } from "./stores/itemStore";
 import { useGlobalStore } from "./stores/globalStore";
-import Debug from "./components/Debug.vue";
+import Debug from "@/components/common/Debug.vue";
 
 const isDev = import.meta.env.DEV;
 

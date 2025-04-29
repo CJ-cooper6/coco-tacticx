@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import LandingPage from "./components/LandingPage.vue";
-import Field from "./components/Field.vue";
+import LandingPage from "./views/LandingPage.vue";
+import BoardView from "./views/BoardView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -13,7 +13,7 @@ const router = createRouter({
     {
       path: "/board",
       name: "board",
-      component: Field,
+      component: BoardView,
     },
   ],
 });

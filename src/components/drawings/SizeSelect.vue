@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { useDrawStore } from "@/stores/drawStore";
-import SvgIcon from "@/components/SvgIcon.vue";
+import SvgIcon from "@/components/common/SvgIcon.vue";
 
 const drawStore = useDrawStore();
 const { drawingConfig } = storeToRefs(drawStore);

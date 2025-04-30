@@ -44,6 +44,24 @@ export class FieldElement extends BaseElement implements IFieldElementProps {
       playerPosition: this.playerPosition,
     });
   }
+
+  cloneIncludingId() {
+    return new FieldElement({
+      id: this.id,
+      x: this.x,
+      y: this.y,
+      color: this.color,
+      isDragging: this.isDragging,
+      creationMode: this.creationMode,
+      type: this.type,
+      state: this.state,
+      r: this.r,
+      text: this.text,
+      elementType: this.elementType,
+      number: this.number,
+      playerPosition: this.playerPosition,
+    });
+  }
 }
 
 export class FieldElementCollection {
@@ -54,21 +72,14 @@ export class FieldElementCollection {
   }
 
   move(x: number, y: number, identifier?: number | string) {
-    const element =
-      typeof identifier === "number"
-        ? this.items.find((p) => p.id === identifier)
-        : this.items.find((p) => p.uuid === identifier);
+    const element = this.items.find((p) => p.id === identifier);
     if (element) {
       element.move(x, y);
     }
   }
 
-  deleteById(id: number): void {
+  deleteById(id: number | string): void {
     this.items = this.items.filter((element) => element.id !== id);
-  }
-
-  deleteByUuid(uuid: string): void {
-    this.items = this.items.filter((element) => element.uuid !== uuid);
   }
 
   clear(): void {
@@ -79,12 +90,8 @@ export class FieldElementCollection {
     return this.items;
   }
 
-  findById(id: number): FieldElement | undefined {
+  findById(id: number | string): FieldElement | undefined {
     return this.items.find((element) => element.id === id);
-  }
-
-  findByUuid(uuid: string): FieldElement | undefined {
-    return this.items.find((element) => element.uuid === uuid);
   }
 
   findByCreationMode(creationMode: string) {

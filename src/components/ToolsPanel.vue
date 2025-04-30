@@ -76,7 +76,7 @@
             <div class="frame-counter">
               <input type="number" v-model="frameInput" @change="switchFrameIndex" class="frame-input" />
               <span class="frame-counter-slash">/</span>
-              <span>{{ totalFrames }}</span>
+              <span>{{ currentAnimationFrameCount }}</span>
             </div>
           </div>
           <div class="tools-panel-item">
@@ -170,7 +170,7 @@ const animationStore = useAnimationStore();
 const { toggleFullscreen } = globalStore;
 const { clearElements } = itemStore;
 const { setCurrentTool, clearDrawings } = drawStore;
-const { isAnimationMode, currentFrameIndex, isPlaying, totalFrames } = storeToRefs(animationStore);
+const { isAnimationMode, currentFrameIndex, isPlaying, currentAnimationFrameCount } = storeToRefs(animationStore);
 const { openAnimation, exitAnimation, switchFrame, togglePlayback } = animationStore;
 
 // 使用 storeToRefs 保持响应性
@@ -224,8 +224,8 @@ const switchFrameIndex = () => {
   if (frameInput.value < 1) {
     frameInput.value = 1;
   }
-  if (frameInput.value >= totalFrames.value + 1) {
-    frameInput.value = totalFrames.value;
+  if (frameInput.value >= currentAnimationFrameCount.value + 1) {
+    frameInput.value = currentAnimationFrameCount.value;
   }
   switchFrame(frameInput.value - 1);
 };
@@ -237,8 +237,8 @@ const addFrame = () => {
 
 const deleteLastFrame = () => {
   animationStore.deleteLastFrame();
-  if (frameInput.value >= totalFrames.value + 1) {
-    frameInput.value = totalFrames.value;
+  if (frameInput.value >= currentAnimationFrameCount.value + 1) {
+    frameInput.value = currentAnimationFrameCount.value;
   }
 };
 

@@ -19,11 +19,7 @@ export const useItemStore = defineStore("items", () => {
   };
 
   const deleteElement = (identifier: string | number) => {
-    if (typeof identifier === "number") {
-      items.deleteById(identifier);
-      return;
-    }
-    items.deleteByUuid(identifier);
+    items.deleteById(identifier);
   };
 
   const clearElements = () => {
@@ -32,20 +28,6 @@ export const useItemStore = defineStore("items", () => {
 
   const setDraggingNewItem = (item: FieldElement | null) => {
     newDraggingItem.value = item;
-  };
-
-  const setElementProperty = <K extends keyof FieldElement>(uuid: string, property: K, value: FieldElement[K]) => {
-    if (isAnimationMode.value) {
-      const elementIndex = currentFrameElements.value.findIndex((p) => p.uuid === uuid);
-      if (elementIndex !== -1) {
-        currentFrameElements.value[elementIndex][property] = value;
-      }
-    } else {
-      const element = items.findByUuid(uuid);
-      if (element) {
-        element[property] = value;
-      }
-    }
   };
 
   const removeDraggingNewItem = () => {
@@ -82,7 +64,7 @@ export const useItemStore = defineStore("items", () => {
       }
     } else {
       // 非动画模式下，直接将元素移动到最后
-      const itemElement = document.getElementById(`item-${element.uuid}`);
+      const itemElement = document.getElementById(`item-${element.id}`);
       if (itemElement) {
         const parent = itemElement.parentElement;
         if (parent) {
@@ -98,7 +80,6 @@ export const useItemStore = defineStore("items", () => {
     numberColor,
     moveItemToLast,
     addElement,
-    setElementProperty,
     items,
     setDraggingNewItem,
     moveElement,

@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-  <g :id="`item-${item.uuid}`" ref="itemRef">
+  <g :id="`item-${item.id}`" ref="itemRef">
     <g @pointerdown="handlePointerDown">
       <!-- 名称 -->
       <text :x="itemPosition.x" :y="itemPosition.y - item.r - 10" text-anchor="middle" class="player-name">
@@ -51,9 +51,7 @@
           <div class="input-group color">
             <input type="color" v-model="item.color" @pointerdown.stop />
           </div>
-          <button class="delete-btn" v-if="item.uuid" @pointerdown="itemStore.deleteElement(item.uuid)">
-            删除球员
-          </button>
+          <button class="delete-btn" v-if="item.id" @pointerdown="itemStore.deleteElement(item.id)">删除球员</button>
         </div>
       </div>
     </foreignObject>
@@ -90,7 +88,7 @@ const props = defineProps({
 const boardStore = useBoardStore();
 const { boardAreaBBox } = storeToRefs(boardStore);
 const animationStore = useAnimationStore();
-const { isPlaying, currentFrameIndex, frameTime } = storeToRefs(animationStore);
+const { isPlaying, currentFrameIndex, frameTime, currentAnimation } = storeToRefs(animationStore);
 const itemStore = useItemStore();
 const { startDrag } = useDraggable();
 
@@ -115,13 +113,13 @@ const itemPosition = computed(() => {
 // 当前元素是否有动画
 const hasAnimation = computed(() => {
   if (!isPlaying.value) return false;
-  const action = animationStore.getElementAnimationAction(props.item.uuid, currentFrameIndex.value);
+  const action = animationStore.getElementAnimationAction(props.item.id, currentFrameIndex.value);
   return !!action;
 });
 
 const animationPathData = () => {
   const action = animationStore.getElementAnimationAction(props.item.id, currentFrameIndex.value);
-  const currentElement = animationStore.getElementInFrame(props.item.id, currentFrameIndex.value);
+  const currentElement = currentAnimation.value?.getElementInFrame(props.item.id, currentFrameIndex.value);
   if (!currentElement || !action) return "";
 
   // 使用相对位置生成 Catmull-Rom 样条曲线

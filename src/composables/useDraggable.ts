@@ -50,14 +50,12 @@ export function useDraggable() {
       const svgPoint = point.matrixTransform(svg.getScreenCTM()?.inverse());
       const { x, y } = clampPosition(svgPoint.x, svgPoint.y);
 
-      if (item.uuid !== undefined) {
-        // todo fix
-        // if (isAnimationMode.value) {
-        //   animationStore.updateElementPosition(item.id, x, y);
-        // } else {
-        //   moveElement(item.uuid, x, y);
-        // }
-        moveElement(item.uuid, x, y);
+      if (item.id !== undefined) {
+        if (isAnimationMode.value) {
+          animationStore.updateElementPosition(item.id, x, y);
+        } else {
+          moveElement(item.id, x, y);
+        }
       }
 
       if (callbacks.onDragMove) {

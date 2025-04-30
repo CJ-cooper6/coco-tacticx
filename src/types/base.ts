@@ -2,8 +2,7 @@
 import { nanoid } from "nanoid";
 
 export interface IBaseElementProps {
-  id?: number;
-  uuid: string;
+  id?: number | string;
   x: number;
   y: number;
   color: string;
@@ -14,8 +13,7 @@ export interface IBaseElementProps {
 }
 
 export class BaseElement implements IBaseElementProps {
-  id?: number;
-  uuid: string;
+  id?: number | string;
   x: number;
   y: number;
   color: string;
@@ -25,8 +23,7 @@ export class BaseElement implements IBaseElementProps {
   state: string;
 
   constructor(props: Partial<IBaseElementProps> = {}) {
-    this.id = props.id;
-    this.uuid = props.uuid || this.generateUuid();
+    this.id = props.id || this.generateUuid();
     this.x = props.x || 0;
     this.y = props.y || 0;
     this.color = props.color || "black";

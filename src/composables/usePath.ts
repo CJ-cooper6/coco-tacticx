@@ -12,13 +12,15 @@ export function usePath() {
     if (!currentAnimation.value) return false;
     const actions = currentAnimation.value.actions;
     if (!actions) return false;
-    return actions.some((a) => a.elementId === item.id && a.startFrame === currentFrameIndex.value - 1);
+    return actions.some((a) => a.animationElementId === item.id && a.startFrame === currentFrameIndex.value - 1);
   };
 
   const elementAction = (item: FieldElement) => {
     const currentFrameActions = currentAnimation.value?.actions;
     if (!currentFrameActions) return null;
-    return currentFrameActions.find((a) => a.elementId === item.id && a.startFrame === currentFrameIndex.value - 1);
+    return currentFrameActions.find(
+      (a) => a.animationElementId === item.id && a.startFrame === currentFrameIndex.value - 1
+    );
   };
 
   const pathData = (item: FieldElement) => {

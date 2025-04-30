@@ -32,14 +32,14 @@
             <g id="drawings" v-if="drawings">
               <component
                 v-for="drawing in drawings.getDrawings()"
-                :key="drawing.uuid"
+                :key="drawing.id"
                 :is="getDrawingComponent(drawing.drawingType)"
                 :drawing="drawing"
               />
             </g>
             <!-- 球员 -->
             <g id="players" v-if="normalItems">
-              <ItemComponent v-for="item in normalItems" :key="item.uuid" :item="item" />
+              <ItemComponent v-for="item in normalItems" :key="item.id" :item="item" />
             </g>
           </template>
           <!-- 动画模式 -->
@@ -47,12 +47,12 @@
             <!-- 播放动画时的图层 -->
             <!-- 播放动画是从上一帧位置移动到当前帧位置，所以一开始需要显示上一帧的元素 -->
             <g id="players" v-show="isPlaying">
-              <ItemComponent v-for="item in prevFrameElements" :key="item.uuid" :item="item" />
+              <ItemComponent v-for="item in prevFrameElements" :key="item.id" :item="item" />
             </g>
             <template v-if="!isPlaying">
               <!-- 创建动画时的图层 -->
               <!-- 和上一帧之间的曲线路径 -->
-              <g id="paths" v-for="item in animationItems" :key="`path-${item.uuid}`" style="z-index: 1">
+              <g id="paths" v-for="item in animationItems" :key="`path-${item.id}`" style="z-index: 1">
                 <path
                   v-if="showPath(item)"
                   :d="pathData(item)"
@@ -73,11 +73,11 @@
               </g>
               <!-- 上一帧球员 -->
               <g id="prev-frame-elements" style="opacity: 0.5; z-index: 10">
-                <ItemComponent v-for="item in haveActionPrevFrameElements" :key="`prev-${item.uuid}`" :item="item" />
+                <ItemComponent v-for="item in haveActionPrevFrameElements" :key="`prev-${item.id}`" :item="item" />
               </g>
               <!-- 球员 -->
               <g id="players">
-                <ItemComponent v-for="item in animationItems" :key="item.uuid" :item="item" />
+                <ItemComponent v-for="item in animationItems" :key="item.id" :item="item" />
               </g>
             </template>
           </template>
@@ -136,8 +136,14 @@ const animationStore = useAnimationStore();
 // Store 状态和方法解构
 const { items, newDraggingItem } = storeToRefs(itemStore);
 const { drawings } = storeToRefs(drawStore);
-const { isAnimationMode, haveActionPrevFrameElements, currentFrameIndex, isPlaying, currentFrameElements } =
-  storeToRefs(animationStore);
+const {
+  isAnimationMode,
+  haveActionPrevFrameElements,
+  currentFrameIndex,
+  isPlaying,
+  currentFrameElements,
+  currentAnimation,
+} = storeToRefs(animationStore);
 
 const svgRef = ref<SVGSVGElement | null>(null);
 const currentFieldType = ref("football");
@@ -156,8 +162,8 @@ const normalItems = computed(() => items.value.findByCreationMode("normal"));
 const animationItems = computed(() => currentFrameElements.value);
 
 const prevFrameElements = computed(() => {
-  if (currentFrameIndex.value === 0) return animationStore.getFrameElements(0);
-  return animationStore.getFrameElements(currentFrameIndex.value - 1);
+  if (currentFrameIndex.value === 0) return currentAnimation.value?.getFrameElements(0);
+  return currentAnimation.value?.getFrameElements(currentFrameIndex.value - 1);
 });
 
 const showWatermark = GAME_CONSTANTS.showWatermark;

@@ -1,12 +1,12 @@
 <template>
   <g class="tools-panel">
-    <g v-for="(item, index) in toolItems" :key="`tool-item-${item.uuid}`">
+    <g v-for="(item, index) in toolItems" :key="`tool-item-${item.id}`">
       <circle
         :cx="item.x"
         :cy="item.y"
         :r="item.r"
         :fill="item.color"
-        :key="`tool-item-${item.uuid}`"
+        :key="`tool-item-${item.id}`"
         :stroke="itemStore.numberColor(item)"
         stroke-width="4"
         @pointerdown="startDragNewItem(item.color, $event, index)"

@@ -10,30 +10,22 @@
     >
       <div class="tools-panel-content">
         <div class="tools-panel-item">
-          <div
-            class="icon-button"
-            title="选择"
-            :class="{ select: currentTool === 'select' }"
-            @click="setCurrentTool('select')"
-          >
-            <GradientSvgIcon
-              class="icon select-icon"
-              :startColor="gradientColor.startColor"
-              :endColor="gradientColor.endColor"
-              name="select"
-            />
-          </div>
-        </div>
-
-        <Shape></Shape>
-
-        <div class="tools-panel-item">
           <div class="icon-button" title="清空" @click="clear">
             <GradientSvgIcon
               class="icon"
               :startColor="gradientColor.startColor"
               :endColor="gradientColor.endColor"
               name="clear"
+            />
+          </div>
+        </div>
+        <div class="tools-panel-item" v-if="boardArea && !isAnimationMode">
+          <div class="icon-button" title="截图" @click="captureScreenshot(boardArea)">
+            <GradientSvgIcon
+              class="icon screenshot-icon"
+              :startColor="gradientColor.startColor"
+              :endColor="gradientColor.endColor"
+              name="screenshot"
             />
           </div>
         </div>
@@ -48,7 +40,6 @@
             />
           </div>
         </div>
-
         <div class="tools-panel-item" v-if="isFullscreen && !globalStore.deviceInfo.isIOS">
           <div class="icon-button" title="退出全屏" @click="exitFullscreen">
             <GradientSvgIcon
@@ -56,17 +47,6 @@
               :startColor="gradientColor.startColor"
               :endColor="gradientColor.endColor"
               name="exit-full-screen"
-            />
-          </div>
-        </div>
-
-        <div class="tools-panel-item" v-if="boardArea && !isAnimationMode">
-          <div class="icon-button" title="截图" @click="captureScreenshot(boardArea)">
-            <GradientSvgIcon
-              class="icon screenshot-icon"
-              :startColor="gradientColor.startColor"
-              :endColor="gradientColor.endColor"
-              name="screenshot"
             />
           </div>
         </div>
@@ -158,7 +138,6 @@ import { useBoardStore } from "../stores/boardStore";
 import { useDrawStore } from "../stores/drawStore";
 import GradientSvgIcon from "./common/GradientSvgIcon.vue";
 import { gradientColor } from "../constants";
-import Shape from "./drawings/Shape.vue";
 import { useAnimationStore } from "../stores/animationStore";
 
 const globalStore = useGlobalStore();
@@ -271,7 +250,7 @@ onBeforeUnmount(() => {
   height: 100%;
   width: 100%;
   display: flex;
-  gap: 50px;
+  gap: 20px;
   align-items: center;
   justify-content: center;
   padding-top: 10px;

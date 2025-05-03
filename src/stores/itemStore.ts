@@ -9,23 +9,23 @@ export const useItemStore = defineStore(
     const animationStore = useAnimationStore();
     const { isAnimationMode, currentFrameElements } = storeToRefs(animationStore);
 
-    const items = reactive(new FieldElementCollection());
+    const items = ref(new FieldElementCollection());
     const newDraggingItem = ref<FieldElement | null>(null);
 
     const addElement = (element: FieldElement) => {
-      items.add(element);
+      items.value.add(element);
     };
 
     const moveElement = (identifier: string | number, x: number, y: number) => {
-      items.move(x, y, identifier);
+      items.value.move(x, y, identifier);
     };
 
     const deleteElement = (identifier: string | number) => {
-      items.deleteById(identifier);
+      items.value.deleteById(identifier);
     };
 
     const clearElements = () => {
-      items.clear();
+      items.value.clear();
     };
 
     const setDraggingNewItem = (item: FieldElement | null) => {
@@ -90,6 +90,19 @@ export const useItemStore = defineStore(
     };
   },
   {
-    persist: true,
+    persist: {
+      // https://prazdevs.github.io/pinia-plugin-persistedstate/zh/guide/limitations.html
+      afterHydrate: (ctx) => {
+        // 在 Pinia 恢复状态后，将 items 中的普通对象重新实例化为 FieldElementCollection 类
+        if (ctx.store.items) {
+          const newCollection = new FieldElementCollection();
+          // 遍历并重新实例化每个 FieldElement
+          ctx.store.items.getItems().forEach((item: any) => {
+            newCollection.add(new FieldElement(item));
+          });
+          ctx.store.items = newCollection;
+        }
+      },
+    },
   }
 );

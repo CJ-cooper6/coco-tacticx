@@ -7,7 +7,7 @@ export const useDrawStore = defineStore(
   "draw",
   () => {
     const currentTool = ref("select");
-    const drawings = reactive(new DrawingCollection());
+    const drawings = ref(new DrawingCollection());
     const drawingConfig = ref({
       strokeColor: DEFAULT_TOOL_CONFIG.SHAPES.strokeColor,
       backgroundColor: DEFAULT_TOOL_CONFIG.SHAPES.backgroundColor,
@@ -43,12 +43,12 @@ export const useDrawStore = defineStore(
         }
       }
       if (newDrawing !== null) {
-        drawings.add(newDrawing);
+        drawings.value.add(newDrawing);
       }
     };
 
     const clearDrawings = () => {
-      drawings.clear();
+      drawings.value.clear();
     };
 
     return {
@@ -61,6 +61,17 @@ export const useDrawStore = defineStore(
     };
   },
   {
-    persist: true,
+    persist: {
+      // https://prazdevs.github.io/pinia-plugin-persistedstate/zh/guide/limitations.html
+      afterHydrate: (ctx) => {
+        if (ctx.store.drawings) {
+          const newCollection = new DrawingCollection();
+          ctx.store.drawings.getDrawings().forEach((drawing: any) => {
+            newCollection.add(new Drawing(drawing));
+          });
+          ctx.store.drawings = newCollection;
+        }
+      },
+    },
   }
 );

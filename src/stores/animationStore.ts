@@ -44,7 +44,8 @@ export const useAnimationStore = defineStore(
     // 当前帧元素
     const currentFrameElements = computed(() => {
       const animationFrames = currentAnimation.value?.frames;
-      if (!animationFrames || animationFrames.length <= 0) return [];
+      if (!animationFrames || animationFrames.length <= 0 || currentFrameIndex.value >= animationFrames.length)
+        return [];
       return animationFrames[currentFrameIndex.value].elements;
     });
 
@@ -278,6 +279,35 @@ export const useAnimationStore = defineStore(
     };
   },
   {
-    persist: true,
+    persist: {
+      // https://prazdevs.github.io/pinia-plugin-persistedstate/zh/guide/limitations.html
+      afterHydrate: (ctx) => {
+        // 通用反序列化函数
+        const deserializeAnimation = (data: any) =>
+          new Animation(
+            data.name,
+            data.frames.map(
+              (frame: any) =>
+                new AnimationFrame(
+                  frame.frameNumber,
+                  frame.elements.map((element: any) => new FieldElement(element))
+                )
+            ),
+            data.actions.map(
+              (action: any) => new AnimationAction(action.animationElementId, action.startFrame, action.controlPoint)
+            )
+          );
+
+        // 恢复 animations
+        if (ctx.store.animations && Array.isArray(ctx.store.animations)) {
+          ctx.store.animations = ctx.store.animations.map(deserializeAnimation);
+        }
+
+        // 恢复 currentAnimation
+        if (ctx.store.currentAnimation) {
+          ctx.store.currentAnimation = deserializeAnimation(ctx.store.currentAnimation);
+        }
+      },
+    },
   }
 );

@@ -1,6 +1,15 @@
+/* eslint-disable no-param-reassign */
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import rough from "roughjs";
+import { GAME_CONSTANTS } from "../constants";
+
+interface BBox {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
 
 export const useBoardStore = defineStore(
   "board",
@@ -52,23 +61,6 @@ export const useBoardStore = defineStore(
       return null;
     });
 
-    // 判断是否超出展示区域
-    const isOutOfBoardArea = (x: number, y: number) => {
-      // 先转换为svg坐标系，再判断是否超出球场区域
-      if (!boardAreaBBox.value || !svgElement.value) return false;
-      const point = svgElement.value.createSVGPoint();
-      point.x = x;
-      point.y = y;
-      const svgPoint = point.matrixTransform(svgElement.value.getScreenCTM()?.inverse());
-      const svgRect = boardAreaBBox.value;
-      return (
-        svgPoint.x < svgRect.left ||
-        svgPoint.x > svgRect.right ||
-        svgPoint.y < svgRect.top ||
-        svgPoint.y > svgRect.bottom
-      );
-    };
-
     // 获取svg坐标系下的坐标
     const getSvgPosition = (e: PointerEvent) => {
       if (!svgElement.value) return { x: 0, y: 0 };
@@ -78,11 +70,61 @@ export const useBoardStore = defineStore(
       return point.matrixTransform(svgElement.value.getScreenCTM()?.inverse());
     };
 
+    // 计算有效边界区域，返回元素中心点可移动的范围
+    const calculateBounds = (areaBBox: BBox | null, radius: number) => {
+      if (!areaBBox) return areaBBox;
+      const { left, right, top, bottom } = areaBBox;
+      return {
+        left: left + radius,
+        right: right - radius,
+        top: top + radius,
+        bottom: bottom - radius,
+      };
+    };
+
+    // 判断元素是否超出某个区域，考虑元素的半径
+    const isOutOfArea = (e: PointerEvent, areaBBox: BBox | null, elementRadius = 0) => {
+      if (!svgElement.value) return false;
+
+      // 先转换为svg坐标系，再判断是否超出区域
+      const svgPoint = getSvgPosition(e);
+      if (elementRadius) {
+        areaBBox = calculateBounds(areaBBox, elementRadius);
+      }
+
+      if (!areaBBox) return false;
+
+      return (
+        svgPoint.x < areaBBox.left ||
+        svgPoint.x > areaBBox.right ||
+        svgPoint.y < areaBBox.top ||
+        svgPoint.y > areaBBox.bottom
+      );
+    };
+
+    const isOutOfBoardArea = (e: PointerEvent, elementRadius?: number) => {
+      if (!boardAreaBBox.value) return true;
+      const radius = elementRadius ?? GAME_CONSTANTS.DefaultItemRadius;
+      return isOutOfArea(e, boardAreaBBox.value, radius);
+    };
+
+    // 限制球员的移动在战术板内
+    const clampPosition = (x: number, y: number) => {
+      const bounds = calculateBounds(boardAreaBBox.value, GAME_CONSTANTS.DefaultItemRadius);
+      if (!bounds) {
+        return { x, y };
+      }
+      const { left, right, top, bottom } = bounds;
+      return {
+        x: Math.max(left, Math.min(right, x)),
+        y: Math.max(top, Math.min(bottom, y)),
+      };
+    };
+
     return {
       boardArea,
       setBoardArea,
       boardAreaBBox,
-      isOutOfBoardArea,
       svgElement,
       setSvgElement,
       setFieldArea,
@@ -90,6 +132,9 @@ export const useBoardStore = defineStore(
       getSvgPosition,
       roughSvg,
       drawingLayer,
+      isOutOfArea,
+      isOutOfBoardArea,
+      clampPosition,
     };
   },
   {

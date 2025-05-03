@@ -57,7 +57,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
-import { isInsideField } from "../utils/index";
 import { useItemStore } from "../stores/itemStore";
 import { FieldElement } from "../types/fieldElement";
 import { useAnimationStore } from "../stores/animationStore";
@@ -66,11 +65,13 @@ import { gradientColor } from "../constants";
 import GradientSvgIcon from "./common/GradientSvgIcon.vue";
 import Shape from "./drawings/Shape.vue";
 import { useDrawStore } from "../stores/drawStore";
+import { useBoardStore } from "../stores/boardStore";
 
 const itemStore = useItemStore();
 const animationStore = useAnimationStore();
 const globalStore = useGlobalStore();
 const drawStore = useDrawStore();
+const boardStore = useBoardStore();
 
 // 方法可以直接解构
 const { addElement, removeDraggingNewItem, setDraggingNewItem } = itemStore;
@@ -116,15 +117,7 @@ const startDragNewItem = (color: string, event: PointerEvent, index: number) => 
   const svg = document.getElementById("field") as SVGSVGElement;
   if (!svg) return;
 
-  // 将位置信息转换为 SVG 的坐标系
-  const getTransformedPoint = (moveEvent: PointerEvent) => {
-    const point = svg.createSVGPoint();
-    point.x = moveEvent.clientX;
-    point.y = moveEvent.clientY;
-    const svgPoint = point.matrixTransform(svg.getScreenCTM()?.inverse());
-    return { x: svgPoint.x, y: svgPoint.y };
-  };
-  const svgPoint = getTransformedPoint(event);
+  const svgPoint = boardStore.getSvgPosition(event);
   const elementNumber = toolItemNumbers.value[index];
   setDraggingNewItem(
     new FieldElement({
@@ -138,8 +131,8 @@ const startDragNewItem = (color: string, event: PointerEvent, index: number) => 
   );
 
   const stopDrag = (moveEvent: PointerEvent) => {
-    const { x, y } = getTransformedPoint(moveEvent);
-    if (isInsideField(x, y)) {
+    const { x, y } = boardStore.getSvgPosition(moveEvent);
+    if (!boardStore.isOutOfBoardArea(moveEvent)) {
       const element = new FieldElement({ color, x, y, number: elementNumber });
       if (isAnimationMode.value) {
         element.creationMode = "animation";
@@ -155,7 +148,7 @@ const startDragNewItem = (color: string, event: PointerEvent, index: number) => 
 
   const moveDrag = (moveEvent: PointerEvent) => {
     if (newDraggingItem.value) {
-      const { x, y } = getTransformedPoint(moveEvent);
+      const { x, y } = boardStore.getSvgPosition(moveEvent);
       newDraggingItem.value.x = x;
       newDraggingItem.value.y = y;
     }

@@ -9,13 +9,12 @@ export function useDrawing() {
   const globalStore = useGlobalStore();
   const boardStore = useBoardStore();
 
-  const { svgElement } = storeToRefs(boardStore);
+  const { svgElement, roughSvg, drawingLayer } = storeToRefs(boardStore);
   const { isDrawing } = storeToRefs(globalStore);
   const { currentTool, drawingConfig } = storeToRefs(drawStore);
   const { createDrawing } = drawStore;
   const { setDrawStatus } = globalStore;
   const { isOutOfBoardArea, getSvgPosition } = boardStore;
-  const { roughSvg, drawingLayer } = storeToRefs(boardStore);
 
   let animationFrameId: number | null = null;
   let startX = 0;
@@ -103,7 +102,7 @@ export function useDrawing() {
 
   const startDrawing = (e: PointerEvent) => {
     if (!svgElement.value || ["select"].includes(currentTool.value)) return;
-    if (isOutOfBoardArea(e.clientX, e.clientY)) return;
+    if (isOutOfBoardArea(e)) return;
     e.preventDefault();
     e.stopPropagation();
     setDrawStatus(true);
@@ -143,7 +142,7 @@ export function useDrawing() {
 
     setDrawStatus(false);
 
-    if (isOutOfBoardArea(event.clientX, event.clientY)) {
+    if (isOutOfBoardArea(event)) {
       return;
     }
 

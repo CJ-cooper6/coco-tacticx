@@ -3,7 +3,6 @@ import { storeToRefs } from "pinia";
 import { useItemStore } from "../stores/itemStore";
 import { useAnimationStore } from "../stores/animationStore";
 import { FieldElement } from "../types/fieldElement";
-import { clampPosition } from "../utils";
 import { useBoardStore } from "../stores/boardStore";
 
 export function useDraggable() {
@@ -44,11 +43,8 @@ export function useDraggable() {
         item.isDragging = true;
       }
 
-      const point = svg.createSVGPoint();
-      point.x = moveEvent.clientX;
-      point.y = moveEvent.clientY;
-      const svgPoint = point.matrixTransform(svg.getScreenCTM()?.inverse());
-      const { x, y } = clampPosition(svgPoint.x, svgPoint.y);
+      const svgPoint = boardStore.getSvgPosition(moveEvent);
+      const { x, y } = boardStore.clampPosition(svgPoint.x, svgPoint.y);
 
       if (item.id !== undefined) {
         if (isAnimationMode.value) {

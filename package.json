@@ -20,6 +20,7 @@
     "mobile-device-detect": "^0.4.3",
     "nanoid": "^5.1.2",
     "pinia": "^2.2.5",
+    "pinia-plugin-persistedstate": "^4.2.0",
     "roughjs": "^4.6.6",
     "vite-plugin-svg-icons": "^2.0.1",
     "vue": "^3.4.21",

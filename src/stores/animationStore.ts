@@ -5,273 +5,279 @@ import { AnimationFrame, AnimationAction, Animation } from "../types/animation";
 import { FieldElement } from "../types/fieldElement";
 import { getDefaultControlPoint } from "../utils/index";
 
-export const useAnimationStore = defineStore("animation", () => {
-  // 基础状态
-  const isAnimationMode = ref(false);
-  const animations = ref<Animation[]>([]);
-  const currentAnimationId = ref<number | string | null>(null);
-  const currentAnimation = ref<Animation | null>(null);
-  const isPlaying = ref(false); // 播放控制
-  const currentFrameIndex = ref(0);
-  let playbackTimer: number | null = null;
-  const frameTime = ref(3); // 帧时间s
+export const useAnimationStore = defineStore(
+  "animation",
+  () => {
+    // 基础状态
+    const isAnimationMode = ref(false);
+    const animations = ref<Animation[]>([]);
+    const currentAnimationId = ref<number | string | null>(null);
+    const currentAnimation = ref<Animation | null>(null);
+    const isPlaying = ref(false); // 播放控制
+    const currentFrameIndex = ref(0);
+    let playbackTimer: number | null = null;
+    const frameTime = ref(3); // 帧时间s
 
-  // 若当前帧存在动画行为的元素，返回上一帧的这些元素
-  const haveActionPrevFrameElements = computed(() => {
-    if (currentFrameIndex.value <= 0) return [];
+    // 若当前帧存在动画行为的元素，返回上一帧的这些元素
+    const haveActionPrevFrameElements = computed(() => {
+      if (currentFrameIndex.value <= 0) return [];
 
-    // 当前帧存在的动画行为的元素
-    const haveActionsElements = currentAnimation.value?.actions.filter(
-      (a) => a.startFrame === currentFrameIndex.value - 1
-    );
-    if (!haveActionsElements) return [];
+      // 当前帧存在的动画行为的元素
+      const haveActionsElements = currentAnimation.value?.actions.filter(
+        (a) => a.startFrame === currentFrameIndex.value - 1
+      );
+      if (!haveActionsElements) return [];
 
-    const haveActionsElementIds = haveActionsElements.map((a) => a.animationElementId);
+      const haveActionsElementIds = haveActionsElements.map((a) => a.animationElementId);
 
-    const animationFrames = currentAnimation.value?.frames;
-    if (!animationFrames || !haveActionsElementIds) return [];
-    const prevFrame = animationFrames[currentFrameIndex.value - 1];
-    return prevFrame.elements.filter((el) => {
-      if (el.id) {
-        return haveActionsElementIds.includes(el.id);
-      }
-      return false;
+      const animationFrames = currentAnimation.value?.frames;
+      if (!animationFrames || !haveActionsElementIds) return [];
+      const prevFrame = animationFrames[currentFrameIndex.value - 1];
+      return prevFrame.elements.filter((el) => {
+        if (el.id) {
+          return haveActionsElementIds.includes(el.id);
+        }
+        return false;
+      });
     });
-  });
 
-  // 当前帧元素
-  const currentFrameElements = computed(() => {
-    const animationFrames = currentAnimation.value?.frames;
-    if (!animationFrames || animationFrames.length <= 0) return [];
-    return animationFrames[currentFrameIndex.value].elements;
-  });
+    // 当前帧元素
+    const currentFrameElements = computed(() => {
+      const animationFrames = currentAnimation.value?.frames;
+      if (!animationFrames || animationFrames.length <= 0) return [];
+      return animationFrames[currentFrameIndex.value].elements;
+    });
 
-  const currentFrameElementsIds = computed(() => currentFrameElements.value.map((el) => el.id));
+    const currentFrameElementsIds = computed(() => currentFrameElements.value.map((el) => el.id));
 
-  // 当前动画总帧数
-  const currentAnimationFrameCount = computed(() => currentAnimation.value?.frameCount() || 0);
+    // 当前动画总帧数
+    const currentAnimationFrameCount = computed(() => currentAnimation.value?.frameCount() || 0);
 
-  // 开启动画
-  const openAnimation = () => {
-    const animation = new Animation("", [{ frameNumber: 0, elements: [] }], []);
-    animations.value.push(animation);
-    currentAnimationId.value = animation.id;
-    isAnimationMode.value = true;
-    isPlaying.value = false;
-    currentAnimation.value = animation;
-  };
-
-  // 退出动画
-  const exitAnimation = () => {
-    if (isAnimationMode.value) {
-      isAnimationMode.value = false;
-      currentAnimationId.value = null;
-      currentAnimation.value = null;
-    }
-  };
-
-  // 切换帧
-  const switchFrame = (frameIndex: number) => {
-    const animationFrames = currentAnimation.value?.frames;
-    if (!animationFrames) return;
-    if (frameIndex >= 0 && frameIndex < animationFrames.length) {
-      currentFrameIndex.value = frameIndex;
-    }
-  };
-
-  // 元素位置更新触发函数
-  const updateElementPosition = (id: number | string, x?: number, y?: number) => {
-    const animationFrames = currentAnimation.value?.frames;
-    if (!animationFrames) return;
-    const frame = animationFrames[currentFrameIndex.value];
-    if (!frame) return;
-    const element = frame.elements.find((el) => el.id === id);
-
-    if (element) {
-      element.x = x ?? element.x;
-      element.y = y ?? element.y;
-      // 判断上一帧是否存在元素,存在才能创建动画行为
-      if (
-        currentFrameIndex.value > 0 &&
-        currentAnimation.value?.getElementInFrame(element.id, currentFrameIndex.value - 1)
-      ) {
-        updateAnimationAction(element.id);
-      }
-    }
-  };
-
-  // 添加新元素
-  const addElement = (item: FieldElement) => {
-    const currentAnimationFrames = currentAnimation.value?.frames;
-    if (!currentAnimationFrames) return;
-    const frame = currentAnimationFrames[currentFrameIndex.value];
-    if (!frame) return;
-    frame.elements.push(item.clone());
-  };
-
-  // 生成/更新动画行为
-  const updateAnimationAction = (elementId: any) => {
-    if (currentFrameIndex.value <= 0) return;
-    const currentElement = currentAnimation.value?.getElementInFrame(elementId, currentFrameIndex.value);
-    const prevElement = currentAnimation.value?.getElementInFrame(elementId, currentFrameIndex.value - 1);
-    if (!currentElement || !prevElement) return;
-
-    const controlPoint = getDefaultControlPoint(prevElement.x, prevElement.y, currentElement.x, currentElement.y);
-    // 先查看是否存在动画行为
-    const action = currentAnimation.value?.actions.find(
-      (a) => a.animationElementId === elementId && a.startFrame === currentFrameIndex.value - 1
-    );
-
-    if (action) {
-      action.controlPoint = controlPoint;
-    } else {
-      const newAction: AnimationAction = new AnimationAction(elementId, currentFrameIndex.value - 1, controlPoint);
-      currentAnimation.value?.actions.push(newAction);
-    }
-  };
-  // 添加新帧
-  const addFrame = () => {
-    if (!currentAnimation.value) {
-      return;
-    }
-    const animationFrames = currentAnimation.value?.frames;
-
-    if (!animationFrames) return;
-    const lastFrame = animationFrames[animationFrames.length - 1];
-    // 复制上一帧的元素到新帧
-    const newFrame: AnimationFrame = {
-      frameNumber: currentAnimation.value.frameCount(),
-      elements: lastFrame.elements.map((el) => el.cloneIncludingId()),
-    };
-    animationFrames.push(newFrame);
-    currentFrameIndex.value = animationFrames.length - 1;
-  };
-
-  // 播放控制
-  const togglePlayback = () => {
-    // 如果只有1帧，不允许播放
-    if (currentAnimationFrameCount.value <= 1) {
-      return;
-    }
-
-    isPlaying.value = !isPlaying.value;
-    if (isPlaying.value) {
-      startAutoPlay();
-    } else {
-      stopAutoPlay();
-    }
-  };
-
-  // 获取某一帧元素的动画行为
-  const getElementAnimationAction = (elementId: any, frameIndex: number) => {
-    const actions = currentAnimation.value?.actions;
-    if (!actions) return null;
-    const action = actions.find((a) => a.animationElementId === elementId && a.startFrame === frameIndex - 1);
-    if (!action) return null;
-    return action;
-  };
-
-  const prevFrameElement = (item: FieldElement) => {
-    if (!currentAnimation.value) return null;
-    const frames = currentAnimation.value.frames;
-    if (!frames) return null;
-    const prevFrame = frames[currentFrameIndex.value - 1];
-    if (!prevFrame) return null;
-    return prevFrame.elements.find((el) => el.id === item.id);
-  };
-
-  // 添加自动播放相关的方法
-  const playNextFrame = () => {
-    if (!isPlaying.value || !currentAnimation.value) return;
-
-    const nextFrameIndex = currentFrameIndex.value + 1;
-    if (nextFrameIndex < currentAnimation.value.frames.length) {
-      currentFrameIndex.value = nextFrameIndex;
-    } else {
-      // 到达最后一帧时停止播放
+    // 开启动画
+    const openAnimation = () => {
+      const animation = new Animation("", [{ frameNumber: 0, elements: [] }], []);
+      animations.value.push(animation);
+      currentAnimationId.value = animation.id;
+      isAnimationMode.value = true;
       isPlaying.value = false;
-      currentFrameIndex.value = 0; // 重置到第一帧
-    }
-  };
+      currentAnimation.value = animation;
+    };
 
-  const startAutoPlay = () => {
-    if (playbackTimer) return;
+    // 退出动画
+    const exitAnimation = () => {
+      if (isAnimationMode.value) {
+        isAnimationMode.value = false;
+        currentAnimationId.value = null;
+        currentAnimation.value = null;
+      }
+    };
 
-    // 第0帧没有动画，直接跳到第1帧
-    if (currentFrameIndex.value === 0) {
-      currentFrameIndex.value = 1;
-    }
+    // 切换帧
+    const switchFrame = (frameIndex: number) => {
+      const animationFrames = currentAnimation.value?.frames;
+      if (!animationFrames) return;
+      if (frameIndex >= 0 && frameIndex < animationFrames.length) {
+        currentFrameIndex.value = frameIndex;
+      }
+    };
 
-    playbackTimer = window.setInterval(() => {
-      if (!isPlaying.value) {
-        stopAutoPlay();
+    // 元素位置更新触发函数
+    const updateElementPosition = (id: number | string, x?: number, y?: number) => {
+      const animationFrames = currentAnimation.value?.frames;
+      if (!animationFrames) return;
+      const frame = animationFrames[currentFrameIndex.value];
+      if (!frame) return;
+      const element = frame.elements.find((el) => el.id === id);
+
+      if (element) {
+        element.x = x ?? element.x;
+        element.y = y ?? element.y;
+        // 判断上一帧是否存在元素,存在才能创建动画行为
+        if (
+          currentFrameIndex.value > 0 &&
+          currentAnimation.value?.getElementInFrame(element.id, currentFrameIndex.value - 1)
+        ) {
+          updateAnimationAction(element.id);
+        }
+      }
+    };
+
+    // 添加新元素
+    const addElement = (item: FieldElement) => {
+      const currentAnimationFrames = currentAnimation.value?.frames;
+      if (!currentAnimationFrames) return;
+      const frame = currentAnimationFrames[currentFrameIndex.value];
+      if (!frame) return;
+      frame.elements.push(item.clone());
+    };
+
+    // 生成/更新动画行为
+    const updateAnimationAction = (elementId: any) => {
+      if (currentFrameIndex.value <= 0) return;
+      const currentElement = currentAnimation.value?.getElementInFrame(elementId, currentFrameIndex.value);
+      const prevElement = currentAnimation.value?.getElementInFrame(elementId, currentFrameIndex.value - 1);
+      if (!currentElement || !prevElement) return;
+
+      const controlPoint = getDefaultControlPoint(prevElement.x, prevElement.y, currentElement.x, currentElement.y);
+      // 先查看是否存在动画行为
+      const action = currentAnimation.value?.actions.find(
+        (a) => a.animationElementId === elementId && a.startFrame === currentFrameIndex.value - 1
+      );
+
+      if (action) {
+        action.controlPoint = controlPoint;
+      } else {
+        const newAction: AnimationAction = new AnimationAction(elementId, currentFrameIndex.value - 1, controlPoint);
+        currentAnimation.value?.actions.push(newAction);
+      }
+    };
+    // 添加新帧
+    const addFrame = () => {
+      if (!currentAnimation.value) {
+        return;
+      }
+      const animationFrames = currentAnimation.value?.frames;
+
+      if (!animationFrames) return;
+      const lastFrame = animationFrames[animationFrames.length - 1];
+      // 复制上一帧的元素到新帧
+      const newFrame: AnimationFrame = {
+        frameNumber: currentAnimation.value.frameCount(),
+        elements: lastFrame.elements.map((el) => el.cloneIncludingId()),
+      };
+      animationFrames.push(newFrame);
+      currentFrameIndex.value = animationFrames.length - 1;
+    };
+
+    // 播放控制
+    const togglePlayback = () => {
+      // 如果只有1帧，不允许播放
+      if (currentAnimationFrameCount.value <= 1) {
         return;
       }
 
+      isPlaying.value = !isPlaying.value;
+      if (isPlaying.value) {
+        startAutoPlay();
+      } else {
+        stopAutoPlay();
+      }
+    };
+
+    // 获取某一帧元素的动画行为
+    const getElementAnimationAction = (elementId: any, frameIndex: number) => {
+      const actions = currentAnimation.value?.actions;
+      if (!actions) return null;
+      const action = actions.find((a) => a.animationElementId === elementId && a.startFrame === frameIndex - 1);
+      if (!action) return null;
+      return action;
+    };
+
+    const prevFrameElement = (item: FieldElement) => {
+      if (!currentAnimation.value) return null;
+      const frames = currentAnimation.value.frames;
+      if (!frames) return null;
+      const prevFrame = frames[currentFrameIndex.value - 1];
+      if (!prevFrame) return null;
+      return prevFrame.elements.find((el) => el.id === item.id);
+    };
+
+    // 添加自动播放相关的方法
+    const playNextFrame = () => {
+      if (!isPlaying.value || !currentAnimation.value) return;
+
       const nextFrameIndex = currentFrameIndex.value + 1;
-      if (nextFrameIndex < (currentAnimation.value?.frames.length || 0)) {
+      if (nextFrameIndex < currentAnimation.value.frames.length) {
         currentFrameIndex.value = nextFrameIndex;
       } else {
-        // 循环播放：回到第0帧，然后立即跳到第1帧
-        currentFrameIndex.value = 0;
-        // 确保状态更新后再跳转到第1帧
-        nextTick(() => {
-          if (isPlaying.value) {
-            currentFrameIndex.value = 1;
-          }
-        });
+        // 到达最后一帧时停止播放
+        isPlaying.value = false;
+        currentFrameIndex.value = 0; // 重置到第一帧
       }
-    }, frameTime.value * 1000);
-  };
+    };
 
-  const stopAutoPlay = () => {
-    if (playbackTimer) {
-      clearInterval(playbackTimer);
-      playbackTimer = null;
-    }
-  };
+    const startAutoPlay = () => {
+      if (playbackTimer) return;
 
-  const deleteLastFrame = () => {
-    if (!currentAnimation.value) return;
-    if (currentFrameIndex.value === 0) {
-      currentAnimation.value.frames = [{ frameNumber: 0, elements: [] }];
-    } else {
-      currentAnimation.value.frames.pop();
-    }
-    if (currentFrameIndex.value >= currentAnimation.value.frames.length) {
-      currentFrameIndex.value = currentAnimation.value.frames.length - 1;
-    }
-  };
+      // 第0帧没有动画，直接跳到第1帧
+      if (currentFrameIndex.value === 0) {
+        currentFrameIndex.value = 1;
+      }
 
-  return {
-    // 状态
-    isAnimationMode,
-    currentFrameIndex,
-    animations,
-    currentAnimationId,
-    currentAnimation,
-    isPlaying,
-    frameTime,
+      playbackTimer = window.setInterval(() => {
+        if (!isPlaying.value) {
+          stopAutoPlay();
+          return;
+        }
 
-    // 方法
-    openAnimation,
-    exitAnimation,
-    switchFrame,
-    addFrame,
-    togglePlayback,
-    updateElementPosition,
-    getElementAnimationAction,
-    prevFrameElement,
-    addElement,
-    startAutoPlay,
-    stopAutoPlay,
-    deleteLastFrame,
+        const nextFrameIndex = currentFrameIndex.value + 1;
+        if (nextFrameIndex < (currentAnimation.value?.frames.length || 0)) {
+          currentFrameIndex.value = nextFrameIndex;
+        } else {
+          // 循环播放：回到第0帧，然后立即跳到第1帧
+          currentFrameIndex.value = 0;
+          // 确保状态更新后再跳转到第1帧
+          nextTick(() => {
+            if (isPlaying.value) {
+              currentFrameIndex.value = 1;
+            }
+          });
+        }
+      }, frameTime.value * 1000);
+    };
 
-    // 计算属性
-    haveActionPrevFrameElements,
-    playNextFrame,
-    currentFrameElements,
-    currentFrameElementsIds,
-    currentAnimationFrameCount,
-  };
-});
+    const stopAutoPlay = () => {
+      if (playbackTimer) {
+        clearInterval(playbackTimer);
+        playbackTimer = null;
+      }
+    };
+
+    const deleteLastFrame = () => {
+      if (!currentAnimation.value) return;
+      if (currentFrameIndex.value === 0) {
+        currentAnimation.value.frames = [{ frameNumber: 0, elements: [] }];
+      } else {
+        currentAnimation.value.frames.pop();
+      }
+      if (currentFrameIndex.value >= currentAnimation.value.frames.length) {
+        currentFrameIndex.value = currentAnimation.value.frames.length - 1;
+      }
+    };
+
+    return {
+      // 状态
+      isAnimationMode,
+      currentFrameIndex,
+      animations,
+      currentAnimationId,
+      currentAnimation,
+      isPlaying,
+      frameTime,
+
+      // 方法
+      openAnimation,
+      exitAnimation,
+      switchFrame,
+      addFrame,
+      togglePlayback,
+      updateElementPosition,
+      getElementAnimationAction,
+      prevFrameElement,
+      addElement,
+      startAutoPlay,
+      stopAutoPlay,
+      deleteLastFrame,
+
+      // 计算属性
+      haveActionPrevFrameElements,
+      playNextFrame,
+      currentFrameElements,
+      currentFrameElementsIds,
+      currentAnimationFrameCount,
+    };
+  },
+  {
+    persist: true,
+  }
+);

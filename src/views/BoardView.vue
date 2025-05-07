@@ -25,8 +25,6 @@
         <!-- 球场区域 -->
         <!-- 动态引入球场组件 -->
         <component :is="currentFieldComponent" @touchmove.prevent.stop>
-          <!-- 正在创建的新元素层 -->
-          <g id="drawingLayer"></g>
           <!-- 非动画模式 -->
           <template v-if="!isAnimationMode">
             <g id="drawings" v-if="drawings">
@@ -37,6 +35,8 @@
                 :drawing="drawing"
               />
             </g>
+            <!-- 正在创建的新元素层 -->
+            <g id="drawingLayer"></g>
             <!-- 球员 -->
             <g id="players" v-if="normalItems">
               <ItemComponent v-for="item in normalItems" :key="item.id" :item="item" />

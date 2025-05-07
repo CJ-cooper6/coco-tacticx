@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
   <g :id="`item-${item.id}`" ref="itemRef">
-    <g @pointerdown="handlePointerDown">
+    <g @pointerdown="handlePointerDown" @contextmenu.prevent>
       <!-- 名称 -->
       <text :x="itemPosition.x" :y="itemPosition.y - item.r - 10" text-anchor="middle" class="player-name">
         {{ item.text }}
@@ -167,6 +167,7 @@ const handleDragMove = (x: number, y: number) => {
 };
 
 const handlePointerDown = (event: PointerEvent) => {
+  event.preventDefault();
   itemStore.moveItemToLast(props.item);
   startDrag(props.item, event, { onDragMove: handleDragMove, onClick: handleClickItem });
 };

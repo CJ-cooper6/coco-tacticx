@@ -74,14 +74,15 @@ export function useDraggable() {
         callbacks.onClick();
       }
 
-      svg.removeEventListener("pointermove", handleMoveItem);
-      svg.removeEventListener("pointerup", stopDrag);
-      svg.removeEventListener("pointercancel", stopDrag);
+      document.removeEventListener("pointermove", handleMoveItem);
+      document.removeEventListener("pointerup", stopDrag);
+      document.removeEventListener("pointercancel", stopDrag);
     };
 
-    svg.addEventListener("pointermove", handleMoveItem);
-    svg.addEventListener("pointerup", stopDrag);
-    svg.addEventListener("pointercancel", stopDrag);
+    // 监听整个window的事件
+    document.addEventListener("pointermove", handleMoveItem);
+    document.addEventListener("pointerup", stopDrag);
+    document.addEventListener("pointercancel", stopDrag);
   };
   return {
     startDrag,

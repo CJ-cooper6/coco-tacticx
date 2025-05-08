@@ -56,3 +56,16 @@ export class DrawingCollection {
     return this.drawings;
   }
 }
+
+export interface renderRoughDrawingvaVriable {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+}
+
+export interface renderRoughDrawingConfig {
+  strokeColor: string;
+  backgroundColor: string;
+  size: number;
+}

@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia";
 import { useDrawStore } from "../stores/drawStore";
 import { useGlobalStore } from "../stores/globalStore";
 import { useBoardStore } from "../stores/boardStore";
+import { getRectangleParams, getEllipseParams, getShapeStyle } from "@/utils/drawing";
 
 export function useDrawing() {
   const drawStore = useDrawStore();
@@ -22,60 +23,47 @@ export function useDrawing() {
 
   // 创建临时图形
   const createShape = (type: string, endX: number, endY: number) => {
-    if (!drawingLayer.value || !roughSvg.value) return null;
-    const strokeColor = drawingConfig.value.strokeColor;
-    const backgroundColor = drawingConfig.value.backgroundColor;
+    if (!drawingLayer.value || !roughSvg.value) return;
 
-    const size = drawingConfig.value.size;
+    const renderRoughDrawingVriable = {
+      startX,
+      startY,
+      endX,
+      endY,
+    };
+    const styleConfig = {
+      strokeColor: drawingConfig.value.strokeColor,
+      backgroundColor: drawingConfig.value.backgroundColor,
+      size: drawingConfig.value.size,
+    };
+    const shapeStyleConfig = getShapeStyle(styleConfig);
+
+    let roughElement;
     switch (type) {
       case "pen": {
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("d", `M${startX},${startY}`);
-        path.setAttribute("stroke", drawingConfig.value.strokeColor);
-        path.setAttribute("stroke-width", drawingConfig.value.size.toString());
+        path.setAttribute("stroke", styleConfig.strokeColor);
+        path.setAttribute("stroke-width", styleConfig.size.toString());
         path.setAttribute("fill", "none");
-        drawingLayer.value?.appendChild(path);
-        return null;
+        roughElement = path;
+        break;
       }
       case "rectangle": {
-        const width = Math.abs(endX - startX);
-        const height = Math.abs(endY - startY);
-        const x = Math.min(startX, endX);
-        const y = Math.min(startY, endY);
-        const roughElement = roughSvg.value.rectangle(x, y, width, height, {
-          roughness: 2,
-          stroke: strokeColor,
-          strokeWidth: size,
-          fill: backgroundColor,
-          fillWeight: 2,
-          hachureGap: 8,
-          seed: 1,
-        });
-        drawingLayer.value.appendChild(roughElement);
-        return roughElement;
+        const { x, y, width, height } = getRectangleParams(renderRoughDrawingVriable);
+        roughElement = roughSvg.value.rectangle(x, y, width, height, shapeStyleConfig);
+        break;
       }
       case "ellipse": {
-        // 椭圆
-        const width = Math.abs(endX - startX);
-        const height = Math.abs(endY - startY);
-        const left = Math.min(startX, endX);
-        const top = Math.min(startY, endY);
-        const x = left + width / 2;
-        const y = top + height / 2;
-        const roughElement = roughSvg.value.ellipse(x, y, width, height, {
-          roughness: 2,
-          stroke: strokeColor,
-          strokeWidth: size,
-          fill: backgroundColor,
-          fillWeight: 2,
-          hachureGap: 8,
-          seed: 1,
-        });
-        drawingLayer.value.appendChild(roughElement);
-        return roughElement;
+        const { centerX, centerY, width, height } = getEllipseParams(renderRoughDrawingVriable);
+        roughElement = roughSvg.value.ellipse(centerX, centerY, width, height, shapeStyleConfig);
+        break;
       }
       default:
-        return null;
+        break;
+    }
+    if (roughElement) {
+      drawingLayer.value.appendChild(roughElement);
     }
   };
 

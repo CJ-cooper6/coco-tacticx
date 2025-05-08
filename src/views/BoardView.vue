@@ -28,12 +28,7 @@
           <!-- 非动画模式 -->
           <template v-if="!isAnimationMode">
             <g id="drawings" v-if="drawings">
-              <component
-                v-for="drawing in drawings.getDrawings()"
-                :key="drawing.id"
-                :is="getDrawingComponent(drawing.drawingType)"
-                :drawing="drawing"
-              />
+              <Drawing v-for="drawing in drawings.getDrawings()" :key="drawing.id" :drawing="drawing" />
             </g>
             <!-- 正在创建的新元素层 -->
             <g id="drawingLayer"></g>
@@ -106,10 +101,8 @@ import ItemComponent from "@/components/Item.vue";
 import ToolsPanel from "@/components/ToolsPanel.vue";
 import DragToolsPanel from "@/components/DragToolsPanel.vue";
 import FootballField from "@/components/fields/FootballField.vue";
-import RectangleComponent from "@/components/drawings/Rectangle.vue";
-import EllipseComponent from "@/components/drawings/Ellipse.vue";
 import Watermark from "@/components/common/Watermark.vue";
-import PenComponent from "@/components/drawings/Pen.vue";
+import Drawing from "@/components/drawings/Drawing.vue";
 
 // Store 导入
 import { useItemStore } from "../stores/itemStore";
@@ -167,20 +160,6 @@ const prevFrameElements = computed(() => {
 });
 
 const showWatermark = GAME_CONSTANTS.showWatermark;
-
-// 工具函数
-const getDrawingComponent = (type: string) => {
-  switch (type) {
-    case "pen":
-      return PenComponent;
-    case "rectangle":
-      return RectangleComponent;
-    case "ellipse":
-      return EllipseComponent;
-    default:
-      return null;
-  }
-};
 
 onMounted(() => {
   if (svgRef.value) {

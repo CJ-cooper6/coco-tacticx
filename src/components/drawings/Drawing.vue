@@ -6,7 +6,7 @@
 import { ref, onMounted, watch } from "vue";
 import rough from "roughjs";
 import type { Drawing } from "@/types/drawing";
-import { getRectangleParams, getEllipseParams, getShapeStyle } from "@/utils/drawing";
+import { renderShape } from "@/utils/drawing";
 
 const props = defineProps<{
   drawing: Drawing;
@@ -34,38 +34,11 @@ const drawShape = () => {
     backgroundColor: props.drawing.backgroundColor || "",
     size: props.drawing.size,
   };
-  const shapeStyleConfig = getShapeStyle(styleConfig);
 
-  let shape;
-  switch (props.drawing.drawingType) {
-    case "ellipse": {
-      const { centerX, centerY, width, height } = getEllipseParams(renderRoughDrawingVriable);
-      shape = rc.ellipse(centerX, centerY, Math.abs(width), Math.abs(height), shapeStyleConfig);
-      break;
-    }
-    case "rectangle": {
-      const { x, y, width, height } = getRectangleParams(renderRoughDrawingVriable);
-      shape = rc.rectangle(x, y, width, height, shapeStyleConfig);
-      break;
-    }
+  const roughElement = renderShape(rc, props.drawing.drawingType, renderRoughDrawingVriable, styleConfig);
 
-    case "line":
-      shape = rc.line(props.drawing.startX, props.drawing.startY, props.drawing.endX, props.drawing.endY, {
-        roughness: 2,
-        stroke: props.drawing.strokeColor,
-        fill: props.drawing.backgroundColor,
-        strokeWidth: props.drawing.size,
-        fillWeight: 2,
-        hachureGap: 8,
-        seed: 1,
-      });
-      break;
-    default:
-      break;
-  }
-
-  if (shape) {
-    container.value.appendChild(shape);
+  if (roughElement) {
+    container.value.appendChild(roughElement);
   }
 };
 

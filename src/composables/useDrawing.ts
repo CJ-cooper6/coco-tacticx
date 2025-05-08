@@ -3,7 +3,7 @@ import { storeToRefs } from "pinia";
 import { useDrawStore } from "../stores/drawStore";
 import { useGlobalStore } from "../stores/globalStore";
 import { useBoardStore } from "../stores/boardStore";
-import { getRectangleParams, getEllipseParams, getShapeStyle } from "@/utils/drawing";
+import { renderShape } from "@/utils/drawing";
 
 export function useDrawing() {
   const drawStore = useDrawStore();
@@ -36,32 +36,9 @@ export function useDrawing() {
       backgroundColor: drawingConfig.value.backgroundColor,
       size: drawingConfig.value.size,
     };
-    const shapeStyleConfig = getShapeStyle(styleConfig);
 
-    let roughElement;
-    switch (type) {
-      case "pen": {
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", `M${startX},${startY}`);
-        path.setAttribute("stroke", styleConfig.strokeColor);
-        path.setAttribute("stroke-width", styleConfig.size.toString());
-        path.setAttribute("fill", "none");
-        roughElement = path;
-        break;
-      }
-      case "rectangle": {
-        const { x, y, width, height } = getRectangleParams(renderRoughDrawingVriable);
-        roughElement = roughSvg.value.rectangle(x, y, width, height, shapeStyleConfig);
-        break;
-      }
-      case "ellipse": {
-        const { centerX, centerY, width, height } = getEllipseParams(renderRoughDrawingVriable);
-        roughElement = roughSvg.value.ellipse(centerX, centerY, width, height, shapeStyleConfig);
-        break;
-      }
-      default:
-        break;
-    }
+    const roughElement = renderShape(roughSvg.value, type, renderRoughDrawingVriable, styleConfig);
+
     if (roughElement) {
       drawingLayer.value.appendChild(roughElement);
     }

@@ -23,7 +23,7 @@ const drawStore = useDrawStore();
 
 const { drawingConfig } = storeToRefs(drawStore);
 
-const shapes = ["pen", "rectangle", "ellipse"];
+const shapes = ["pen", "line", "arrow", "rectangle", "ellipse"];
 
 const emit = defineEmits(["changedShape"]);
 
@@ -44,6 +44,7 @@ const chooseShape = (shape: string) => {
     flex-wrap: wrap;
     justify-content: space-around;
     width: 100%;
+    gap: 0.5rem;
   }
 
   .shape-item {

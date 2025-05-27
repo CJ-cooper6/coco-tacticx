@@ -27,6 +27,7 @@ const drawShape = () => {
     startY: props.drawing.startY,
     endX: props.drawing.endX,
     endY: props.drawing.endY,
+    pathPoints: props.drawing.pathPoints,
   };
 
   const styleConfig = {

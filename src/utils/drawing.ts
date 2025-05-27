@@ -78,6 +78,11 @@ export function renderShape(
       return renderArrow(rc, vriable, styleConfig);
     case "line":
       return rc.line(vriable.startX, vriable.startY, vriable.endX, vriable.endY, style);
+    case "pen": {
+      if (!vriable.pathPoints || vriable.pathPoints.length < 2) return null;
+      // 使用 rough.js 的 linearPath 方法连接点
+      return rc.linearPath(vriable.pathPoints, style);
+    }
     default:
       return null;
   }

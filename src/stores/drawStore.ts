@@ -19,29 +19,27 @@ export const useDrawStore = defineStore(
       currentTool.value = tool;
     };
 
-    const createDrawing = (tool: string, startX: number, startY: number, endX: number, endY: number) => {
+    const createDrawing = (
+      tool: string,
+      startX: number,
+      startY: number,
+      endX: number,
+      endY: number,
+      pathPoints: [number, number][]
+    ) => {
       let newDrawing = null;
-      if (tool === "shape") {
-        newDrawing = new Drawing({
-          drawingType: drawingConfig.value.type,
-          startX,
-          startY,
-          endX,
-          endY,
-          state: "saved",
-          strokeColor: drawingConfig.value.strokeColor,
-          backgroundColor: drawingConfig.value.backgroundColor,
-          size: drawingConfig.value.size,
-        });
-      }
-      if (newDrawing !== null && drawingConfig.value.type === "pen") {
-        const drawingLayer = document.getElementById("drawingLayer");
-        const penElement = drawingLayer?.lastChild as SVGPathElement;
-        const path = penElement.getAttribute("d");
-        if (path !== null) {
-          newDrawing.pathData = path;
-        }
-      }
+      newDrawing = new Drawing({
+        drawingType: drawingConfig.value.type,
+        startX,
+        startY,
+        endX,
+        endY,
+        state: "saved",
+        strokeColor: drawingConfig.value.strokeColor,
+        backgroundColor: drawingConfig.value.backgroundColor,
+        size: drawingConfig.value.size,
+        pathPoints,
+      });
       if (newDrawing !== null) {
         drawings.value.add(newDrawing);
       }

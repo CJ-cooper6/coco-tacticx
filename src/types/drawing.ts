@@ -12,7 +12,7 @@ interface IDrawingProps extends IBaseElementProps {
   strokeColor?: string; // 描边颜色
   backgroundColor?: string; // 背景颜色
   size: number;
-  pathData?: string; // 绘画路径数据
+  pathPoints?: [number, number][]; // 绘画路径数据
   drawingType: string; // 绘画图案类型
 }
 
@@ -24,7 +24,7 @@ export class Drawing extends BaseElement implements IDrawingProps {
   strokeColor?: string; // 描边颜色
   backgroundColor?: string; // 背景颜色
   size: number;
-  pathData?: string; // 绘画路径数据
+  pathPoints?: [number, number][]; // 绘画路径数据
   drawingType: string; // 绘画图案类型
 
   constructor(props: Partial<IDrawingProps> = {}) {
@@ -36,7 +36,7 @@ export class Drawing extends BaseElement implements IDrawingProps {
     this.strokeColor = props.strokeColor;
     this.backgroundColor = props.backgroundColor;
     this.size = props.size || DEFAULT_TOOL_CONFIG.SHAPES.size;
-    this.pathData = props.pathData;
+    this.pathPoints = props.pathPoints;
     this.drawingType = props.drawingType || DEFAULT_TOOL_CONFIG.SHAPES.shape;
   }
 }
@@ -62,6 +62,7 @@ export interface renderRoughDrawingvaVriable {
   startY: number;
   endX: number;
   endY: number;
+  pathPoints?: [number, number][];
 }
 
 export interface renderRoughDrawingConfig {

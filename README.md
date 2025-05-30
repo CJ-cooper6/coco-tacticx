@@ -5,9 +5,9 @@ Coco战术板是一款开源的足球战术板工具，旨在帮助用户进行�
 ### 本地运行
 
 ```bash
-npm install
+yarn install
 
-npm run dev
+yarn dev
 ```
 
 访问 https://localhost:5173

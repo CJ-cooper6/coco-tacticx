@@ -75,13 +75,12 @@ const boardStore = useBoardStore();
 
 // 方法可以直接解构
 const { addElement, removeDraggingNewItem, setDraggingNewItem } = itemStore;
-const { setCurrentTool } = drawStore;
+const { setCurrentTool } = globalStore;
 
 // 使用 storeToRefs 保持响应性
 const { newDraggingItem } = storeToRefs(itemStore);
 const { isAnimationMode } = storeToRefs(animationStore);
-const { orientation } = storeToRefs(globalStore);
-const { currentTool } = storeToRefs(drawStore);
+const { orientation, currentTool } = storeToRefs(globalStore);
 
 const toolItemNumbers = ref([0, 0, 0, 0, 0, 0]);
 const toolItems = computed(() => {

@@ -54,10 +54,10 @@ import { useGlobalStore } from "@/stores/globalStore";
 const drawStore = useDrawStore();
 const globalStore = useGlobalStore();
 
-const { setCurrentTool } = drawStore;
+const { setCurrentTool } = globalStore;
 
-const { currentTool, drawingConfig } = storeToRefs(drawStore);
-const { orientation } = storeToRefs(globalStore);
+const { drawingConfig } = storeToRefs(drawStore);
+const { orientation, currentTool } = storeToRefs(globalStore);
 
 const popoverVisible = ref(false);
 

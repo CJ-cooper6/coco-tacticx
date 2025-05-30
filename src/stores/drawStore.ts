@@ -6,7 +6,6 @@ import { DEFAULT_TOOL_CONFIG } from "@/constants";
 export const useDrawStore = defineStore(
   "draw",
   () => {
-    const currentTool = ref("select");
     const drawings = ref(new DrawingCollection());
     const drawingConfig = ref({
       strokeColor: DEFAULT_TOOL_CONFIG.SHAPES.strokeColor,
@@ -14,10 +13,6 @@ export const useDrawStore = defineStore(
       size: DEFAULT_TOOL_CONFIG.SHAPES.size,
       type: DEFAULT_TOOL_CONFIG.SHAPES.shape,
     });
-
-    const setCurrentTool = (tool: string) => {
-      currentTool.value = tool;
-    };
 
     const createDrawing = (
       tool: string,
@@ -50,8 +45,6 @@ export const useDrawStore = defineStore(
     };
 
     return {
-      currentTool,
-      setCurrentTool,
       drawings,
       drawingConfig,
       createDrawing,
@@ -60,6 +53,7 @@ export const useDrawStore = defineStore(
   },
   {
     persist: {
+      pick: ["drawings"],
       // https://prazdevs.github.io/pinia-plugin-persistedstate/zh/guide/limitations.html
       afterHydrate: (ctx) => {
         if (ctx.store.drawings) {

@@ -280,6 +280,7 @@ export const useAnimationStore = defineStore(
   },
   {
     persist: {
+      omit: ["isAnimationMode", "isPlaying"],
       // https://prazdevs.github.io/pinia-plugin-persistedstate/zh/guide/limitations.html
       afterHydrate: (ctx) => {
         // 通用反序列化函数

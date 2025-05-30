@@ -146,16 +146,15 @@ const boardStore = useBoardStore();
 const drawStore = useDrawStore();
 const animationStore = useAnimationStore();
 // 方法可以直接解构
-const { toggleFullscreen } = globalStore;
+const { toggleFullscreen, setCurrentTool } = globalStore;
 const { clearElements } = itemStore;
-const { setCurrentTool, clearDrawings } = drawStore;
+const { clearDrawings } = drawStore;
 const { isAnimationMode, currentFrameIndex, isPlaying, currentAnimationFrameCount } = storeToRefs(animationStore);
 const { openAnimation, exitAnimation, switchFrame, togglePlayback } = animationStore;
 
 // 使用 storeToRefs 保持响应性
-const { isFullscreen } = storeToRefs(globalStore);
+const { isFullscreen, currentTool } = storeToRefs(globalStore);
 const { boardArea } = storeToRefs(boardStore);
-const { currentTool } = storeToRefs(drawStore);
 
 const frameInput = ref(1);
 frameInput.value = currentFrameIndex.value + 1;

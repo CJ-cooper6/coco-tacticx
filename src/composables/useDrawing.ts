@@ -11,8 +11,8 @@ export function useDrawing() {
   const boardStore = useBoardStore();
 
   const { svgElement, roughSvg, drawingLayer } = storeToRefs(boardStore);
-  const { isDrawing } = storeToRefs(globalStore);
-  const { currentTool, drawingConfig } = storeToRefs(drawStore);
+  const { isDrawing, currentTool } = storeToRefs(globalStore);
+  const { drawingConfig } = storeToRefs(drawStore);
   const { createDrawing } = drawStore;
   const { setDrawStatus } = globalStore;
   const { isOutOfBoardArea, getSvgPosition } = boardStore;

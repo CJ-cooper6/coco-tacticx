@@ -36,7 +36,7 @@
           <div
             class="icon-button"
             title="选择"
-            :class="{ select: currentTool === 'select' }"
+            :class="{ 'is-active': currentTool === 'select' }"
             @click="setCurrentTool('select')"
           >
             <GradientSvgIcon
@@ -64,13 +64,11 @@ import { useGlobalStore } from "../stores/globalStore";
 import { gradientColor } from "../constants";
 import GradientSvgIcon from "./common/GradientSvgIcon.vue";
 import Shape from "./drawings/Shape.vue";
-import { useDrawStore } from "../stores/drawStore";
 import { useBoardStore } from "../stores/boardStore";
 
 const itemStore = useItemStore();
 const animationStore = useAnimationStore();
 const globalStore = useGlobalStore();
-const drawStore = useDrawStore();
 const boardStore = useBoardStore();
 
 // 方法可以直接解构

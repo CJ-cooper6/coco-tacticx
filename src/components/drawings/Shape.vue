@@ -6,7 +6,7 @@
           class="icon-button"
           ref="buttonRef"
           title="绘制图形"
-          :class="{ select: currentTool === 'shape' }"
+          :class="{ 'is-active': currentTool === 'shape' }"
           @click="handleClick()"
         >
           <GradientSvgIcon

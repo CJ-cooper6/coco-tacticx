@@ -146,14 +146,14 @@ const boardStore = useBoardStore();
 const drawStore = useDrawStore();
 const animationStore = useAnimationStore();
 // 方法可以直接解构
-const { toggleFullscreen, setCurrentTool } = globalStore;
+const { toggleFullscreen } = globalStore;
 const { clearElements } = itemStore;
 const { clearDrawings } = drawStore;
 const { isAnimationMode, currentFrameIndex, isPlaying, currentAnimationFrameCount } = storeToRefs(animationStore);
 const { openAnimation, exitAnimation, switchFrame, togglePlayback } = animationStore;
 
 // 使用 storeToRefs 保持响应性
-const { isFullscreen, currentTool } = storeToRefs(globalStore);
+const { isFullscreen } = storeToRefs(globalStore);
 const { boardArea } = storeToRefs(boardStore);
 
 const frameInput = ref(1);
@@ -378,8 +378,8 @@ circle {
     5px 7px 8px rgba(0, 0, 0, 0.09),
     1px 2px 4px rgba(0, 0, 0, 0.1);
 
-  &:hover,
-  &.select {
+  &.is-active,
+  &:hover {
     background: #c2f4f2;
   }
 }

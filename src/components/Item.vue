@@ -1,60 +1,84 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
   <g :id="`item-${item.id}`" ref="itemRef">
-    <g @pointerdown="handlePointerDown" @contextmenu.prevent>
-      <!-- 名称 -->
-      <text :x="itemPosition.x" :y="itemPosition.y - item.r - 10" text-anchor="middle" class="player-name">
-        {{ item.text }}
-      </text>
-      <!-- 位置 -->
-      <text :x="itemPosition.x" :y="itemPosition.y + item.r + 23" text-anchor="middle" class="player-position">
-        {{ item.playerPosition }}
-      </text>
+    <g v-if="item.elementType === 'player'">
+      <g @pointerdown="handlePointerDown" @contextmenu.prevent>
+        <!-- 名称 -->
+        <text :x="itemPosition.x" :y="itemPosition.y - item.r - 10" text-anchor="middle" class="player-name">
+          {{ item.text }}
+        </text>
+        <!-- 位置 -->
+        <text :x="itemPosition.x" :y="itemPosition.y + item.r + 23" text-anchor="middle" class="player-position">
+          {{ item.playerPosition }}
+        </text>
 
-      <circle
-        ref="circleRef"
-        :cx="itemPosition.x"
-        :cy="itemPosition.y"
-        :r="item.r"
-        :fill="item.color"
-        :stroke="itemStore.numberColor(item)"
-        stroke-width="4"
-      ></circle>
+        <circle
+          ref="circleRef"
+          :cx="itemPosition.x"
+          :cy="itemPosition.y"
+          :r="item.r"
+          :fill="item.color"
+          :stroke="itemStore.numberColor(item)"
+          stroke-width="4"
+        ></circle>
 
-      <!-- 号码 -->
-      <text
-        :x="itemPosition.x"
-        :y="itemPosition.y"
-        text-anchor="middle"
-        dominant-baseline="central"
-        class="player-number"
-        :style="{ fill: itemStore.numberColor(item) }"
-        pointer-events="none"
-      >
-        {{ item.number }}
-      </text>
-    </g>
+        <!-- 号码 -->
+        <text
+          :x="itemPosition.x"
+          :y="itemPosition.y"
+          text-anchor="middle"
+          dominant-baseline="central"
+          class="player-number"
+          :style="{ fill: itemStore.numberColor(item) }"
+          pointer-events="none"
+        >
+          {{ item.number }}
+        </text>
+      </g>
 
-    <!-- 弹窗 -->
-    <foreignObject class="popup" ref="popupRef" :x="popupX" :y="popupY" width="200" height="260" v-if="showPopup">
-      <div xmlns="http://www.w3.org/1999/xhtml" class="popup-content">
-        <div class="popup-body">
-          <div class="input-group">
-            <input type="text" placeholder="号码" v-model="item.number" maxlength="2" />
+      <!-- 弹窗 -->
+      <foreignObject class="popup" ref="popupRef" :x="popupX" :y="popupY" width="200" height="260" v-if="showPopup">
+        <div xmlns="http://www.w3.org/1999/xhtml" class="popup-content">
+          <div class="popup-body">
+            <div class="input-group">
+              <input type="text" placeholder="号码" v-model="item.number" maxlength="2" />
+            </div>
+            <div class="input-group">
+              <input type="text" placeholder="名称" v-model="item.text" />
+            </div>
+            <div class="input-group">
+              <input type="text" placeholder="位置" v-model="item.playerPosition" />
+            </div>
+            <div class="input-group color">
+              <input type="color" v-model="item.color" @pointerdown.stop />
+            </div>
+            <button class="delete-btn" v-if="item.id" @pointerdown="itemStore.deleteElement(item.id)">删除球员</button>
           </div>
-          <div class="input-group">
-            <input type="text" placeholder="名称" v-model="item.text" />
-          </div>
-          <div class="input-group">
-            <input type="text" placeholder="位置" v-model="item.playerPosition" />
-          </div>
-          <div class="input-group color">
-            <input type="color" v-model="item.color" @pointerdown.stop />
-          </div>
-          <button class="delete-btn" v-if="item.id" @pointerdown="itemStore.deleteElement(item.id)">删除球员</button>
         </div>
-      </div>
-    </foreignObject>
+      </foreignObject>
+    </g>
+    <g v-else>
+      <!-- 足球 -->
+      <!-- 扩大操作热区 -->
+      <circle
+        :cx="item.x"
+        :cy="item.y"
+        :r="ELEMENT_RADIUS_OBJECT.player"
+        fill="transparent"
+        stroke="transparent"
+        @pointerdown="handlePointerDown"
+        @contextmenu.prevent
+      />
+      <!-- 保持视觉尺寸 -->
+      <image
+        :x="item.x - ELEMENT_RADIUS_OBJECT.ball"
+        :y="item.y - ELEMENT_RADIUS_OBJECT.ball"
+        :width="ELEMENT_RADIUS_OBJECT.ball * 2"
+        :height="ELEMENT_RADIUS_OBJECT.ball * 2"
+        :href="ballSvg"
+        pointer-events="none"
+      />
+    </g>
 
     <!-- 动画 -->
     <animateMotion
@@ -78,6 +102,8 @@ import { useClickOutside } from "../composables/useClickOutside";
 import { getCatmullRomPath } from "../utils/path";
 import { useItemStore } from "../stores/itemStore";
 import { useDraggable } from "../composables/useDraggable";
+import ballSvg from "@/assets/icons/ball.svg";
+import { ELEMENT_RADIUS_OBJECT } from "../constants";
 
 const props = defineProps({
   item: {
@@ -173,6 +199,9 @@ const handlePointerDown = (event: PointerEvent) => {
 };
 
 const handleClickItem = () => {
+  if (props.item.elementType !== "player") {
+    return;
+  }
   showPopup.value = !showPopup.value;
   nextTick(() => {
     if (showPopup.value) {

@@ -44,7 +44,7 @@ export function useDraggable() {
       }
 
       const svgPoint = boardStore.getSvgPosition(moveEvent);
-      const { x, y } = boardStore.clampPosition(svgPoint.x, svgPoint.y);
+      const { x, y } = boardStore.clampPosition(svgPoint.x, svgPoint.y, item.elementType);
 
       if (item.id !== undefined) {
         if (isAnimationMode.value) {

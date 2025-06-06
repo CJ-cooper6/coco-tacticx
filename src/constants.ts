@@ -1,7 +1,13 @@
+import type { ElementType } from "@/types/fieldElement";
+
 export const GAME_CONSTANTS = {
-  DefaultItemRadius: 24, // 默认球员半径
   showWatermark: true, // 是否显示水印
   showWatermarkText: "Coco战术板 - www.cocotactic.cn", // 水印文本
+};
+
+export const ELEMENT_RADIUS_OBJECT: Record<ElementType, number> = {
+  player: 24, // 球员
+  ball: 13, // 足球
 };
 
 // 图标渐变色

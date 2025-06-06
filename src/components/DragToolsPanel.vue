@@ -1,28 +1,40 @@
 <template>
   <g class="tools-panel">
     <g v-for="(item, index) in toolItems" :key="`tool-item-${item.id}`">
-      <circle
-        :cx="item.x"
-        :cy="item.y"
-        :r="item.r"
-        :fill="item.color"
-        :key="`tool-item-${item.id}`"
-        :stroke="itemStore.numberColor(item)"
-        stroke-width="4"
-        @pointerdown="startDragNewItem(item.color, $event, index)"
-      />
-      <!-- 号码 -->
-      <text
-        :x="item.x"
-        :y="item.y"
-        text-anchor="middle"
-        dominant-baseline="central"
-        class="player-number"
-        :style="{ fill: itemStore.numberColor(item) }"
-        pointer-events="none"
-      >
-        {{ item.number }}
-      </text>
+      <g v-if="item.elementType === 'player'">
+        <circle
+          :cx="item.x"
+          :cy="item.y"
+          :r="item.r"
+          :fill="item.color"
+          :key="`tool-item-${item.id}`"
+          :stroke="itemStore.numberColor(item)"
+          stroke-width="4"
+          @pointerdown="startDragNewItem(item, $event, index)"
+        />
+        <!-- 号码 -->
+        <text
+          :x="item.x"
+          :y="item.y"
+          text-anchor="middle"
+          dominant-baseline="central"
+          class="player-number"
+          :style="{ fill: itemStore.numberColor(item) }"
+          pointer-events="none"
+        >
+          {{ item.number }}
+        </text>
+      </g>
+      <g v-else>
+        <image
+          :x="item.x - ELEMENT_RADIUS_OBJECT.ball"
+          :y="item.y - ELEMENT_RADIUS_OBJECT.ball"
+          :width="ELEMENT_RADIUS_OBJECT.ball * 2"
+          :height="ELEMENT_RADIUS_OBJECT.ball * 2"
+          :href="ballSvg"
+          @pointerdown="startDragNewItem(item, $event, index)"
+        />
+      </g>
     </g>
     <foreignObject
       :x="toolsPanelPosition.x"
@@ -61,10 +73,11 @@ import { useItemStore } from "../stores/itemStore";
 import { FieldElement } from "../types/fieldElement";
 import { useAnimationStore } from "../stores/animationStore";
 import { useGlobalStore } from "../stores/globalStore";
-import { gradientColor } from "../constants";
+import { gradientColor, ELEMENT_RADIUS_OBJECT } from "../constants";
 import GradientSvgIcon from "./common/GradientSvgIcon.vue";
 import Shape from "./drawings/Shape.vue";
 import { useBoardStore } from "../stores/boardStore";
+import ballSvg from "@/assets/icons/ball.svg";
 
 const itemStore = useItemStore();
 const animationStore = useAnimationStore();
@@ -84,21 +97,23 @@ const toolItemNumbers = ref([0, 0, 0, 0, 0, 0]);
 const toolItems = computed(() => {
   if (orientation.value === "landscape") {
     return [
-      new FieldElement({ color: "#eb281e", x: -50, y: 80, number: toolItemNumbers.value[0] }),
-      new FieldElement({ color: "#853ee5", x: -50, y: 150, number: toolItemNumbers.value[1] }),
-      new FieldElement({ color: "#2495ff", x: -50, y: 220, number: toolItemNumbers.value[2] }),
-      new FieldElement({ color: "#fffd55", x: -50, y: 290, number: toolItemNumbers.value[3] }),
-      new FieldElement({ color: "#ffffff", x: -50, y: 360, number: toolItemNumbers.value[4] }),
-      new FieldElement({ color: "#000000", x: -50, y: 430, number: toolItemNumbers.value[5] }),
+      new FieldElement({ color: "#eb281e", x: -50, y: 80, number: toolItemNumbers.value[0], elementType: "player" }),
+      new FieldElement({ color: "#853ee5", x: -50, y: 150, number: toolItemNumbers.value[1], elementType: "player" }),
+      new FieldElement({ color: "#2495ff", x: -50, y: 220, number: toolItemNumbers.value[2], elementType: "player" }),
+      new FieldElement({ color: "#fffd55", x: -50, y: 290, number: toolItemNumbers.value[3], elementType: "player" }),
+      new FieldElement({ color: "#ffffff", x: -50, y: 360, number: toolItemNumbers.value[4], elementType: "player" }),
+      new FieldElement({ color: "#000000", x: -50, y: 430, number: toolItemNumbers.value[5], elementType: "player" }),
+      new FieldElement({ x: -50, y: 500, elementType: "ball" }),
     ];
   }
   return [
-    new FieldElement({ color: "#eb281e", x: 150, y: 870, number: toolItemNumbers.value[0] }),
-    new FieldElement({ color: "#853ee5", x: 220, y: 870, number: toolItemNumbers.value[1] }),
-    new FieldElement({ color: "#2495ff", x: 290, y: 870, number: toolItemNumbers.value[2] }),
-    new FieldElement({ color: "#fffd55", x: 360, y: 870, number: toolItemNumbers.value[3] }),
-    new FieldElement({ color: "#ffffff", x: 430, y: 870, number: toolItemNumbers.value[4] }),
-    new FieldElement({ color: "#000000", x: 500, y: 870, number: toolItemNumbers.value[5] }),
+    new FieldElement({ color: "#eb281e", x: 150, y: 870, number: toolItemNumbers.value[0], elementType: "player" }),
+    new FieldElement({ color: "#853ee5", x: 220, y: 870, number: toolItemNumbers.value[1], elementType: "player" }),
+    new FieldElement({ color: "#2495ff", x: 290, y: 870, number: toolItemNumbers.value[2], elementType: "player" }),
+    new FieldElement({ color: "#fffd55", x: 360, y: 870, number: toolItemNumbers.value[3], elementType: "player" }),
+    new FieldElement({ color: "#ffffff", x: 430, y: 870, number: toolItemNumbers.value[4], elementType: "player" }),
+    new FieldElement({ color: "#000000", x: 500, y: 870, number: toolItemNumbers.value[5], elementType: "player" }),
+    new FieldElement({ x: 570, y: 870, elementType: "ball" }),
   ];
 });
 
@@ -109,7 +124,7 @@ const toolsPanelPosition = computed(() => {
   return { x: 950, y: 820, width: 800, height: 100 };
 });
 
-const startDragNewItem = (color: string, event: PointerEvent, index: number) => {
+const startDragNewItem = (item: FieldElement, event: PointerEvent, index: number) => {
   // @ts-ignore
   const svg = document.getElementById("field") as SVGSVGElement;
   if (!svg) return;
@@ -118,19 +133,26 @@ const startDragNewItem = (color: string, event: PointerEvent, index: number) => 
   const elementNumber = toolItemNumbers.value[index];
   setDraggingNewItem(
     new FieldElement({
-      color,
+      color: item.color,
       x: svgPoint.x,
       y: svgPoint.y,
       number: elementNumber,
       isDragging: true,
       state: "temporary",
+      elementType: item.elementType,
     })
   );
 
   const stopDrag = (moveEvent: PointerEvent) => {
     const { x, y } = boardStore.getSvgPosition(moveEvent);
-    if (!boardStore.isOutOfBoardArea(moveEvent)) {
-      const element = new FieldElement({ color, x, y, number: elementNumber });
+    if (!boardStore.isOutOfBoardArea(moveEvent, ELEMENT_RADIUS_OBJECT[item.elementType])) {
+      const element = new FieldElement({
+        color: item.color,
+        x,
+        y,
+        number: elementNumber,
+        elementType: item.elementType,
+      });
       if (isAnimationMode.value) {
         element.creationMode = "animation";
         animationStore.addElement(element);
@@ -182,6 +204,10 @@ const startDragNewItem = (color: string, event: PointerEvent, index: number) => 
 .select-icon {
   width: 35px;
   height: 35px;
+}
+
+image {
+  cursor: pointer;
 }
 </style>
 

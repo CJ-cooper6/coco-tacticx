@@ -2,7 +2,8 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import rough from "roughjs";
-import { GAME_CONSTANTS } from "../constants";
+import { ELEMENT_RADIUS_OBJECT } from "../constants";
+import type { ElementType } from "@/types/fieldElement";
 
 interface BBox {
   left: number;
@@ -103,13 +104,13 @@ export const useBoardStore = defineStore("board", () => {
 
   const isOutOfBoardArea = (e: PointerEvent, elementRadius?: number) => {
     if (!boardAreaBBox.value) return true;
-    const radius = elementRadius ?? GAME_CONSTANTS.DefaultItemRadius;
+    const radius = elementRadius ?? ELEMENT_RADIUS_OBJECT.player;
     return isOutOfArea(e, boardAreaBBox.value, radius);
   };
 
-  // 限制球员的移动在战术板内
-  const clampPosition = (x: number, y: number) => {
-    const bounds = calculateBounds(boardAreaBBox.value, GAME_CONSTANTS.DefaultItemRadius);
+  // 限制元素的移动在战术板内
+  const clampPosition = (x: number, y: number, elementType: ElementType) => {
+    const bounds = calculateBounds(boardAreaBBox.value, ELEMENT_RADIUS_OBJECT[elementType]);
     if (!bounds) {
       return { x, y };
     }

@@ -1,13 +1,15 @@
 /* eslint-disable lines-between-class-members */
-import { GAME_CONSTANTS } from "@/constants";
+import { ELEMENT_RADIUS_OBJECT } from "@/constants";
 import type { IBaseElementProps } from "./base";
 import { BaseElement } from "./base";
+
+export type ElementType = "player" | "ball"; // 球员 player  球 ball
 
 // 球场元素
 interface IFieldElementProps extends IBaseElementProps {
   r: number;
   text: string;
-  elementType: string; // 1.球员 player  2.球 ball
+  elementType: ElementType;
   number?: number;
   playerPosition?: string; // 球员场上位置
 }
@@ -15,13 +17,13 @@ interface IFieldElementProps extends IBaseElementProps {
 export class FieldElement extends BaseElement implements IFieldElementProps {
   r: number;
   text: string;
-  elementType: string;
+  elementType: ElementType;
   number?: number;
   playerPosition?: string;
 
   constructor(props: Partial<IFieldElementProps> = {}) {
     super(props);
-    this.r = props.r || GAME_CONSTANTS.DefaultItemRadius;
+    this.r = props.r || ELEMENT_RADIUS_OBJECT[props.elementType || "player"];
     this.text = props.text || "";
     this.elementType = props.elementType || "player";
     this.number = props.number;

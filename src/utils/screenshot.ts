@@ -12,6 +12,19 @@ export const captureScreenshot = async (area: SVGElement) => {
 
   // 克隆 area 内容并添加到新的 SVG 中
   const clonedContent = area.cloneNode(true) as SVGElement;
+
+  // 修复 image 标签的 href 属性，确保内容被直接包含在截图生成的 SVG 中
+  const images = clonedContent.querySelectorAll("image");
+  await Promise.all(
+    Array.from(images).map(async (img) => {
+      const href = img.getAttribute("href");
+      if (href && href.endsWith(".svg")) {
+        const svgContent = await fetch(href).then((res) => res.text());
+        img.setAttribute("href", `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgContent)))}`);
+      }
+    })
+  );
+
   newSvg.appendChild(clonedContent);
 
   // 将样式内联到克隆的 SVG 内容中

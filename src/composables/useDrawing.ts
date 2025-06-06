@@ -24,7 +24,7 @@ export function useDrawing() {
 
   const startDrawing = (e: PointerEvent) => {
     if (!svgElement.value || ["select"].includes(currentTool.value)) return;
-    if (isOutOfBoardArea(e)) return;
+    if (isOutOfBoardArea(e, 0)) return;
     e.preventDefault();
     e.stopPropagation();
     setDrawStatus(true);
@@ -72,7 +72,7 @@ export function useDrawing() {
 
     setDrawStatus(false);
 
-    if (isOutOfBoardArea(event)) {
+    if (isOutOfBoardArea(event, 0)) {
       return;
     }
 

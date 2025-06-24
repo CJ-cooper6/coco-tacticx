@@ -11,7 +11,7 @@ export function useDraggable() {
   const boardStore = useBoardStore();
   let hasDragged = false; // 内部状态，用于判断是否发生了真实拖动
 
-  const { isAnimationMode } = storeToRefs(animationStore);
+  const { isAnimationMode, currentAnimation } = storeToRefs(animationStore);
   const { moveElement } = itemStore;
   const { svgElement } = storeToRefs(boardStore);
 
@@ -33,6 +33,7 @@ export function useDraggable() {
     const dragThreshold = 4; // 拖动阈值
 
     const handleMoveItem = (moveEvent: PointerEvent) => {
+      if (!item.id) return;
       if (!hasDragged) {
         const dx = moveEvent.clientX - startX;
         const dy = moveEvent.clientY - startY;
@@ -40,18 +41,29 @@ export function useDraggable() {
         if (distance <= dragThreshold) return;
 
         hasDragged = true;
-        item.isDragging = true;
+
+        if (isAnimationMode.value) {
+          // 动画模式下更新共享元素池中的 isDragging
+          const animation = currentAnimation.value;
+          if (animation) {
+            const sharedElement = animation.getSharedElement(item.id);
+            if (sharedElement) {
+              sharedElement.isDragging = true;
+            }
+          }
+        } else {
+          // 非动画模式下直接修改 item.isDragging
+          item.isDragging = true;
+        }
       }
 
       const svgPoint = boardStore.getSvgPosition(moveEvent);
       const { x, y } = boardStore.clampPosition(svgPoint.x, svgPoint.y, item.elementType);
 
-      if (item.id !== undefined) {
-        if (isAnimationMode.value) {
-          animationStore.updateElementPosition(item.id, x, y);
-        } else {
-          moveElement(item.id, x, y);
-        }
+      if (isAnimationMode.value) {
+        animationStore.updateElementPosition(item.id, x, y);
+      } else {
+        moveElement(item.id, x, y);
       }
 
       if (callbacks.onDragMove) {
@@ -60,7 +72,18 @@ export function useDraggable() {
     };
 
     const stopDrag = () => {
-      if (item.id !== undefined) {
+      if (!item.id) return;
+      if (isAnimationMode.value) {
+        // 动画模式下更新共享元素池中的 isDragging
+        const animation = currentAnimation.value;
+        if (animation) {
+          const sharedElement = animation.getSharedElement(item.id);
+          if (sharedElement) {
+            sharedElement.isDragging = false;
+          }
+        }
+      } else {
+        // 非动画模式下直接修改 item.isDragging
         item.isDragging = false;
       }
 

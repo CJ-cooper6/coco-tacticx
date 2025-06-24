@@ -30,10 +30,9 @@ export const useAnimationStore = defineStore(
 
       const haveActionsElementIds = haveActionsElements.map((a) => a.animationElementId);
 
-      const animationFrames = currentAnimation.value?.frames;
-      if (!animationFrames || !haveActionsElementIds) return [];
-      const prevFrame = animationFrames[currentFrameIndex.value - 1];
-      return prevFrame.elements.filter((el) => {
+      const prevFrameElements = currentAnimation.value?.getFrameElements(currentFrameIndex.value - 1);
+      if (!prevFrameElements) return false;
+      return prevFrameElements.filter((el) => {
         if (el.id) {
           return haveActionsElementIds.includes(el.id);
         }
@@ -43,10 +42,8 @@ export const useAnimationStore = defineStore(
 
     // 当前帧元素
     const currentFrameElements = computed(() => {
-      const animationFrames = currentAnimation.value?.frames;
-      if (!animationFrames || animationFrames.length <= 0 || currentFrameIndex.value >= animationFrames.length)
-        return [];
-      return animationFrames[currentFrameIndex.value].elements;
+      if (!currentAnimation.value) return [];
+      return currentAnimation.value.getFrameElements(currentFrameIndex.value);
     });
 
     const currentFrameElementsIds = computed(() => currentFrameElements.value.map((el) => el.id));
@@ -84,32 +81,42 @@ export const useAnimationStore = defineStore(
 
     // 元素位置更新触发函数
     const updateElementPosition = (id: number | string, x?: number, y?: number) => {
-      const animationFrames = currentAnimation.value?.frames;
-      if (!animationFrames) return;
-      const frame = animationFrames[currentFrameIndex.value];
+      if (!currentAnimation.value) return;
+      // 获取当前帧
+      const frame = currentAnimation.value.frames[currentFrameIndex.value];
       if (!frame) return;
-      const element = frame.elements.find((el) => el.id === id);
 
-      if (element) {
-        element.x = x ?? element.x;
-        element.y = y ?? element.y;
-        // 判断上一帧是否存在元素,存在才能创建动画行为
-        if (
-          currentFrameIndex.value > 0 &&
-          currentAnimation.value?.getElementInFrame(element.id, currentFrameIndex.value - 1)
-        ) {
-          updateAnimationAction(element.id);
-        }
+      // 查找帧中的元素引用
+      const frameElement = frame.elements.find((el) => el.id === id);
+      if (!frameElement) return;
+
+      frameElement.x = x ?? frameElement.x;
+      frameElement.y = y ?? frameElement.y;
+
+      // 判断上一帧是否存在元素
+      if (
+        currentFrameIndex.value > 0 &&
+        currentAnimation.value.getElementInFrame(frameElement.id!, currentFrameIndex.value - 1)
+      ) {
+        updateAnimationAction(frameElement.id);
       }
     };
 
     // 添加新元素
     const addElement = (item: FieldElement) => {
+      if (!currentAnimation.value) return;
       const currentAnimationFrames = currentAnimation.value?.frames;
       if (!currentAnimationFrames) return;
       const frame = currentAnimationFrames[currentFrameIndex.value];
       if (!frame) return;
-      frame.elements.push(item.clone());
+      // 1. 将元素添加到共享元素池
+      currentAnimation.value.addSharedElement(item.id!, item);
+      // 2. 在帧中添加元素引用（只存储ID和位置）
+      frame.elements.push({
+        id: item.id!,
+        x: item.x,
+        y: item.y,
+      });
     };
 
     // 生成/更新动画行为
@@ -132,6 +139,7 @@ export const useAnimationStore = defineStore(
         currentAnimation.value?.actions.push(newAction);
       }
     };
+
     // 添加新帧
     const addFrame = () => {
       if (!currentAnimation.value) {
@@ -141,10 +149,14 @@ export const useAnimationStore = defineStore(
 
       if (!animationFrames) return;
       const lastFrame = animationFrames[animationFrames.length - 1];
-      // 复制上一帧的元素到新帧
+      // 复制上一帧的元素到新帧，只复制元素引用（ID和位置）
       const newFrame: AnimationFrame = {
         frameNumber: currentAnimation.value.frameCount(),
-        elements: lastFrame.elements.map((el) => el.cloneIncludingId()),
+        elements: lastFrame.elements.map(({ id, x, y }) => ({
+          id,
+          x,
+          y,
+        })),
       };
       animationFrames.push(newFrame);
       currentFrameIndex.value = animationFrames.length - 1;
@@ -176,11 +188,7 @@ export const useAnimationStore = defineStore(
 
     const prevFrameElement = (item: FieldElement) => {
       if (!currentAnimation.value) return null;
-      const frames = currentAnimation.value.frames;
-      if (!frames) return null;
-      const prevFrame = frames[currentFrameIndex.value - 1];
-      if (!prevFrame) return null;
-      return prevFrame.elements.find((el) => el.id === item.id);
+      return currentAnimation.value.getElementInFrame(item.id!, currentFrameIndex.value - 1);
     };
 
     // 添加自动播放相关的方法

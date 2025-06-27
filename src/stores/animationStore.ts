@@ -53,6 +53,14 @@ export const useAnimationStore = defineStore(
 
     // 开启动画
     const openAnimation = () => {
+      if (animations.value.length > 0) {
+        currentAnimationId.value = animations.value[animations.value.length - 1].id;
+        isAnimationMode.value = true;
+        isPlaying.value = false;
+        currentAnimation.value = animations.value[animations.value.length - 1];
+        return;
+      }
+      animations.value = [];
       const animation = new Animation("", [{ frameNumber: 0, elements: [] }], []);
       animations.value.push(animation);
       currentAnimationId.value = animation.id;

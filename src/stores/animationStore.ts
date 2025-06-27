@@ -316,6 +316,8 @@ export const useAnimationStore = defineStore(
         if (ctx.store.currentAnimation) {
           ctx.store.currentAnimation = deserializeAnimation(ctx.store.currentAnimation);
         }
+
+        ctx.store.currentFrameIndex = 0;
       },
     },
   }

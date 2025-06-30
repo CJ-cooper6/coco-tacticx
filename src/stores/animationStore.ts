@@ -4,10 +4,13 @@ import { ref, computed, nextTick } from "vue";
 import { AnimationFrame, AnimationAction, Animation, SharedElementPool } from "../types/animation";
 import { FieldElement } from "../types/fieldElement";
 import { getDefaultControlPoint } from "../utils/index";
+import { useBoardStore } from "./boardStore";
 
 export const useAnimationStore = defineStore(
   "animation",
   () => {
+    const boardStore = useBoardStore();
+
     // 基础状态
     const isAnimationMode = ref(false);
     const animations = ref<Animation[]>([]);
@@ -58,15 +61,16 @@ export const useAnimationStore = defineStore(
         isAnimationMode.value = true;
         isPlaying.value = false;
         currentAnimation.value = animations.value[animations.value.length - 1];
-        return;
+      } else {
+        animations.value = [];
+        const animation = new Animation("", [{ frameNumber: 0, elements: [] }], []);
+        animations.value.push(animation);
+        currentAnimationId.value = animation.id;
+        isAnimationMode.value = true;
+        isPlaying.value = false;
+        currentAnimation.value = animation;
       }
-      animations.value = [];
-      const animation = new Animation("", [{ frameNumber: 0, elements: [] }], []);
-      animations.value.push(animation);
-      currentAnimationId.value = animation.id;
-      isAnimationMode.value = true;
-      isPlaying.value = false;
-      currentAnimation.value = animation;
+      boardStore.resetSvgElement();
     };
 
     // 退出动画
@@ -76,6 +80,7 @@ export const useAnimationStore = defineStore(
         currentAnimationId.value = null;
         currentAnimation.value = null;
       }
+      boardStore.resetSvgElement();
     };
 
     // 切换帧

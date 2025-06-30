@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { ref, computed } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { defineStore } from "pinia";
 import rough from "roughjs";
 import { ELEMENT_RADIUS_OBJECT } from "../constants";
@@ -121,6 +121,14 @@ export const useBoardStore = defineStore("board", () => {
     };
   };
 
+  const resetSvgElement = () => {
+    nextTick(() => {
+      if (svgElement.value) {
+        setSvgElement(svgElement.value);
+      }
+    });
+  };
+
   return {
     boardArea,
     setBoardArea,
@@ -135,5 +143,6 @@ export const useBoardStore = defineStore("board", () => {
     isOutOfArea,
     isOutOfBoardArea,
     clampPosition,
+    resetSvgElement,
   };
 });

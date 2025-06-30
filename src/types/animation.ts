@@ -56,8 +56,22 @@ export class AnimationAction implements IAnimationAction {
 }
 
 // 公共元素池：用于存储所有共享元素，只存一份完整数据，避免每帧重复
-class SharedElementPool {
+export class SharedElementPool {
   private map = new Map<string | number, FieldElement>();
+
+  constructor(initialElements: [string | number, FieldElement][] = []) {
+    initialElements.forEach(([id, element]) => {
+      this.add(id, element);
+    });
+  }
+
+  toJSON() {
+    return Array.from(this.map.entries());
+  }
+
+  static fromJSON(data: any): SharedElementPool {
+    return new SharedElementPool(data.map(([id, element]: [string | number, any]) => [id, new FieldElement(element)]));
+  }
 
   get(id: string | number): FieldElement | null {
     return this.map.get(id) || null;
@@ -82,14 +96,26 @@ export class Animation implements IAnimation {
 
   constructor(
     name: string = "",
-    frames: AnimationFrame[] = [{ frameNumber: 0, elements: [] }],
-    actions: AnimationAction[] = []
+    frames: AnimationFrame[] = [new AnimationFrame(0)],
+    actions: AnimationAction[] = [],
+    sharedElementPool: SharedElementPool = new SharedElementPool()
   ) {
     this.id = nanoid();
     this.name = name;
     this.frames = frames;
     this.actions = actions;
-    this.sharedElementPool = new SharedElementPool();
+    this.sharedElementPool = sharedElementPool;
+  }
+
+  // Pinia 持久化时会自动调用对象的 toJSON 方法
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      frames: this.frames,
+      actions: this.actions,
+      sharedElementPool: this.sharedElementPool.toJSON(),
+    };
   }
 
   // 获取指定帧的完整元素列表（共享元素属性 + 当前帧位置）

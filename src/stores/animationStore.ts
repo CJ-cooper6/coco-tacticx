@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 import { defineStore } from "pinia";
 import { ref, computed, nextTick } from "vue";
-import { AnimationFrame, AnimationAction, Animation } from "../types/animation";
+import { AnimationFrame, AnimationAction, Animation, SharedElementPool } from "../types/animation";
 import { FieldElement } from "../types/fieldElement";
 import { getDefaultControlPoint } from "../utils/index";
 
@@ -300,8 +300,8 @@ export const useAnimationStore = defineStore(
       // https://prazdevs.github.io/pinia-plugin-persistedstate/zh/guide/limitations.html
       afterHydrate: (ctx) => {
         // 通用反序列化函数
-        const deserializeAnimation = (data: any) =>
-          new Animation(
+        const deserializeAnimation = (data: any) => {
+          const animation = new Animation(
             data.name,
             data.frames.map(
               (frame: any) =>
@@ -314,6 +314,9 @@ export const useAnimationStore = defineStore(
               (action: any) => new AnimationAction(action.animationElementId, action.startFrame, action.controlPoint)
             )
           );
+          animation.sharedElementPool = SharedElementPool.fromJSON(data.sharedElementPool);
+          return animation;
+        };
 
         // 恢复 animations
         if (ctx.store.animations && Array.isArray(ctx.store.animations)) {

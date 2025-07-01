@@ -39,6 +39,27 @@ export class Drawing extends BaseElement implements IDrawingProps {
     this.pathPoints = props.pathPoints;
     this.drawingType = props.drawingType || DEFAULT_TOOL_CONFIG.SHAPES.shape;
   }
+
+  clone(): Drawing {
+    return new Drawing({
+      x: this.x,
+      y: this.y,
+      color: this.color,
+      isDragging: this.isDragging,
+      creationMode: this.creationMode,
+      type: this.type,
+      state: this.state,
+      startX: this.startX,
+      startY: this.startY,
+      endX: this.endX,
+      endY: this.endY,
+      strokeColor: this.strokeColor,
+      backgroundColor: this.backgroundColor,
+      size: this.size,
+      pathPoints: this.pathPoints ? [...this.pathPoints] : [],
+      drawingType: this.drawingType,
+    });
+  }
 }
 
 export class DrawingCollection {

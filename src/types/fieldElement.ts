@@ -99,4 +99,8 @@ export class FieldElementCollection {
   findByCreationMode(creationMode: string) {
     return this.items.filter((element) => element.creationMode === creationMode);
   }
+
+  getAll(): FieldElement[] {
+    return [...this.items];
+  }
 }

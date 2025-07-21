@@ -1,18 +1,21 @@
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 import { FieldElement, FieldElementCollection } from "../types/fieldElement";
 import { useAnimationStore } from "./animationStore";
+import { useHistory } from "../composables/useHistory";
 
 export const useItemStore = defineStore(
-  "items",
+  "item",
   () => {
     const animationStore = useAnimationStore();
     const { isAnimationMode, currentFrameElements } = storeToRefs(animationStore);
+    const { pushHistory } = useHistory();
 
-    const items = ref(new FieldElementCollection());
+    const items = ref<FieldElementCollection>(new FieldElementCollection());
     const newDraggingItem = ref<FieldElement | null>(null);
 
     const addElement = (element: FieldElement) => {
+      pushHistory();
       items.value.add(element);
     };
 
@@ -21,10 +24,12 @@ export const useItemStore = defineStore(
     };
 
     const deleteElement = (identifier: string | number) => {
+      pushHistory();
       items.value.deleteById(identifier);
     };
 
     const clearElements = () => {
+      pushHistory();
       items.value.clear();
     };
 

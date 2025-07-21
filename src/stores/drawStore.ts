@@ -1,7 +1,8 @@
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import { defineStore } from "pinia";
 import { Drawing, DrawingCollection } from "../types/drawing";
 import { DEFAULT_TOOL_CONFIG } from "@/constants";
+import { useHistory } from "../composables/useHistory";
 
 export const useDrawStore = defineStore(
   "draw",
@@ -13,6 +14,7 @@ export const useDrawStore = defineStore(
       size: DEFAULT_TOOL_CONFIG.SHAPES.size,
       type: DEFAULT_TOOL_CONFIG.SHAPES.shape,
     });
+    const { pushHistory } = useHistory();
 
     const createDrawing = (
       tool: string,
@@ -36,11 +38,13 @@ export const useDrawStore = defineStore(
         pathPoints,
       });
       if (newDrawing !== null) {
+        pushHistory();
         drawings.value.add(newDrawing);
       }
     };
 
     const clearDrawings = () => {
+      pushHistory();
       drawings.value.clear();
     };
 

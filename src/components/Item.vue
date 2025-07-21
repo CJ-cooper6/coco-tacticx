@@ -104,6 +104,7 @@ import { useItemStore } from "../stores/itemStore";
 import { useDraggable } from "../composables/useDraggable";
 import ballSvg from "@/assets/icons/ball.svg";
 import { ELEMENT_RADIUS_OBJECT } from "../constants";
+import { useHistory } from "../composables/useHistory";
 
 const props = defineProps({
   item: {
@@ -117,6 +118,7 @@ const animationStore = useAnimationStore();
 const { isPlaying, currentFrameIndex, frameTime, currentAnimation } = storeToRefs(animationStore);
 const itemStore = useItemStore();
 const { startDrag } = useDraggable();
+const { pushHistory } = useHistory();
 
 const popupRef = ref(null);
 const circleRef = ref(null);
@@ -195,6 +197,7 @@ const handleDragMove = (x: number, y: number) => {
 const handlePointerDown = (event: PointerEvent) => {
   event.preventDefault();
   itemStore.moveItemToLast(props.item);
+  pushHistory();
   startDrag(props.item, event, { onDragMove: handleDragMove, onClick: handleClickItem });
 };
 

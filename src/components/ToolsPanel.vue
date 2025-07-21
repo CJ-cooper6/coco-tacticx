@@ -123,6 +123,28 @@
             />
           </div>
         </div>
+
+        <div class="tools-panel-item" v-if="!isAnimationMode">
+          <div class="icon-button" @click="handleUndo" title="撤销" :class="{ disabled: !canUndo }">
+            <GradientSvgIcon
+              class="icon undo-icon"
+              :startColor="gradientColor.startColor"
+              :endColor="gradientColor.endColor"
+              name="undo"
+            />
+          </div>
+        </div>
+
+        <div class="tools-panel-item" v-if="!isAnimationMode">
+          <div class="icon-button" @click="handleRedo" title="重做" :class="{ disabled: !canRedo }">
+            <GradientSvgIcon
+              class="icon redo-icon"
+              :startColor="gradientColor.startColor"
+              :endColor="gradientColor.endColor"
+              name="redo"
+            />
+          </div>
+        </div>
       </div>
     </foreignObject>
   </g>
@@ -139,12 +161,15 @@ import { useDrawStore } from "../stores/drawStore";
 import GradientSvgIcon from "./common/GradientSvgIcon.vue";
 import { gradientColor } from "../constants";
 import { useAnimationStore } from "../stores/animationStore";
+import { useHistory } from "../composables/useHistory";
 
 const globalStore = useGlobalStore();
 const itemStore = useItemStore();
 const boardStore = useBoardStore();
 const drawStore = useDrawStore();
 const animationStore = useAnimationStore();
+const { handleUndo, handleRedo, canUndo, canRedo } = useHistory();
+
 // 方法可以直接解构
 const { toggleFullscreen } = globalStore;
 const { clearElements } = itemStore;
@@ -286,6 +311,12 @@ onBeforeUnmount(() => {
   height: 40px;
 }
 
+.redo-icon,
+.undo-icon {
+  width: 35px;
+  height: 35px;
+}
+
 circle {
   cursor: pointer;
   transition: r 0.2s ease;
@@ -381,6 +412,14 @@ circle {
   &.is-active,
   &:hover {
     background: #c2f4f2;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    &:hover {
+      background: #ffffff;
+    }
   }
 }
 </style>

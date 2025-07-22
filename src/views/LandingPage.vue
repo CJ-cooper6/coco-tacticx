@@ -1,12 +1,38 @@
 <template>
   <div class="landing-page">
-    <div class="hero-section">
-      <h1 class="title">Coco战术板</h1>
-      <p class="subtitle">简单易用的足球战术分析工具</p>
-      <router-link :to="{ name: 'board' }" target="_blank" class="start-button">开始使用</router-link>
+    <!-- Navigation Header -->
+    <header class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-icon">⚽</span>
+          <span class="logo-text">Coco足球战术板</span>
+        </div>
+        <nav class="nav-menu" :class="{ active: mobileMenuOpen }">
+          <a href="#home" class="nav-link" @click="scrollToSection('home')">首页</a>
+          <a href="#features" class="nav-link" @click="scrollToSection('features')">功能</a>
+          <a href="#showcase" class="nav-link" @click="scrollToSection('showcase')">演示</a>
+          <a href="#faq" class="nav-link" @click="scrollToSection('faq')">常见问题</a>
+          <router-link :to="{ name: 'board' }" target="_blank" class="nav-cta">立即体验</router-link>
+        </nav>
+        <div class="hamburger" :class="{ active: mobileMenuOpen }" @click="toggleMobileMenu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </header>
+    <!-- Showcase Section - Moved to top -->
+    <div id="showcase" class="showcase-section">
+      <div class="showcase-container">
+        <h1 class="title">Coco足球战术板</h1>
+        <p class="showcase-subtitle">直观的界面设计，专业的战术分析功能，让您的战术思考更加清晰</p>
+        <router-link :to="{ name: 'board' }" target="_blank" class="start-button">立即体验</router-link>
+        <div class="showcase-image">
+          <img src="/case-2.png" alt="Coco足球战术板界面展示" />
+        </div>
+      </div>
     </div>
-
-    <div class="features-section">
+    <div id="features" class="features-section">
       <div class="feature-card">
         <div class="feature-icon">⚽</div>
         <h3>实时绘制</h3>
@@ -24,12 +50,14 @@
       </div>
     </div>
 
+    <!-- Showcase Section -->
+
     <div class="faq-section" id="faq">
       <h2 class="faq-title">常见问题</h2>
       <div class="faq-grid">
         <div class="faq-item">
           <h3>如何开始使用？</h3>
-          <p>点击"开始使用"按钮，进入战术板页面后，您就可以通过拖拽来创建和编辑战术图了。</p>
+          <p>点击"立即体验"按钮，进入战术板页面后，您就可以通过拖拽来创建和编辑战术图了。</p>
         </div>
         <div class="faq-item">
           <h3>是否需要注册账号？</h3>
@@ -86,25 +114,153 @@
         </div>
       </div>
       <div class="footer-content">
-        <div class="copyright">© 2024 - 2025 Coco战术板. All Rights Reserved.</div>
+        <div class="copyright">© 2024 - 2025 Coco足球战术板. All Rights Reserved.</div>
       </div>
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-const scrollToFaq = () => {
-  const faqElement = document.getElementById("faq");
-  if (faqElement) {
-    faqElement.scrollIntoView({
+import { ref } from "vue";
+
+const mobileMenuOpen = ref(false);
+
+const toggleMobileMenu = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value;
+};
+
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    const headerOffset = 80;
+    const elementPosition = element.offsetTop;
+    const offsetPosition = elementPosition - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
       behavior: "smooth",
-      block: "start",
     });
   }
+  mobileMenuOpen.value = false;
+};
+
+const scrollToFaq = () => {
+  scrollToSection("faq");
 };
 </script>
 
 <style scoped>
+/* Navigation Header */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #76c4c2;
+  padding: 1rem 0;
+  transition: all 0.3s ease;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: white;
+}
+
+.logo-icon {
+  font-size: 1.5rem;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.nav-link:hover {
+  color: white;
+  transform: translateY(-2px);
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-cta {
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: white;
+  color: #3ca49f;
+}
+
+.nav-cta:hover {
+  transform: translateY(-3px);
+  background: white;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 4px;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: white;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
 .landing-page {
   height: 100%;
   background: linear-gradient(135deg, #95e3e1 0%, #3ca49f 100%);
@@ -135,36 +291,61 @@ const scrollToFaq = () => {
   flex: 1;
 }
 
+/* Updated hero section to account for fixed header */
 .hero-section {
   text-align: center;
-  padding: 4rem 1rem;
+  padding: 8rem 1rem 6rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .title {
   font-size: 3.5rem;
   margin-bottom: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .subtitle {
   font-size: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
   opacity: 0.9;
+  font-weight: 400;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .start-button {
   display: inline-block;
-  padding: 1rem 2.5rem;
+  padding: 1.25rem 3rem;
   font-size: 1.25rem;
-  background-color: white;
-  color: #3ca49f;
-  border-radius: 2rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--primary-700);
+  border-radius: 3rem;
   text-decoration: none;
-  transition: transform 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.2),
+    0 6px 20px rgba(0, 0, 0, 0.15);
+  border: none;
+  cursor: pointer;
+  color: #3ca49f;
+  margin-bottom: 6rem;
 }
 
 .start-button:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.25),
+    0 8px 25px rgba(0, 0, 0, 0.2);
+  background: white;
 }
 
 .features-section {
@@ -172,15 +353,25 @@ const scrollToFaq = () => {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem;
   max-width: 1200px;
-  margin: 4rem auto;
+  margin: 6rem auto;
+  padding: 0 2rem;
 }
 
 .feature-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  padding: 2.5rem 2rem;
+  border-radius: 1.5rem;
   text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .feature-icon {
@@ -190,7 +381,8 @@ const scrollToFaq = () => {
 
 .feature-card h3 {
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
 }
 
 .feature-card p {
@@ -200,7 +392,8 @@ const scrollToFaq = () => {
 
 .faq-section {
   max-width: 1200px;
-  margin: 4rem auto;
+  margin: 8rem auto;
+  padding: 0 2rem;
 }
 
 .faq-title {
@@ -216,21 +409,76 @@ const scrollToFaq = () => {
 }
 
 .faq-item {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 1rem;
-  transition: transform 0.2s;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.faq-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .faq-item h3 {
   font-size: 1.25rem;
   margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 .faq-item p {
   opacity: 0.9;
   line-height: 1.6;
+}
+
+/* Showcase Section */
+.showcase-section {
+  margin: 8rem 0;
+  backdrop-filter: blur(10px);
+}
+
+.showcase-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.showcase-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.showcase-subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 3rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.showcase-image {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 2rem;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.showcase-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 .sitemap-section {
@@ -285,9 +533,9 @@ const scrollToFaq = () => {
 .footer {
   margin-top: 0;
   padding: 1.5rem 2rem;
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   width: 100%;
 }
 
@@ -374,7 +622,66 @@ const scrollToFaq = () => {
   line-height: 1.4;
 }
 
+/* Mobile responsive styles */
 @media (max-width: 768px) {
+  .nav-container {
+    padding: 0 1rem;
+  }
+
+  .hamburger {
+    display: flex;
+    z-index: 1001;
+  }
+
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    bottom: 0;
+    width: 280px;
+    background: #64a7a5;
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    padding: 6rem 2rem 2rem;
+    gap: 2rem;
+    transform: translateX(0);
+    transition: left 0.3s ease;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .nav-menu.active {
+    left: 0;
+  }
+
+  .nav-link {
+    font-size: 1.2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .hero-section {
+    padding: 6rem 1rem 4rem;
+  }
+
+  .showcase-section {
+    margin: 6rem 0;
+    padding: 4rem 0;
+  }
+
+  .showcase-title {
+    font-size: 2rem;
+  }
+
+  .showcase-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .showcase-image {
+    padding: 1rem;
+  }
+
   .sitemap-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -401,11 +708,17 @@ const scrollToFaq = () => {
   .qr-desc {
     font-size: 0.8rem;
   }
-}
 
-@media (max-width: 480px) {
-  .sitemap-grid {
+  .features-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .faq-grid {
     grid-template-columns: 1fr;
+  }
+
+  .sitemap-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -415,27 +728,24 @@ const scrollToFaq = () => {
   }
 }
 
-@media (max-width: 768px) {
-  .features-section {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .faq-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .sitemap-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 @media (max-width: 480px) {
+  .nav-container {
+    padding: 0 1rem;
+  }
+
   .features-section {
+    margin: 4rem auto;
     grid-template-columns: 1fr;
+    padding: 0 1rem;
+  }
+
+  .faq-section {
+    margin: 6rem auto;
+    padding: 0 1rem;
   }
 
   .sitemap-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 
   .title {
@@ -449,6 +759,28 @@ const scrollToFaq = () => {
   .start-button {
     font-size: 1rem;
     padding: 0.8rem 2rem;
+  }
+
+  .hero-section {
+    padding: 5rem 1rem 3rem;
+  }
+
+  .nav-menu {
+    padding: 6rem 1.5rem 1.5rem;
+    width: 260px;
+  }
+
+  .showcase-section {
+    margin: 4rem 0;
+    padding: 3rem 0;
+  }
+
+  .showcase-container {
+    padding: 0 1rem;
+  }
+
+  .showcase-image {
+    padding: 0.8rem;
   }
 }
 </style>

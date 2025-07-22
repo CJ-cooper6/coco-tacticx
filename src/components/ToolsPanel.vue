@@ -168,7 +168,7 @@ const itemStore = useItemStore();
 const boardStore = useBoardStore();
 const drawStore = useDrawStore();
 const animationStore = useAnimationStore();
-const { handleUndo, handleRedo, canUndo, canRedo } = useHistory();
+const { handleUndo, handleRedo, canUndo, canRedo, pushHistory } = useHistory();
 
 // 方法可以直接解构
 const { toggleFullscreen } = globalStore;
@@ -246,6 +246,7 @@ const deleteLastFrame = () => {
 };
 
 const clear = () => {
+  pushHistory();
   clearElements();
   clearDrawings();
 };

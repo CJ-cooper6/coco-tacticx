@@ -52,7 +52,7 @@
             <div class="input-group color">
               <input type="color" v-model="item.color" @pointerdown.stop />
             </div>
-            <button class="delete-btn" v-if="item.id" @pointerdown="itemStore.deleteElement(item.id)">删除球员</button>
+            <button class="delete-btn" v-if="item.id" @pointerdown="handleDelete(item.id)">删除球员</button>
           </div>
         </div>
       </foreignObject>
@@ -197,8 +197,7 @@ const handleDragMove = (x: number, y: number) => {
 const handlePointerDown = (event: PointerEvent) => {
   event.preventDefault();
   itemStore.moveItemToLast(props.item);
-  pushHistory();
-  startDrag(props.item, event, { onDragMove: handleDragMove, onClick: handleClickItem });
+  startDrag(props.item, event, { onDragMove: handleDragMove, onClick: handleClickItem, onDragStart: pushHistory });
 };
 
 const handleClickItem = () => {
@@ -215,6 +214,11 @@ const handleClickItem = () => {
 
 const closePopup = () => {
   showPopup.value = false;
+};
+
+const handleDelete = (id: string | number) => {
+  pushHistory();
+  itemStore.deleteElement(id);
 };
 
 useClickOutside({

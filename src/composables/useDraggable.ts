@@ -22,6 +22,7 @@ export function useDraggable() {
       onDragMove?: (x: number, y: number) => void;
       onDragEnd?: () => void;
       onClick?: () => void;
+      onDragStart?: () => void;
     }
   ) => {
     const svg = svgElement.value;
@@ -41,6 +42,11 @@ export function useDraggable() {
         if (distance <= dragThreshold) return;
 
         hasDragged = true;
+
+        // 触发拖动开始回调，只在确认拖动后触发一次
+        if (callbacks.onDragStart) {
+          callbacks.onDragStart();
+        }
 
         if (isAnimationMode.value) {
           // 动画模式下更新共享元素池中的 isDragging

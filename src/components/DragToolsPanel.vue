@@ -73,6 +73,7 @@ import { useItemStore } from "../stores/itemStore";
 import { FieldElement } from "../types/fieldElement";
 import { useAnimationStore } from "../stores/animationStore";
 import { useGlobalStore } from "../stores/globalStore";
+import { useHistory } from "../composables/useHistory";
 import { gradientColor, ELEMENT_RADIUS_OBJECT } from "../constants";
 import GradientSvgIcon from "./common/GradientSvgIcon.vue";
 import Shape from "./drawings/Shape.vue";
@@ -83,6 +84,7 @@ const itemStore = useItemStore();
 const animationStore = useAnimationStore();
 const globalStore = useGlobalStore();
 const boardStore = useBoardStore();
+const { pushHistory } = useHistory();
 
 // 方法可以直接解构
 const { addElement, removeDraggingNewItem, setDraggingNewItem } = itemStore;
@@ -157,6 +159,7 @@ const startDragNewItem = (item: FieldElement, event: PointerEvent, index: number
         element.creationMode = "animation";
         animationStore.addElement(element);
       }
+      pushHistory();
       addElement(element);
       toolItemNumbers.value[index]++;
     }

@@ -3,12 +3,14 @@ import { storeToRefs } from "pinia";
 import { useDrawStore } from "../stores/drawStore";
 import { useGlobalStore } from "../stores/globalStore";
 import { useBoardStore } from "../stores/boardStore";
+import { useHistory } from "./useHistory";
 import { renderShape } from "@/utils/drawing";
 
 export function useDrawing() {
   const drawStore = useDrawStore();
   const globalStore = useGlobalStore();
   const boardStore = useBoardStore();
+  const { pushHistory } = useHistory();
 
   const { svgElement, roughSvg, drawingLayer } = storeToRefs(boardStore);
   const { isDrawing, currentTool } = storeToRefs(globalStore);
@@ -77,6 +79,7 @@ export function useDrawing() {
     }
 
     const svgPoint = getSvgPosition(event);
+    pushHistory();
     createDrawing(currentTool.value, startX, startY, svgPoint.x, svgPoint.y, pathPoints);
     clearDrawingLayer();
     pathPoints = [];

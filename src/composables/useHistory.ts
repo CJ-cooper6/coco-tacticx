@@ -22,7 +22,7 @@ export function useHistory() {
     if (!canUndo.value) return;
 
     // 在执行撤销之前，保存当前状态到 redoHistory
-    historyStore.pushRedoHistory("", itemStore.items.getAll(), drawings.value.getDrawings());
+    historyStore.pushRedoHistory("", items.value.getAll(), drawings.value.getDrawings());
 
     const lastOperation = historyStore.popUndo();
     if (!lastOperation) return;
@@ -44,7 +44,7 @@ export function useHistory() {
     if (!canRedo.value) return;
 
     // 在执行重做之前，保存当前状态到 undoHistory
-    historyStore.pushHistory("", itemStore.items.getAll(), drawings.value.getDrawings());
+    historyStore.pushHistory("", items.value.getAll(), drawings.value.getDrawings());
 
     const nextOperation = historyStore.popRedo();
     if (!nextOperation) return;
@@ -64,7 +64,9 @@ export function useHistory() {
 
   // 保存当前状态到撤销栈
   const pushHistory = () => {
-    historyStore.pushHistory("", itemStore.items.getAll(), drawings.value.getDrawings());
+    const itemData = items && items.value ? items.value.getAll() : [];
+    const drawingData = drawings?.value ? drawings.value.getDrawings() : [];
+    historyStore.pushHistory("", itemData, drawingData);
     // 清空重做栈
     redoStack.value = [];
   };

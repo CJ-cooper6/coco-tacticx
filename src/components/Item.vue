@@ -82,7 +82,7 @@
 
     <!-- 动画 -->
     <animateMotion
-      v-if="circleRef && isPlaying && hasAnimation"
+      v-if="isPlaying && hasAnimation"
       :path="animationPathData()"
       :dur="frameTime + 's'"
       begin="indefinite"

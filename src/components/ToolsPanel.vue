@@ -123,28 +123,6 @@
             />
           </div>
         </div>
-
-        <div class="tools-panel-item" v-if="!isAnimationMode">
-          <div class="icon-button" @click="handleUndo" title="撤销" :class="{ disabled: !canUndo }">
-            <GradientSvgIcon
-              class="icon undo-icon"
-              :startColor="gradientColor.startColor"
-              :endColor="gradientColor.endColor"
-              name="undo"
-            />
-          </div>
-        </div>
-
-        <div class="tools-panel-item" v-if="!isAnimationMode">
-          <div class="icon-button" @click="handleRedo" title="重做" :class="{ disabled: !canRedo }">
-            <GradientSvgIcon
-              class="icon redo-icon"
-              :startColor="gradientColor.startColor"
-              :endColor="gradientColor.endColor"
-              name="redo"
-            />
-          </div>
-        </div>
       </div>
     </foreignObject>
   </g>
@@ -168,7 +146,7 @@ const itemStore = useItemStore();
 const boardStore = useBoardStore();
 const drawStore = useDrawStore();
 const animationStore = useAnimationStore();
-const { handleUndo, handleRedo, canUndo, canRedo, pushHistory } = useHistory();
+const { pushHistory } = useHistory();
 
 // 方法可以直接解构
 const { toggleFullscreen } = globalStore;
@@ -251,7 +229,7 @@ const clear = () => {
   clearDrawings();
 };
 
-watch(currentFrameIndex, (newVal) => {
+watch(currentFrameIndex, () => {
   if (isPlaying.value) {
     frameInput.value = currentFrameIndex.value + 1;
   }
@@ -310,12 +288,6 @@ onBeforeUnmount(() => {
 .animation-icon {
   width: 40px;
   height: 40px;
-}
-
-.redo-icon,
-.undo-icon {
-  width: 35px;
-  height: 35px;
 }
 
 circle {

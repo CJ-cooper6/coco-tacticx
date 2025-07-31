@@ -4,19 +4,19 @@
       <div class="sitemap-grid">
         <div class="sitemap-column">
           <h3>文档</h3>
-          <ul>
+          <!-- <ul>
             <li>快速开始</li>
             <li>使用教程</li>
             <li><a href="#faq" @click.prevent="scrollToFaq">常见问题</a></li>
-          </ul>
+          </ul> -->
         </div>
         <div class="sitemap-column">
           <h3>关于</h3>
-          <ul>
+          <!-- <ul>
             <li>关于我们</li>
             <li>隐私政策</li>
             <li>使用条款</li>
-          </ul>
+          </ul> -->
         </div>
         <div class="sitemap-column">
           <h3>联系</h3>
@@ -25,7 +25,7 @@
             <li>cha473172339@163.com</li>
             <li>
               <a href="https://qiyjcn5ub3.feishu.cn/share/base/form/shrcnFrxVlFamvENvwhHw2noxXe" target="_blank">
-                问题反馈
+                反馈
               </a>
             </li>
           </ul>

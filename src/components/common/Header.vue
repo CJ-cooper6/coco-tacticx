@@ -8,10 +8,10 @@
       <nav class="nav-menu" :class="{ active: mobileMenuOpen }">
         <template v-if="showFullMenu">
           <a href="#home" class="nav-link" @click="scrollToSection('home')">首页</a>
-          <a href="#features" class="nav-link" @click="scrollToSection('features')">功能</a>
-          <a href="#showcase" class="nav-link" @click="scrollToSection('showcase')">演示</a>
+          <!-- <a href="#features" class="nav-link" @click="scrollToSection('features')">功能</a>
+          <a href="#showcase" class="nav-link" @click="scrollToSection('showcase')">演示</a> -->
+          <!-- <a href="#faq" class="nav-link" @click="scrollToSection('faq')">常见问题</a> -->
           <router-link :to="{ name: 'changelog' }" class="nav-link">更新记录</router-link>
-          <a href="#faq" class="nav-link" @click="scrollToSection('faq')">常见问题</a>
         </template>
         <template v-else>
           <router-link :to="{ name: 'home' }" class="nav-link">返回首页</router-link>

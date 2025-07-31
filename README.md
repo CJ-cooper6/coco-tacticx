@@ -48,26 +48,16 @@ yarn run dev
 
 本项目倾注了不少心血，如果觉得不错，别忘了给我们的 GitHub 仓库点个星🌟哦！欢迎加入我们的社区，一起聊聊战术板开发技术、足球战术和比赛复盘，期待与你碰撞出更多火花，感谢支持！
 
-<p align="center">
-    <div style="display: inline-block; margin: 0 20px;">
-        <img src="https://raw.githubusercontent.com/CJ-cooper6/coco-tacticx/refs/heads/main/public/wechat-mp.jpg" style="width: 100px; display: block;">
-        微信公众号
-    </div>
-    <div style="display: inline-block; margin: 0 20px;">
-        <img src="https://raw.githubusercontent.com/CJ-cooper6/coco-tacticx/refs/heads/main/public/qq-group.png" style="width: 100px; display: block;">
-        QQ交流群
-    </div>
-</p>
+<p align="center" style="display:flex; justify-content: flex-start;" >
+    <img src="https://raw.githubusercontent.com/CJ-cooper6/coco-tacticx/refs/heads/main/public/wechat-mp-1.png" width=200 height=300/>
+    <img src="https://raw.githubusercontent.com/CJ-cooper6/coco-tacticx/refs/heads/main/public/qq-group-1.jpg" width=170 height=300/>
+ </p>
 
 ## 🚀赞赏
 
 如果本项目对你有帮助，欢迎支持开发工作，为代码加点"燃料"🚀！
 
-<p align="center">
- <div style="display: inline-block; margin: 0 10px;">
-        <img src="https://raw.githubusercontent.com/CJ-cooper6/coco-tacticx/refs/heads/main/public/wechat-payment-qr-code.jpeg" style="width: 150px; display: block;">
-    </div>
-    <div style="display: inline-block; margin: 0 10px;">
-        <img src="https://raw.githubusercontent.com/CJ-cooper6/coco-tacticx/refs/heads/main/public/alipay-payment-qr-code.png" style="width: 150px; display: block;">
-    </div>
-</p>
+<p align="center" style="display:flex; justify-content: flex-start;" >
+    <img src="https://raw.githubusercontent.com/CJ-cooper6/coco-tacticx/refs/heads/main/public/wechat-payment-qr-code.jpeg" width=200/>
+    <img src="https://raw.githubusercontent.com/CJ-cooper6/coco-tacticx/refs/heads/main/public/alipay-payment-qr-code.png" width=200/>
+ </p>

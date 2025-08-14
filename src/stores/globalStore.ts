@@ -13,7 +13,7 @@ export const useGlobalStore = defineStore("global", () => {
   };
   const isFullscreen = ref(false);
   const windowSize = ref({ width: window.innerWidth, height: window.innerHeight });
-  const isDrawing = ref(false);
+  const isDrawing = ref(false); // 正在绘画状态
   // 屏幕方向 portrait 竖屏 landscape 横屏
   const orientation = ref<"portrait" | "landscape">(window.innerHeight > window.innerWidth ? "portrait" : "landscape");
   const currentTool = ref("select");

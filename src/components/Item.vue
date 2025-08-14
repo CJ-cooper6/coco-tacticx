@@ -105,6 +105,7 @@ import { useDraggable } from "../composables/useDraggable";
 import ballSvg from "@/assets/icons/ball.svg";
 import { ELEMENT_RADIUS_OBJECT } from "../constants";
 import { useHistory } from "../composables/useHistory";
+import { useGlobalStore } from "../stores/globalStore";
 
 const props = defineProps({
   item: {
@@ -119,6 +120,8 @@ const { isPlaying, currentFrameIndex, frameTime, currentAnimation } = storeToRef
 const itemStore = useItemStore();
 const { startDrag } = useDraggable();
 const { pushHistory } = useHistory();
+const globalStore = useGlobalStore();
+const { currentTool } = storeToRefs(globalStore);
 
 const popupRef = ref(null);
 const circleRef = ref(null);
@@ -195,6 +198,10 @@ const handleDragMove = (x: number, y: number) => {
 };
 
 const handlePointerDown = (event: PointerEvent) => {
+  if (currentTool.value === "shape") {
+    // 绘画模式下元素不支持拖动、点击等操作
+    return;
+  }
   event.preventDefault();
   itemStore.moveItemToLast(props.item);
   startDrag(props.item, event, { onDragMove: handleDragMove, onClick: handleClickItem, onDragStart: pushHistory });

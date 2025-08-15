@@ -40,6 +40,13 @@ export const useDrawStore = defineStore(
       }
     };
 
+    const removeDrawing = (drawingToRemove: Drawing) => {
+      const index = drawings.value.getDrawings().findIndex((drawing) => drawing.id === drawingToRemove.id);
+      if (index !== -1) {
+        drawings.value.getDrawings().splice(index, 1);
+      }
+    };
+
     const clearDrawings = () => {
       drawings.value.clear();
     };
@@ -48,6 +55,7 @@ export const useDrawStore = defineStore(
       drawings,
       drawingConfig,
       createDrawing,
+      removeDrawing,
       clearDrawings,
     };
   },

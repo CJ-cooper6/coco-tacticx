@@ -13,7 +13,7 @@ export interface IBaseElementProps {
 }
 
 export class BaseElement implements IBaseElementProps {
-  id?: number | string;
+  id: number | string;
   x: number;
   y: number;
   color: string;

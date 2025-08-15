@@ -8,7 +8,8 @@
       viewBox="0 0 1250 826"
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMid meet"
-      @pointerdown="startDrawing"
+      @pointerdown="handlePointerdown"
+      @pointermove="handlePointermove"
       @dblclick.stop
       class="field"
     >
@@ -24,7 +25,12 @@
       <g>
         <!-- 球场区域 -->
         <!-- 动态引入球场组件 -->
-        <component :is="currentFieldComponent" @touchmove.prevent.stop>
+
+        <component
+          :is="currentFieldComponent"
+          @touchmove.prevent.stop
+          :style="{ cursor: currentTool === 'eraser' ? `url(${eraserPng}) 4 4, auto` : 'default' }"
+        >
           <!-- 非动画模式 -->
           <template v-if="!isAnimationMode">
             <g id="drawings" v-if="drawings">
@@ -67,7 +73,7 @@
                 />
               </g>
               <!-- 上一帧球员 -->
-              <g id="prev-frame-elements" style="opacity: 0.5; z-index: 10">
+              <g id="prev-frame-elements" style="opacity: 0.5; z-index: 10" v-if="haveActionPrevFrameElements">
                 <ItemComponent v-for="item in haveActionPrevFrameElements" :key="`prev-${item.id}`" :item="item" />
               </g>
               <!-- 球员 -->
@@ -87,6 +93,17 @@
       <g id="tools-panel">
         <ItemComponent v-if="newDraggingItem" :item="newDraggingItem" />
       </g>
+      <!-- 
+      <circle
+        v-if="eraserCursorPos"
+        :cx="eraserCursorPos.x"
+        :cy="eraserCursorPos.y"
+        r="20"
+        fill="rgba(255,0,0,0.3)"
+        stroke="red"
+        stroke-width="2"
+        pointer-events="none"
+      /> -->
     </svg>
   </div>
 </template>
@@ -103,6 +120,7 @@ import DragToolsPanel from "@/components/DragToolsPanel.vue";
 import FootballField from "@/components/fields/FootballField.vue";
 import Watermark from "@/components/common/Watermark.vue";
 import Drawing from "@/components/drawings/Drawing.vue";
+import eraserPng from "@/assets/icons/eraser.png";
 
 // Store 导入
 import { useItemStore } from "../stores/itemStore";
@@ -114,10 +132,12 @@ import { useAnimationStore } from "../stores/animationStore";
 // Composables 导入
 import { useDrawing } from "../composables/useDrawing";
 import { usePath } from "../composables/usePath";
+import { useEraser } from "../composables/useEraser";
 
 // 组合式函数初始化
 const { startDrawing } = useDrawing();
 const { showPath, pathData, pathControlPoint, startDragControlPoint } = usePath();
+const { beginErasing } = useEraser();
 
 // Store 初始化
 const globalStore = useGlobalStore();
@@ -137,9 +157,11 @@ const {
   currentFrameElements,
   currentAnimation,
 } = storeToRefs(animationStore);
+const { currentTool } = storeToRefs(globalStore);
 
 const svgRef = ref<SVGSVGElement | null>(null);
 const currentFieldType = ref("football");
+const eraserCursorPos = ref<{ x: number; y: number } | null>(null); // 橡皮擦坐标
 
 // 场地组件注册
 const fieldComponents: Record<string, Component> = {
@@ -160,6 +182,28 @@ const prevFrameElements = computed(() => {
 });
 
 const showWatermark = GAME_CONSTANTS.showWatermark;
+
+const handlePointerdown = (e: PointerEvent) => {
+  if (currentTool.value === "eraser") {
+    return beginErasing(e);
+  }
+  return startDrawing(e);
+};
+
+const handlePointermove = (e: PointerEvent) => {
+  if (currentTool.value === "eraser") {
+    const svg = svgRef.value;
+    if (svg) {
+      const point = svg.createSVGPoint();
+      point.x = e.clientX;
+      point.y = e.clientY;
+      const svgPoint = point.matrixTransform(svg.getScreenCTM()?.inverse());
+      eraserCursorPos.value = { x: svgPoint.x, y: svgPoint.y };
+    }
+  } else {
+    eraserCursorPos.value = null;
+  }
+};
 
 onMounted(() => {
   if (svgRef.value) {

@@ -60,24 +60,18 @@
           </div>
         </div>
         <Shape></Shape>
-        <div class="tools-panel-item" v-if="!isAnimationMode">
-          <div class="icon-button" @click="handleUndo" title="撤销" :class="{ disabled: !canUndo }">
+        <div class="tools-panel-item">
+          <div
+            class="icon-button"
+            title="橡皮擦"
+            :class="{ 'is-active': currentTool === 'eraser' }"
+            @click="setCurrentTool('eraser')"
+          >
             <GradientSvgIcon
-              class="icon undo-icon"
+              class="icon eraser-icon"
               :startColor="gradientColor.startColor"
               :endColor="gradientColor.endColor"
-              name="undo"
-            />
-          </div>
-        </div>
-
-        <div class="tools-panel-item" v-if="!isAnimationMode">
-          <div class="icon-button" @click="handleRedo" title="重做" :class="{ disabled: !canRedo }">
-            <GradientSvgIcon
-              class="icon redo-icon"
-              :startColor="gradientColor.startColor"
-              :endColor="gradientColor.endColor"
-              name="redo"
+              name="eraser"
             />
           </div>
         </div>
@@ -104,7 +98,7 @@ const itemStore = useItemStore();
 const animationStore = useAnimationStore();
 const globalStore = useGlobalStore();
 const boardStore = useBoardStore();
-const { handleUndo, handleRedo, canUndo, canRedo, pushHistory } = useHistory();
+const { pushHistory } = useHistory();
 
 // 方法可以直接解构
 const { addElement, removeDraggingNewItem, setDraggingNewItem } = itemStore;
@@ -120,22 +114,20 @@ const toolItems = computed(() => {
   if (orientation.value === "landscape") {
     return [
       new FieldElement({ color: "#eb281e", x: -50, y: 80, number: toolItemNumbers.value[0], elementType: "player" }),
-      new FieldElement({ color: "#853ee5", x: -50, y: 150, number: toolItemNumbers.value[1], elementType: "player" }),
-      new FieldElement({ color: "#2495ff", x: -50, y: 220, number: toolItemNumbers.value[2], elementType: "player" }),
-      new FieldElement({ color: "#fffd55", x: -50, y: 290, number: toolItemNumbers.value[3], elementType: "player" }),
-      new FieldElement({ color: "#ffffff", x: -50, y: 360, number: toolItemNumbers.value[4], elementType: "player" }),
-      new FieldElement({ color: "#000000", x: -50, y: 430, number: toolItemNumbers.value[5], elementType: "player" }),
-      new FieldElement({ x: -50, y: 500, elementType: "ball" }),
+      new FieldElement({ color: "#2495ff", x: -50, y: 150, number: toolItemNumbers.value[1], elementType: "player" }),
+      new FieldElement({ color: "#fffd55", x: -50, y: 220, number: toolItemNumbers.value[2], elementType: "player" }),
+      new FieldElement({ color: "#ffffff", x: -50, y: 290, number: toolItemNumbers.value[3], elementType: "player" }),
+      new FieldElement({ color: "#000000", x: -50, y: 360, number: toolItemNumbers.value[4], elementType: "player" }),
+      new FieldElement({ x: -50, y: 430, elementType: "ball" }),
     ];
   }
   return [
     new FieldElement({ color: "#eb281e", x: 150, y: 870, number: toolItemNumbers.value[0], elementType: "player" }),
-    new FieldElement({ color: "#853ee5", x: 220, y: 870, number: toolItemNumbers.value[1], elementType: "player" }),
-    new FieldElement({ color: "#2495ff", x: 290, y: 870, number: toolItemNumbers.value[2], elementType: "player" }),
-    new FieldElement({ color: "#fffd55", x: 360, y: 870, number: toolItemNumbers.value[3], elementType: "player" }),
-    new FieldElement({ color: "#ffffff", x: 430, y: 870, number: toolItemNumbers.value[4], elementType: "player" }),
-    new FieldElement({ color: "#000000", x: 500, y: 870, number: toolItemNumbers.value[5], elementType: "player" }),
-    new FieldElement({ x: 570, y: 870, elementType: "ball" }),
+    new FieldElement({ color: "#2495ff", x: 220, y: 870, number: toolItemNumbers.value[1], elementType: "player" }),
+    new FieldElement({ color: "#fffd55", x: 290, y: 870, number: toolItemNumbers.value[2], elementType: "player" }),
+    new FieldElement({ color: "#ffffff", x: 360, y: 870, number: toolItemNumbers.value[3], elementType: "player" }),
+    new FieldElement({ color: "#000000", x: 430, y: 870, number: toolItemNumbers.value[4], elementType: "player" }),
+    new FieldElement({ x: 500, y: 870, elementType: "ball" }),
   ];
 });
 
@@ -229,14 +221,13 @@ const startDragNewItem = (item: FieldElement, event: PointerEvent, index: number
   height: 35px;
 }
 
-image {
-  cursor: pointer;
+.eraser-icon {
+  width: 30px;
+  height: 30px;
 }
 
-.redo-icon,
-.undo-icon {
-  width: 35px;
-  height: 35px;
+image {
+  cursor: pointer;
 }
 </style>
 

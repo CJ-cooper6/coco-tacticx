@@ -52,7 +52,7 @@
             <div class="input-group color">
               <input type="color" v-model="item.color" @pointerdown.stop />
             </div>
-            <button class="delete-btn" v-if="item.id" @pointerdown="handleDelete(item.id)">删除球员</button>
+            <button class="delete-btn" v-if="item.id" @pointerdown="handleDelete(item.id)">删除</button>
           </div>
         </div>
       </foreignObject>
@@ -61,6 +61,7 @@
       <!-- 足球 -->
       <!-- 扩大操作热区 -->
       <circle
+        ref="circleRef"
         :cx="item.x"
         :cy="item.y"
         :r="ELEMENT_RADIUS_OBJECT.player"
@@ -78,6 +79,13 @@
         :href="ballSvg"
         pointer-events="none"
       />
+      <foreignObject class="popup" ref="popupRef" :x="popupX" :y="popupY" width="200" height="65" v-if="showPopup">
+        <div xmlns="http://www.w3.org/1999/xhtml" class="popup-content">
+          <div class="popup-body">
+            <button class="delete-btn" v-if="item.id" @pointerdown="handleDelete(item.id)">删除</button>
+          </div>
+        </div>
+      </foreignObject>
     </g>
 
     <!-- 动画 -->
@@ -208,9 +216,6 @@ const handlePointerDown = (event: PointerEvent) => {
 };
 
 const handleClickItem = () => {
-  if (props.item.elementType !== "player") {
-    return;
-  }
   showPopup.value = !showPopup.value;
   nextTick(() => {
     if (showPopup.value) {

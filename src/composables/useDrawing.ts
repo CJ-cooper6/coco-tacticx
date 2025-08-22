@@ -1,5 +1,6 @@
 /* eslint-disable no-use-before-define */
 import { storeToRefs } from "pinia";
+import { ElMessage } from "element-plus";
 import { useDrawStore } from "../stores/drawStore";
 import { useGlobalStore } from "../stores/globalStore";
 import { useBoardStore } from "../stores/boardStore";
@@ -50,6 +51,13 @@ export function useDrawing() {
     e.preventDefault();
     e.stopPropagation();
 
+    // 检查鼠标是否移出了战术区域
+    if (isOutOfBoardArea(e, 0)) {
+      // 如果移出了战术区域，取消绘制
+      cancelDrawing();
+      return;
+    }
+
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId);
     }
@@ -86,6 +94,31 @@ export function useDrawing() {
 
     svgElement.value.removeEventListener("pointermove", moveDrawing);
     svgElement.value.removeEventListener("pointerup", endDrawing);
+  };
+
+  // 取消绘制
+  const cancelDrawing = () => {
+    if (!svgElement.value || !isDrawing.value) return;
+
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
+
+    setDrawStatus(false);
+    clearDrawingLayer();
+    pathPoints = [];
+
+    // 移除事件监听器
+    svgElement.value.removeEventListener("pointermove", moveDrawing);
+    svgElement.value.removeEventListener("pointerup", endDrawing);
+
+    // 显示提示信息
+    ElMessage({
+      message: "请在战术区域内进行绘制",
+      type: "warning",
+      duration: 2000,
+    });
   };
 
   // 创建临时图形
@@ -130,6 +163,7 @@ export function useDrawing() {
     startDrawing,
     moveDrawing,
     endDrawing,
+    cancelDrawing,
     getSvgPosition,
   };
 }

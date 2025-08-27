@@ -72,6 +72,10 @@
                   @pointerdown="startDragControlPoint(item, $event)"
                 />
               </g>
+              <!-- 绘制图形 -->
+              <g id="drawings" v-if="animationDrawings">
+                <Drawing v-for="drawing in animationDrawings" :key="drawing.id" :drawing="drawing" />
+              </g>
               <!-- 上一帧球员 -->
               <g id="prev-frame-elements" style="opacity: 0.5; z-index: 10" v-if="haveActionPrevFrameElements">
                 <ItemComponent v-for="item in haveActionPrevFrameElements" :key="`prev-${item.id}`" :item="item" />
@@ -157,6 +161,7 @@ const {
   currentFrameElements,
   currentAnimation,
 } = storeToRefs(animationStore);
+const { getCurrentFrameDrawings } = animationStore;
 const { currentTool } = storeToRefs(globalStore);
 
 const svgRef = ref<SVGSVGElement | null>(null);
@@ -175,6 +180,8 @@ const currentFieldComponent = computed(() => fieldComponents[currentFieldType.va
 const normalItems = computed(() => items.value.findByCreationMode("normal"));
 
 const animationItems = computed(() => currentFrameElements.value);
+
+const animationDrawings = computed(() => getCurrentFrameDrawings());
 
 const prevFrameElements = computed(() => {
   if (currentFrameIndex.value === 0) return currentAnimation.value?.getFrameElements(0);

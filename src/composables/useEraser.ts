@@ -2,6 +2,7 @@ import { storeToRefs } from "pinia";
 import { useDrawStore } from "../stores/drawStore";
 import { useGlobalStore } from "../stores/globalStore";
 import { useBoardStore } from "../stores/boardStore";
+import { useAnimationStore } from "../stores/animationStore";
 import { useHistory } from "./useHistory";
 import { isEraserIntersectDrawing } from "@/utils/collision";
 import type { Drawing } from "@/types/drawing";
@@ -10,12 +11,15 @@ export function useEraser() {
   const drawStore = useDrawStore();
   const globalStore = useGlobalStore();
   const boardStore = useBoardStore();
+  const animationStore = useAnimationStore();
   const { pushHistory } = useHistory();
   const { currentTool } = storeToRefs(globalStore);
   const { svgElement } = storeToRefs(boardStore);
   const { getSvgPosition } = boardStore;
   const { drawings } = storeToRefs(drawStore);
   const { removeDrawing } = drawStore;
+  const { isAnimationMode } = storeToRefs(animationStore);
+  const { getCurrentFrameDrawings, removeDrawingFromFrame } = animationStore;
 
   const beginErasing = (e: PointerEvent) => {
     if (!svgElement.value || currentTool.value !== "eraser") return;
@@ -51,19 +55,35 @@ export function useEraser() {
   const handleEraserCollision = (eraserX: number, eraserY: number) => {
     const eraserRadius = 10;
     const drawingsToRemove: Drawing[] = [];
+    let isFrameDrawing = false;
+    const frameDrawingIds: string[] = [];
 
-    // 遍历所有绘图对象，检查与橡皮擦的碰撞
-    drawings.value.getDrawings().forEach((drawing) => {
-      if (isEraserIntersectDrawing(eraserX, eraserY, eraserRadius, drawing)) {
-        drawingsToRemove.push(drawing);
-      }
-    });
+    if (isAnimationMode.value) {
+      const frameDrawings = getCurrentFrameDrawings();
+      frameDrawings.forEach((drawing: any) => {
+        if (isEraserIntersectDrawing(eraserX, eraserY, eraserRadius, drawing)) {
+          drawingsToRemove.push(drawing);
+          frameDrawingIds.push(drawing.id.toString());
+          isFrameDrawing = true;
+        }
+      });
+    } else {
+      drawings.value.getDrawings().forEach((drawing) => {
+        if (isEraserIntersectDrawing(eraserX, eraserY, eraserRadius, drawing)) {
+          drawingsToRemove.push(drawing);
+        }
+      });
+    }
 
     // 删除相交的图形
     if (drawingsToRemove.length > 0) {
       pushHistory();
-      drawingsToRemove.forEach((drawing) => {
-        removeDrawing(drawing);
+      drawingsToRemove.forEach((drawing, index) => {
+        if (isFrameDrawing) {
+          removeDrawingFromFrame(frameDrawingIds[index]);
+        } else {
+          removeDrawing(drawing);
+        }
       });
     }
   };

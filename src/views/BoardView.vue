@@ -25,7 +25,6 @@
       <g>
         <!-- 球场区域 -->
         <!-- 动态引入球场组件 -->
-
         <component
           :is="currentFieldComponent"
           @touchmove.prevent.stop
@@ -76,6 +75,8 @@
               <g id="drawings" v-if="animationDrawings">
                 <Drawing v-for="drawing in animationDrawings" :key="drawing.id" :drawing="drawing" />
               </g>
+              <!-- 正在创建的新元素层 -->
+              <g id="drawingLayer"></g>
               <!-- 上一帧球员 -->
               <g id="prev-frame-elements" style="opacity: 0.5; z-index: 10" v-if="haveActionPrevFrameElements">
                 <ItemComponent v-for="item in haveActionPrevFrameElements" :key="`prev-${item.id}`" :item="item" />
@@ -97,17 +98,6 @@
       <g id="tools-panel">
         <ItemComponent v-if="newDraggingItem" :item="newDraggingItem" />
       </g>
-      <!-- 
-      <circle
-        v-if="eraserCursorPos"
-        :cx="eraserCursorPos.x"
-        :cy="eraserCursorPos.y"
-        r="20"
-        fill="rgba(255,0,0,0.3)"
-        stroke="red"
-        stroke-width="2"
-        pointer-events="none"
-      /> -->
     </svg>
   </div>
 </template>

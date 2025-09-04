@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 import { ref, computed, nextTick } from "vue";
 import { AnimationFrame, AnimationAction, Animation, SharedElementPool } from "../types/animation";
 import { FieldElement } from "../types/fieldElement";
-import { Drawing } from "../types/drawing";
 import { getDefaultControlPoint } from "../utils/index";
 import { useBoardStore } from "./boardStore";
 
@@ -64,7 +63,7 @@ export const useAnimationStore = defineStore(
         currentAnimation.value = animations.value[animations.value.length - 1];
       } else {
         animations.value = [];
-        const animation = new Animation("", [{ frameNumber: 0, elements: [], drawings: [] }], []);
+        const animation = new Animation("", [{ frameNumber: 0, elements: [] }], []);
         animations.value.push(animation);
         currentAnimationId.value = animation.id;
         isAnimationMode.value = true;
@@ -171,7 +170,6 @@ export const useAnimationStore = defineStore(
           x,
           y,
         })),
-        drawings: [...lastFrame.drawings],
       };
       animationFrames.push(newFrame);
       currentFrameIndex.value = animationFrames.length - 1;
@@ -260,41 +258,13 @@ export const useAnimationStore = defineStore(
     const deleteLastFrame = () => {
       if (!currentAnimation.value) return;
       if (currentFrameIndex.value === 0) {
-        currentAnimation.value.frames = [{ frameNumber: 0, elements: [], drawings: [] }];
+        currentAnimation.value.frames = [{ frameNumber: 0, elements: [] }];
       } else {
         currentAnimation.value.frames.pop();
       }
       if (currentFrameIndex.value >= currentAnimation.value.frames.length) {
         currentFrameIndex.value = currentAnimation.value.frames.length - 1;
       }
-    };
-
-    // 添加绘制图形到当前帧
-    const addDrawingToFrame = (drawing: any) => {
-      if (!currentAnimation.value) return;
-      const currentFrame = currentAnimation.value.frames[currentFrameIndex.value];
-      if (currentFrame) {
-        currentFrame.drawings.push(drawing);
-      }
-    };
-
-    // 从当前帧删除绘制图形
-    const removeDrawingFromFrame = (drawingId: string) => {
-      if (!currentAnimation.value) return;
-      const currentFrame = currentAnimation.value.frames[currentFrameIndex.value];
-      if (currentFrame) {
-        const index = currentFrame.drawings.findIndex((d: any) => d.id === drawingId);
-        if (index !== -1) {
-          currentFrame.drawings.splice(index, 1);
-        }
-      }
-    };
-
-    // 获取当前帧的绘制图形
-    const getCurrentFrameDrawings = () => {
-      if (!currentAnimation.value) return [];
-      const currentFrame = currentAnimation.value.frames[currentFrameIndex.value];
-      return currentFrame ? currentFrame.drawings : [];
     };
 
     return {
@@ -320,9 +290,6 @@ export const useAnimationStore = defineStore(
       startAutoPlay,
       stopAutoPlay,
       deleteLastFrame,
-      addDrawingToFrame,
-      removeDrawingFromFrame,
-      getCurrentFrameDrawings,
 
       // 计算属性
       haveActionPrevFrameElements,
@@ -345,8 +312,7 @@ export const useAnimationStore = defineStore(
               (frame: any) =>
                 new AnimationFrame(
                   frame.frameNumber,
-                  frame.elements.map((element: any) => new FieldElement(element)),
-                  frame.drawings ? frame.drawings.map((drawing: any) => new Drawing(drawing)) : []
+                  frame.elements.map((element: any) => new FieldElement(element))
                 )
             ),
             data.actions.map(

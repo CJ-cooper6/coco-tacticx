@@ -4,7 +4,6 @@ import { ElMessage } from "element-plus";
 import { useDrawStore } from "../stores/drawStore";
 import { useGlobalStore } from "../stores/globalStore";
 import { useBoardStore } from "../stores/boardStore";
-import { useAnimationStore } from "../stores/animationStore";
 import { useHistory } from "./useHistory";
 import { renderShape } from "@/utils/drawing";
 
@@ -12,17 +11,14 @@ export function useDrawing() {
   const drawStore = useDrawStore();
   const globalStore = useGlobalStore();
   const boardStore = useBoardStore();
-  const animationStore = useAnimationStore();
   const { pushHistory } = useHistory();
 
   const { svgElement, roughSvg, drawingLayer } = storeToRefs(boardStore);
   const { isDrawing, currentTool } = storeToRefs(globalStore);
-  const { isAnimationMode } = storeToRefs(animationStore);
   const { drawingConfig } = storeToRefs(drawStore);
   const { createDrawing } = drawStore;
   const { setDrawStatus } = globalStore;
   const { isOutOfBoardArea, getSvgPosition } = boardStore;
-  const { addDrawingToFrame } = animationStore;
 
   let animationFrameId: number | null = null;
   let startX = 0;
@@ -92,29 +88,7 @@ export function useDrawing() {
 
     const svgPoint = getSvgPosition(event);
     pushHistory();
-
-    const newDrawing = {
-      id: Date.now().toString(),
-      startX,
-      startY,
-      endX: svgPoint.x,
-      endY: svgPoint.y,
-      strokeColor: drawingConfig.value.strokeColor,
-      backgroundColor: drawingConfig.value.backgroundColor,
-      size: drawingConfig.value.size,
-      pathPoints: [...pathPoints],
-      drawingType: drawingConfig.value.type,
-      type: "drawing",
-      state: "saved",
-      creationMode: "animation",
-    };
-
-    if (isAnimationMode.value) {
-      addDrawingToFrame(newDrawing);
-    } else {
-      createDrawing(currentTool.value, startX, startY, svgPoint.x, svgPoint.y, pathPoints);
-    }
-
+    createDrawing(currentTool.value, startX, startY, svgPoint.x, svgPoint.y, pathPoints);
     clearDrawingLayer();
     pathPoints = [];
 

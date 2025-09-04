@@ -1,7 +1,6 @@
 /* eslint-disable lines-between-class-members */
 import { nanoid } from "nanoid";
 import { FieldElement } from "./fieldElement";
-import { Drawing } from "./drawing";
 
 // 表示关键帧中的元素，存储其位置（x, y）和引用的共享元素 ID
 interface AnimationFrameSharedElement {
@@ -14,7 +13,6 @@ interface AnimationFrameSharedElement {
 interface IAnimationFrame {
   frameNumber: number;
   elements: AnimationFrameSharedElement[];
-  drawings: Drawing[]; // 每帧的绘制图形
 }
 
 // 动画行为，描述元素如何从一帧过渡到下一帧（可扩展支持贝塞尔曲线）
@@ -37,12 +35,10 @@ interface IAnimation {
 export class AnimationFrame implements IAnimationFrame {
   frameNumber: number;
   elements: AnimationFrameSharedElement[];
-  drawings: Drawing[];
 
-  constructor(frameNumber: number, elements: AnimationFrameSharedElement[] = [], drawings: Drawing[] = []) {
+  constructor(frameNumber: number, elements: AnimationFrameSharedElement[] = []) {
     this.frameNumber = frameNumber;
     this.elements = elements;
-    this.drawings = drawings;
   }
 }
 
@@ -100,7 +96,7 @@ export class Animation implements IAnimation {
 
   constructor(
     name: string = "",
-    frames: AnimationFrame[] = [new AnimationFrame(0, [], [])],
+    frames: AnimationFrame[] = [new AnimationFrame(0)],
     actions: AnimationAction[] = [],
     sharedElementPool: SharedElementPool = new SharedElementPool()
   ) {
@@ -133,28 +129,6 @@ export class Animation implements IAnimation {
         return { ...shared, x, y }; // 合成一个完整元素：保留共享属性，覆盖位置信息
       })
       .filter(Boolean) as FieldElement[];
-  }
-
-  // 获取指定帧的绘制图形
-  getFrameDrawings(frameIndex: number): Drawing[] {
-    if (frameIndex < 0 || frameIndex >= this.frames.length) return [];
-    return this.frames[frameIndex].drawings;
-  }
-
-  // 添加绘制图形到当前帧
-  addDrawingToFrame(frameIndex: number, drawing: Drawing): void {
-    if (frameIndex < 0 || frameIndex >= this.frames.length) return;
-    this.frames[frameIndex].drawings.push(drawing);
-  }
-
-  // 删除指定帧的绘制图形
-  removeDrawingFromFrame(frameIndex: number, drawingId: string): void {
-    if (frameIndex < 0 || frameIndex >= this.frames.length) return;
-    const frame = this.frames[frameIndex];
-    const index = frame.drawings.findIndex(d => d.id === drawingId);
-    if (index !== -1) {
-      frame.drawings.splice(index, 1);
-    }
   }
 
   // 获取指定帧中某个元素（合并共享属性和帧位置）

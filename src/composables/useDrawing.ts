@@ -4,6 +4,7 @@ import { ElMessage } from "element-plus";
 import { useDrawStore } from "../stores/drawStore";
 import { useGlobalStore } from "../stores/globalStore";
 import { useBoardStore } from "../stores/boardStore";
+import { useAnimationStore } from "@/stores/animationStore";
 import { useHistory } from "./useHistory";
 import { renderShape } from "@/utils/drawing";
 
@@ -11,6 +12,7 @@ export function useDrawing() {
   const drawStore = useDrawStore();
   const globalStore = useGlobalStore();
   const boardStore = useBoardStore();
+  const animationStore = useAnimationStore();
   const { pushHistory } = useHistory();
 
   const { svgElement, roughSvg, drawingLayer } = storeToRefs(boardStore);
@@ -19,6 +21,7 @@ export function useDrawing() {
   const { createDrawing } = drawStore;
   const { setDrawStatus } = globalStore;
   const { isOutOfBoardArea, getSvgPosition } = boardStore;
+  const { isAnimationMode } = storeToRefs(animationStore);
 
   let animationFrameId: number | null = null;
   let startX = 0;
@@ -26,6 +29,7 @@ export function useDrawing() {
   let pathPoints: [number, number][] = [];
 
   const startDrawing = (e: PointerEvent) => {
+    if (isAnimationMode.value) return;
     if (!svgElement.value || ["select"].includes(currentTool.value)) return;
     if (isOutOfBoardArea(e, 0)) return;
     e.preventDefault();

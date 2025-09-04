@@ -5,11 +5,13 @@ import { AnimationFrame, AnimationAction, Animation, SharedElementPool } from ".
 import { FieldElement } from "../types/fieldElement";
 import { getDefaultControlPoint } from "../utils/index";
 import { useBoardStore } from "./boardStore";
+import { useGlobalStore } from "./globalStore";
 
 export const useAnimationStore = defineStore(
   "animation",
   () => {
     const boardStore = useBoardStore();
+    const golobalStore = useGlobalStore();
 
     // 基础状态
     const isAnimationMode = ref(false);
@@ -56,6 +58,7 @@ export const useAnimationStore = defineStore(
 
     // 开启动画
     const openAnimation = () => {
+      golobalStore.setCurrentTool("select");
       if (animations.value.length > 0) {
         currentAnimationId.value = animations.value[animations.value.length - 1].id;
         isAnimationMode.value = true;

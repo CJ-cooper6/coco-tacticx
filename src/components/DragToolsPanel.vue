@@ -59,8 +59,8 @@
             />
           </div>
         </div>
-        <Shape></Shape>
-        <div class="tools-panel-item">
+        <Shape v-if="!isAnimationMode"></Shape>
+        <div class="tools-panel-item" v-if="!isAnimationMode">
           <div
             class="icon-button"
             title="橡皮擦"

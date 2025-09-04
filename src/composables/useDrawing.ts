@@ -83,13 +83,38 @@ export function useDrawing() {
       cancelAnimationFrame(animationFrameId);
       animationFrameId = null;
     }
+
     setDrawStatus(false);
+
     if (isOutOfBoardArea(event, 0)) {
       return;
     }
+
     const svgPoint = getSvgPosition(event);
     pushHistory();
-    createDrawing(currentTool.value, startX, startY, svgPoint.x, svgPoint.y, pathPoints);
+
+    const newDrawing = {
+      id: Date.now().toString(),
+      startX,
+      startY,
+      endX: svgPoint.x,
+      endY: svgPoint.y,
+      strokeColor: drawingConfig.value.strokeColor,
+      backgroundColor: drawingConfig.value.backgroundColor,
+      size: drawingConfig.value.size,
+      pathPoints: [...pathPoints],
+      drawingType: drawingConfig.value.type,
+      type: "drawing",
+      state: "saved",
+      creationMode: "animation",
+    };
+
+    if (isAnimationMode.value) {
+      addDrawingToFrame(newDrawing);
+    } else {
+      createDrawing(currentTool.value, startX, startY, svgPoint.x, svgPoint.y, pathPoints);
+    }
+
     clearDrawingLayer();
     pathPoints = [];
 

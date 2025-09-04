@@ -1,16 +1,11 @@
 import { ref } from "vue";
-import { defineStore, storeToRefs } from "pinia";
+import { defineStore } from "pinia";
 import { Drawing, DrawingCollection } from "../types/drawing";
 import { DEFAULT_TOOL_CONFIG } from "@/constants";
-import { useAnimationStore } from "../stores/animationStore";
 
 export const useDrawStore = defineStore(
   "draw",
   () => {
-    const animationStore = useAnimationStore();
-    const { isAnimationMode } = storeToRefs(animationStore);
-    const { addDrawingToFrame } = animationStore;
-
     const drawings = ref(new DrawingCollection());
     const drawingConfig = ref({
       strokeColor: DEFAULT_TOOL_CONFIG.SHAPES.strokeColor,
@@ -40,11 +35,6 @@ export const useDrawStore = defineStore(
         size: drawingConfig.value.size,
         pathPoints,
       });
-      if (isAnimationMode.value) {
-        newDrawing.creationMode = "animation";
-        addDrawingToFrame(newDrawing);
-        return;
-      }
       if (newDrawing !== null) {
         drawings.value.add(newDrawing);
       }
